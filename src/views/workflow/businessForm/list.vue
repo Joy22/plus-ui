@@ -73,13 +73,18 @@
         </span>
       </template>
     </el-dialog>
+    <!-- 提交组件 -->
+    <submitVerify ref="submitVerifyRef" @submitCallback="submitCallback" @cancelCallback="cancelCallback" />
   </div>
 </template>
 
 <script setup name="BusinessForm" lang="ts">
-import { listBusinessForm, getBusinessForm, delBusinessForm, addBusinessForm, updateBusinessForm } from '@/api/workflow/businessForm';
+import { listBusinessForm, getBusinessForm, delBusinessForm, updateBusinessForm } from '@/api/workflow/businessForm';
 import { BusinessFormVO, BusinessFormQuery, BusinessFormForm } from '@/api/workflow/businessForm/types';
-
+import SubmitVerify from '@/components/Process/submitVerify.vue';
+import { startWorkFlow } from '@/api/workflow/task';
+//提交组件
+const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const businessFormList = ref<BusinessFormVO[]>([]);
@@ -92,6 +97,7 @@ const applyCodes = ref<Array<string | number>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
+const processDefinitionKey = ref<string>('');
 
 const queryFormRef = ref<ElFormInstance>();
 const vfRenderRef = ref(null);
@@ -123,6 +129,12 @@ const data = reactive<PageData<BusinessFormForm, BusinessFormQuery>>({
 });
 
 const { queryParams, form, rules } = toRefs(data);
+
+const submitFormData = ref<Record<string, any>>({
+  businessKey: '',
+  processKey: '',
+  variables: {}
+});
 
 /** 查询发起流程列表 */
 const getList = async () => {
@@ -158,12 +170,17 @@ const handleSelectionChange = (selection: BusinessFormVO[]) => {
 const handleUpdate = async (row?: BusinessFormVO) => {
   const _id = row?.id || ids.value[0]
   fromLoading.value = true
+  buttonLoading.value = true
   render.visible = true;
   const res = await getBusinessForm(_id);
-  Object.assign(form.value, res.data);
+  form.value = res.data
   render.title = "修改单据";
+  if (res.data.wfFormDefinitionVo && res.data.wfFormDefinitionVo.processDefinitionKey) {
+    processDefinitionKey.value = res.data.wfFormDefinitionVo.processDefinitionKey
+  }
   if (vfRenderRef.value) {
     fromLoading.value = false
+    buttonLoading.value = false
     vfRenderRef.value.setFormJson(res.data.content);
     vfRenderRef.value.setFormData(JSON.parse(res.data.contentValue))
   }
@@ -173,20 +190,54 @@ const handleUpdate = async (row?: BusinessFormVO) => {
 const submitData = (status: string) => {
   if (vfRenderRef.value) {
     buttonLoading.value = true;
+    fromLoading.value = true;
     vfRenderRef.value.getFormData().then((formData) => {
-      initFormData.contentValue = JSON.stringify(formData)
+      form.value.contentValue = JSON.stringify(formData)
       if ('draft' === status) {
-        addBusinessForm(initFormData).then(res => {
+        updateBusinessForm(form.value).then(res => {
           proxy?.$modal.msgSuccess("暂存成功");
           render.visible = false;
           buttonLoading.value = false;
+          fromLoading.value = false;
         })
       } else {
-
+        if (!processDefinitionKey.value) {
+          proxy?.$modal.msgError("未绑定流程!");
+          buttonLoading.value = false;
+          fromLoading.value = false;
+          return
+        }
+        updateBusinessForm(form.value).then(res => {
+          handleStartWorkFlow(res.data)
+        })
       }
     })
   }
 }
+//提交申请
+const handleStartWorkFlow = async (data: any) => {
+  submitFormData.value.processKey = processDefinitionKey.value;
+  submitFormData.value.businessKey = data.id;
+  submitFormData.value.variables = data.variable;
+  startWorkFlow(submitFormData.value).then((response: any) => {
+    if (submitVerifyRef.value) {
+      submitVerifyRef.value.openDialog(response.data.taskId);
+    }
+  });
+};
+//提交回调
+const submitCallback = async () => {
+  render.visible = false;
+  buttonLoading.value = false;
+  fromLoading.value = false;
+  handleQuery();
+};
+//取消回调
+const cancelCallback = async () => {
+  buttonLoading.value = false;
+  fromLoading.value = false;
+};
+
 /** 删除按钮操作 */
 const handleDelete = async (row?: BusinessFormVO) => {
   const _ids = row?.id || ids.value;

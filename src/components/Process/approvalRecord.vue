@@ -1,35 +1,26 @@
 <template>
-  <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" append-to-body :close-on-click-modal="false">
+  <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" append-to-body
+    :close-on-click-modal="false">
     <div v-loading="loading">
       <div style="width: 100%;height: 300px;overflow: auto;position: relative;">
-        <div
-          v-for="(graphic, index) in graphicInfoVos"
-          :key="index"
-          :style="{
-                    position: 'absolute',
-                    left: `${graphic.x}px`,
-                    top: `${graphic.y}px`,
-                    width: `${graphic.width}px`,
-                    height: `${graphic.height}px`,
-                    cursor: 'pointer',
-                    zIndex: 99
-                }"
-          @mouseover="handleMouseOver(graphic)"
-          @mouseleave="handleMouseLeave()"
-        ></div>
+        <div v-for="(graphic, index) in graphicInfoVos" :key="index" :style="{
+          position: 'absolute',
+          left: `${graphic.x}px`,
+          top: `${graphic.y}px`,
+          width: `${graphic.width}px`,
+          height: `${graphic.height}px`,
+          cursor: 'pointer',
+          zIndex: 99
+        }" @mouseover="handleMouseOver(graphic)" @mouseleave="handleMouseLeave()"></div>
         <!-- 弹出的 div 元素 -->
-        <div
-          v-show="popupVisible"
-          class="triangle"
-          :style="{
-                    position: 'absolute',
-                    left: `${graphicX}px`,
-                    top: `${graphicY}px`,
-                    backgroundColor: '#fff',
-                    padding: '10px',
-                    zIndex: 100
-                }"
-        >
+        <div v-show="popupVisible" class="triangle" :style="{
+          position: 'absolute',
+          left: `${graphicX}px`,
+          top: `${graphicY}px`,
+          backgroundColor: '#fff',
+          padding: '10px',
+          zIndex: 100
+        }">
           <p>审批人员: {{ nodeInfo.nickName }}</p>
           <p>节点状态：{{ nodeInfo.status }}</p>
           <p>开始时间：{{ nodeInfo.startTime }}</p>

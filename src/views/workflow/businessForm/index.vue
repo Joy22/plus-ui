@@ -61,7 +61,7 @@
 <script setup name="BusinessForm" lang="ts">
 import { queryList, getForm } from "@/api/workflow/form";
 import { FormVO } from "@/api/workflow/form/types";
-import { addBusinessForm } from '@/api/workflow/businessForm';
+import { addBusinessForm, updateBusinessForm } from '@/api/workflow/businessForm';
 import { BusinessFormForm } from '@/api/workflow/businessForm/types';
 import { startWorkFlow } from '@/api/workflow/task';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
@@ -89,14 +89,14 @@ const queryParams = ref<Record<string, any>>({
   formName: ''
 });
 
-const initFormData: BusinessFormForm = {
+const initFormData = ref<BusinessFormForm>({
   id: undefined,
   applyCode: undefined,
   formId: undefined,
   formName: undefined,
   content: undefined,
   contentValue: undefined
-}
+})
 
 const submitFormData = ref<Record<string, any>>({
   businessKey: '',
@@ -125,12 +125,12 @@ const queryFromList = async () => {
 /** 申请单据 */
 const handleAppay = async (row?: FormVO) => {
   render.visible = true;
-  fromLoading.value = false
+  fromLoading.value = true
   render.title = row?.formName;
   const formId = row?.formId || ids.value[0];
-  initFormData.formId = row?.formId
-  initFormData.formName = row?.formName
-  initFormData.content = row?.content
+  initFormData.value.formId = row?.formId
+  initFormData.value.formName = row?.formName
+  initFormData.value.content = row?.content
   const res = await getForm(formId);
   if (vfRenderRef.value) {
     fromLoading.value = false
@@ -147,9 +147,9 @@ const submitData = (status: string) => {
     fromLoading.value = true
     buttonLoading.value = true;
     vfRenderRef.value.getFormData().then((formData) => {
-      initFormData.contentValue = JSON.stringify(formData)
+      initFormData.value.contentValue = JSON.stringify(formData)
       if ('draft' === status) {
-        addBusinessForm(initFormData).then(res => {
+        addBusinessForm(initFormData.value).then(res => {
           proxy?.$modal.msgSuccess("暂存成功");
           render.visible = false;
           buttonLoading.value = false;
@@ -159,10 +159,19 @@ const submitData = (status: string) => {
           proxy?.$modal.msgError("未绑定流程!");
           buttonLoading.value = false;
           fromLoading.value = false;
+          return
         }
-        addBusinessForm(initFormData).then(res => {
-          handleStartWorkFlow(res.data)
-        })
+        if (initFormData.value && initFormData.value.id) {
+          updateBusinessForm(initFormData.value).then(res => {
+            initFormData.value = res.data
+            handleStartWorkFlow(res.data)
+          })
+        } else {
+          addBusinessForm(initFormData.value).then(res => {
+            initFormData.value = res.data
+            handleStartWorkFlow(res.data)
+          })
+        }
       }
     })
   }

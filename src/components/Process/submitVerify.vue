@@ -1,5 +1,6 @@
 <template>
-  <el-dialog v-model="dialog.visible" :title="dialog.title" width="50%" draggable :close-on-click-modal="false">
+  <el-dialog v-model="dialog.visible" :title="dialog.title" width="50%" draggable :before-close="cancel"
+    :close-on-click-modal="false">
     <el-form :model="form" label-width="120px" v-loading="loading">
       <el-form-item label="消息提醒">
         <el-checkbox-group v-model="form.messageType">
