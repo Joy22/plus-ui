@@ -5,7 +5,7 @@
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
             <el-form-item label="部门名称" prop="deptName">
-              <el-input v-model="queryParams.deptName" placeholder="请输入部门名称" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.deptName" placeholder="请输入部门名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="状态" prop="status">
               <el-select v-model="queryParams.status" placeholder="部门状态" clearable>
@@ -116,7 +116,7 @@
             <el-form-item label="部门状态">
               <el-radio-group v-model="form.status">
                 <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.value">{{ dict.label
-                  }}</el-radio>
+                }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>

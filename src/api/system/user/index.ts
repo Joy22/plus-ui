@@ -74,6 +74,9 @@ export const resetUserPwd = (userId: string | number, password: string) => {
   return request({
     url: '/system/user/resetPwd',
     method: 'put',
+    headers: {
+      isEncrypt: true
+    },
     data: data
   });
 };
@@ -130,6 +133,9 @@ export const updateUserPwd = (oldPassword: string, newPassword: string) => {
   return request({
     url: '/system/user/profile/updatePwd',
     method: 'put',
+    headers: {
+      isEncrypt: true
+    },
     params: data
   });
 };
@@ -175,8 +181,8 @@ export const updateAuthRole = (data: { userId: string; roleIds: string }) => {
  */
 export const listUserByDeptId = (deptId: string | number): AxiosPromise<UserVO[]> => {
   return request({
-    url: "/system/user/list/dept/" + deptId,
-    method: "get"
+    url: '/system/user/list/dept/' + deptId,
+    method: 'get'
   });
 };
 

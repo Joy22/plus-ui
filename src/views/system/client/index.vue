@@ -4,10 +4,10 @@
       <div class="search" v-show="showSearch">
         <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="100px">
           <el-form-item label="客户端key" prop="clientKey">
-            <el-input v-model="queryParams.clientKey" placeholder="请输入客户端key" clearable @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.clientKey" placeholder="请输入客户端key" clearable style="width: 240px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="客户端秘钥" prop="clientSecret">
-            <el-input v-model="queryParams.clientSecret" placeholder="请输入客户端秘钥" clearable @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.clientSecret" placeholder="请输入客户端秘钥" clearable style="width: 240px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-select v-model="queryParams.status" placeholder="状态" clearable>
@@ -53,11 +53,7 @@
         <el-table-column label="客户端秘钥" align="center" prop="clientSecret" />
         <el-table-column label="授权类型" align="center">
           <template #default="scope">
-            <div>
-              <template v-for="(type, index) in scope.row.grantTypeList" :key="index">
-                <dict-tag class="el-check-tag" :options="sys_grant_type" :value="type" />
-              </template>
-            </div>
+            <dict-tag :options="sys_grant_type" :value="scope.row.grantTypeList" />
           </template>
         </el-table-column>
         <el-table-column label="设备类型" align="center">
