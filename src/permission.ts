@@ -15,7 +15,7 @@ const whiteList = ['/login', '/register', '/social-callback'];
 router.beforeEach(async (to, from, next) => {
   NProgress.start();
   if (getToken()) {
-    to.meta.title && useSettingsStore().setTitle(to.meta.title as string);
+    to.meta.title && useSettingsStore().setTitle(to.meta.title);
     /* has token*/
     if (to.path === '/login') {
       next({ path: '/' });
