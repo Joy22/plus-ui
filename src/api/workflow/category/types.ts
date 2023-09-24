@@ -23,6 +23,8 @@ export interface CategoryVO {
    * 排序
    */
   sortNum: number;
+
+  children?: CategoryVO[];
 }
 
 export interface CategoryForm extends BaseEntity {

@@ -5,14 +5,22 @@
       <el-col :lg="4" :xs="24" style="">
         <el-card shadow="hover">
           <el-input placeholder="请输入流程分类名" v-model="categoryName" prefix-icon="Search" clearable />
-          <el-tree class="mt-2" ref="categoryTreeRef" node-key="id" :data="categoryOptions"
-            :props="{ label: 'categoryName', children: 'children' }" :expand-on-click-node="false"
-            :filter-node-method="filterNode" highlight-current default-expand-all @node-click="handleNodeClick"></el-tree>
+          <el-tree
+            class="mt-2"
+            ref="categoryTreeRef"
+            node-key="id"
+            :data="categoryOptions"
+            :props="{ label: 'categoryName', children: 'children' }"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            highlight-current
+            default-expand-all
+            @node-click="handleNodeClick"
+          ></el-tree>
         </el-card>
       </el-col>
       <el-col :lg="20" :xs="24">
-        <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
-          :leave-active-class="proxy?.animate.searchAnimate.leave">
+        <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div class="mb-[10px]">
             <el-card shadow="hover">
               <center>
@@ -24,8 +32,7 @@
             </el-card>
           </div>
         </transition>
-        <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
-          :leave-active-class="proxy?.animate.searchAnimate.leave">
+        <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div class="mb-[10px]" v-show="showSearch">
             <el-card shadow="hover">
               <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="120px">
@@ -74,14 +81,12 @@
               </template>
             </el-table-column>
             <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
-            <el-table-column align="center" v-if="tab === 'finish'" prop="endTime" label="结束时间"
-              width="160"></el-table-column>
+            <el-table-column align="center" v-if="tab === 'finish'" prop="endTime" label="结束时间" width="160"></el-table-column>
             <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
-                    <el-button type="text" size="small" icon="Document"
-                      @click="handleApprovalRecord(scope.row)">审批记录</el-button>
+                    <el-button type="text" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
                   </el-col>
                   <el-col :span="1.5">
                     <el-button type="text" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -89,8 +94,7 @@
                 </el-row>
                 <el-row :gutter="10" class="mb8" v-if="tab === 'running'">
                   <el-col :span="1.5">
-                    <el-button type="text" size="small" icon="Sort"
-                      @click="getProcessDefinitionHitoryList(scope.row.processDefinitionId, scope.row.processDefinitionKey)">切换版本</el-button>
+                    <el-button type="text" size="small" icon="Sort" @click="getProcessDefinitionHitoryList(scope.row.processDefinitionId, scope.row.processDefinitionKey)">切换版本</el-button>
                   </el-col>
                   <el-col :span="1.5">
                     <el-popover trigger="click" :ref="`popoverRef${scope.$index}`" placement="left" :width="300">
@@ -108,13 +112,11 @@
               </template>
             </el-table-column>
           </el-table>
-          <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
-            v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
+          <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible"
-      :title="processDefinitionDialog.title" width="70%">
+    <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible" :title="processDefinitionDialog.title" width="70%">
       <el-table v-loading="loading" :data="processDefinitionHistoryList">
         <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="流程定义名称"></el-table-column>
@@ -128,8 +130,7 @@
             <el-tag type="danger" v-else>挂起</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="deploymentTime" label="部署时间"
-          :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column fixed="right" label="操作" align="center" width="200" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button link type="primary" size="small" icon="Sort" @click="handleChange(scope.row.id)">切换</el-button>

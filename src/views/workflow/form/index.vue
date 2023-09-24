@@ -1,7 +1,6 @@
 <template>
   <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
-      :leave-active-class="proxy?.animate.searchAnimate.leave">
+    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div class="search" v-show="showSearch">
         <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="70">
           <el-form-item label="表单名称" prop="formName">
@@ -18,20 +17,16 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd"
-              v-hasPermi="['workflow:form:add']">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['workflow:form:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()"
-              v-hasPermi="['workflow:form:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['workflow:form:edit']">修改</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()"
-              v-hasPermi="['workflow:form:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['workflow:form:remove']">删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport"
-              v-hasPermi="['workflow:form:export']">导出</el-button>
+            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['workflow:form:export']">导出</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
@@ -43,8 +38,7 @@
         <el-table-column label="表单名称" align="center" prop="formName" />
         <el-table-column label="状态" align="center" key="status">
           <template #default="scope">
-            <el-switch v-model="scope.row.status" active-value="0" inactive-value="1"
-              @change="handleStatusChange(scope.row)"></el-switch>
+            <el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="流程定义KEY" align="center" prop="wfFormDefinitionVo">
@@ -60,16 +54,13 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="详情" placement="top">
-              <el-button link type="primary" icon="View" @click="handleDetail(scope.row)"
-                v-hasPermi="['workflow:form:query']"></el-button>
+              <el-button link type="primary" icon="View" @click="handleDetail(scope.row)" v-hasPermi="['workflow:form:query']"></el-button>
             </el-tooltip>
             <el-tooltip content="修改" placement="top">
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
-                v-hasPermi="['workflow:form:edit']"></el-button>
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['workflow:form:edit']"></el-button>
             </el-tooltip>
             <el-tooltip content="删除" placement="top">
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-                v-hasPermi="['workflow:form:remove']"></el-button>
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['workflow:form:remove']"></el-button>
             </el-tooltip>
             <el-tooltip content="绑定流程" placement="top">
               <el-button link type="primary" icon="Tickets" @click="handleProcess(scope.row)"></el-button>
@@ -77,8 +68,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize" @pagination="getList" />
+      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
 
     <!-- 流程表单设计器对话框 -->
@@ -115,8 +105,7 @@
         </div>
       </template>
     </el-dialog>
-    <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible"
-      :title="processDefinitionDialog.title" width="70%">
+    <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible" :title="processDefinitionDialog.title" width="70%">
       <el-table v-loading="loading" :data="processDefinition.list">
         <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="流程定义名称"></el-table-column>
@@ -130,17 +119,20 @@
             <el-tag type="danger" v-else>挂起</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="deploymentTime" label="部署时间"
-          :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column fixed="right" label="操作" align="center" width="200" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="handleConfirm(scope.row)">确认绑定</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="processDefinition.total > 0" :total="processDefinition.total"
-        v-model:page="processQueryParams.pageNum" v-model:limit="processQueryParams.pageSize"
-        @pagination="getDefinitionList" />
+      <pagination
+        v-show="processDefinition.total > 0"
+        :total="processDefinition.total"
+        v-model:page="processQueryParams.pageNum"
+        v-model:limit="processQueryParams.pageSize"
+        @pagination="getDefinitionList"
+      />
     </el-dialog>
   </div>
 </template>
@@ -174,8 +166,8 @@ const processDefinition = reactive<any>({
 
 
 
-const vfDesignerRef = ref(null);
-const vfRenderRef = ref(null);
+const vfDesignerRef = ref();
+const vfRenderRef = ref();
 const formFormRef = ref(ElForm);
 const queryFormRef = ref(ElForm);
 

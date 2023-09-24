@@ -5,14 +5,22 @@
       <el-col :lg="4" :xs="24" style="">
         <el-card shadow="hover">
           <el-input placeholder="请输入流程分类名" v-model="categoryName" prefix-icon="Search" clearable />
-          <el-tree class="mt-2" ref="categoryTreeRef" node-key="id" :data="categoryOptions"
-            :props="{ label: 'categoryName', children: 'children' }" :expand-on-click-node="false"
-            :filter-node-method="filterNode" highlight-current default-expand-all @node-click="handleNodeClick"></el-tree>
+          <el-tree
+            class="mt-2"
+            ref="categoryTreeRef"
+            node-key="id"
+            :data="categoryOptions"
+            :props="{ label: 'categoryName', children: 'children' }"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            highlight-current
+            default-expand-all
+            @node-click="handleNodeClick"
+          ></el-tree>
         </el-card>
       </el-col>
       <el-col :lg="20" :xs="24">
-        <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
-          :leave-active-class="proxy?.animate.searchAnimate.leave">
+        <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div class="mb-[10px]" v-show="showSearch">
             <el-card shadow="hover">
               <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="80px">
@@ -58,29 +66,24 @@
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Pointer"
-                      @click="clickDesign(scope.row.id)">设计流程</el-button>
+                    <el-button link type="primary" size="small" icon="Pointer" @click="clickDesign(scope.row.id)">设计流程</el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Download"
-                      @click="clickExportZip(scope.row)">导出</el-button>
+                    <el-button link type="primary" size="small" icon="Download" @click="clickExportZip(scope.row)">导出</el-button>
                   </el-col>
                 </el-row>
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="ScaleToOriginal"
-                      @click="clickDeploy(scope.row.id, scope.row.key)"> 流程部署 </el-button>
+                    <el-button link type="primary" size="small" icon="ScaleToOriginal" @click="clickDeploy(scope.row.id, scope.row.key)"> 流程部署 </el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Delete"
-                      @click="handleDelete(scope.row)">删除</el-button>
+                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
                 </el-row>
               </template>
             </el-table-column>
           </el-table>
-          <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
-            v-model:limit="queryParams.pageSize" @pagination="getList" />
+          <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
         </el-card>
       </el-col>
     </el-row>
@@ -97,9 +100,14 @@
           <el-input v-model="form.key" maxlength="20" show-word-limit />
         </el-form-item>
         <el-form-item label="流程分类" prop="categoryCode">
-          <el-tree-select v-model="form.categoryCode" :data="categoryOptions"
-            :props="{ value: 'categoryCode', label: 'categoryName', children: 'children' }" value-key="categoryCode"
-            placeholder="请选择流程分类" check-strictly />
+          <el-tree-select
+            v-model="form.categoryCode"
+            :data="categoryOptions"
+            :props="{ value: 'categoryCode', label: 'categoryName', children: 'children' }"
+            value-key="categoryCode"
+            placeholder="请选择流程分类"
+            check-strictly
+          />
         </el-form-item>
         <el-form-item label="备注：" prop="description">
           <el-input type="textarea" v-model="form.description" maxlength="30" show-word-limit></el-input>
@@ -142,7 +150,7 @@ const single = ref(true);
 const multiple = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
-const modelList = ref<Record<string, any>>([]);
+const modelList = ref<any[]>([]);
 const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
 const categoryTreeRef = ref(ElTree);
@@ -164,7 +172,8 @@ const data = reactive<PageData<ModelForm, ModelQuery>>({
     pageNum: 1,
     pageSize: 10,
     name: '',
-    key: ''
+    key: '',
+    categoryCode: ''
   },
   rules: {
     name: [{ required: true, message: '模型不能为空', trigger: 'blur' }],

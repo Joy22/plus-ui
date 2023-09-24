@@ -15,6 +15,16 @@ export interface BusinessFormVO {
   formId: string | number;
 
   /**
+   * 表单内容
+   */
+  content: string;
+
+  /**
+   * 表单值
+   */
+  contentValue: string;
+
+  /**
    * 表单名称
    */
   formName: string;

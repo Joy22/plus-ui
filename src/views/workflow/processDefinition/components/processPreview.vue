@@ -16,14 +16,14 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const data = reactive({
     visible: false,
-    url: [],
+    url: new Array<string>,
     type: ''
 })
 //打开
-function openDialog (url, type) {
+const openDialog = (url: string[], type: string) => {
     data.visible = true
     data.url = url
     data.type = type
