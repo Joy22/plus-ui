@@ -117,8 +117,8 @@ export const backProcess = (data: object) => {
 
 /**
  * 获取流程状态
- * @param taskId 
- * @returns 
+ * @param taskId
+ * @returns
  */
 export const getBusinessStatus = (taskId: string) => {
   return request({
@@ -129,8 +129,8 @@ export const getBusinessStatus = (taskId: string) => {
 
 /**
  * 加签
- * @param data 
- * @returns 
+ * @param data
+ * @returns
  */
 export const addMultiInstanceExecution = (data: object) => {
   return request({
@@ -142,8 +142,8 @@ export const addMultiInstanceExecution = (data: object) => {
 
 /**
  * 减签
- * @param data 
- * @returns 
+ * @param data
+ * @returns
  */
 export const deleteMultiInstanceExecution = (data: object) => {
   return request({
@@ -152,4 +152,3 @@ export const deleteMultiInstanceExecution = (data: object) => {
     data: data
   });
 };
-

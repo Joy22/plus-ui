@@ -23,7 +23,6 @@ export interface CategoryVO {
    * 排序
    */
   sortNum: number;
-
 }
 
 export interface CategoryForm extends BaseEntity {
@@ -51,7 +50,6 @@ export interface CategoryForm extends BaseEntity {
    * 排序
    */
   sortNum?: number;
-
 }
 
 export interface CategoryQuery extends PageQuery {
@@ -64,5 +62,4 @@ export interface CategoryQuery extends PageQuery {
    * 分类编码
    */
   categoryCode?: string;
-
 }

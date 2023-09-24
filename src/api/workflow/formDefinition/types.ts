@@ -28,7 +28,6 @@ export interface FormDefinitionVO {
    * 流程定义版本
    */
   processDefinitionVersion: number;
-
 }
 
 export interface FormDefinitionForm extends BaseEntity {
@@ -61,11 +60,9 @@ export interface FormDefinitionForm extends BaseEntity {
    * 流程定义版本
    */
   processDefinitionVersion?: number;
-
 }
 
 export interface FormDefinitionQuery extends PageQuery {
-
   /**
    * 动态表单id
    */
@@ -91,11 +88,8 @@ export interface FormDefinitionQuery extends PageQuery {
    */
   processDefinitionVersion?: number;
 
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
 }
-
-
-
