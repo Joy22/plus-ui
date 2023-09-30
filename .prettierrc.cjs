@@ -3,7 +3,7 @@
  */
 module.exports = {
   // 一行最多多少个字符
-  printWidth: 150,
+  printWidth: 200,
   // 指定每个缩进级别的空格数
   tabWidth: 2,
   // 使用制表符而不是空格缩进行
@@ -12,6 +12,8 @@ module.exports = {
   semi: true,
   // 是否使用单引号
   singleQuote: true,
+  // 是否缩进 Vue 文件中的代码<script>和<style>标签
+  vueIndentScriptAndStyle: true,
   // 更改引用对象属性的时间 可选值"<as-needed|consistent|preserve>"
   quoteProps: 'as-needed',
   // 在JSX中使用单引号而不是双引号

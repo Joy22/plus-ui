@@ -28,7 +28,7 @@
               <div>
                 <img
                   src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABwBAMAAAA0zul4AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAeUExURf///zKW+ur0/nO4+6XR/YvE/Eqi+5DG/Nnr/sPg/brnfYAAAAFMSURBVFjD7dfPSsNAEAbwNTGtuXVM09pbqCAeFV8gwYNXtU+wioI3FcFrLorH+OeBncYuSnYl+wUKEueDNmHhR8rO7myqqGOUQIECBQoUaDK5dsQD3ihXNtth6YTqtQ0mbqcGbXD8C4z6BYPFUSP3ftCawOVU+8ANezH5QXuVzDwnJ5g38nfruP/SSOYHh9bkjNdcjrDrAghOHhvJe7ettlab6RaFA9fDkTpOURivbi963OX+H/x4qLrA4IzHzjvA57pzVDCMsU7+nT0eKfiTofCQKF2SAxAGPLBdf4GQz63LXB1rHsVgRDtfD05BGLKofQJDOuXLHQyHdQm5mOhPjQ2coXXUXIiM6zFCYUGj3aTUlKMwpIQPOd9j7ufS0abDotsqMu+wcAd40nRV+sCp1W0ysxbW9GpNlRsWrTB9mzvyLn/KBAoUKFCgyScZMYmWkzKSDQAAAABJRU5ErkJggg=="
-                  width="60">
+                  width="60" />
               </div>
               <div style="display: inline-block;padding-left: 15px;">
                 <div class="from-font">{{ item.formName }}</div>
@@ -65,6 +65,7 @@ import { addBusinessForm, updateBusinessForm } from '@/api/workflow/businessForm
 import { BusinessFormForm } from '@/api/workflow/businessForm/types';
 import { startWorkFlow } from '@/api/workflow/task';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
+
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
@@ -78,7 +79,7 @@ const buttonLoading = ref(false);
 const processDefinitionKey = ref<string>('');
 
 const queryFormRef = ref<ElFormInstance>();
-const vfRenderRef = ref(null);
+const vfRenderRef = ref();
 
 const render = reactive<DialogOption>({
   visible: false,
@@ -126,6 +127,7 @@ const queryFromList = async () => {
 const handleAppay = async (row?: FormVO) => {
   render.visible = true;
   fromLoading.value = true
+  buttonLoading.value = true
   render.title = row?.formName;
   const formId = row?.formId || ids.value[0];
   initFormData.value.formId = row?.formId
@@ -134,6 +136,7 @@ const handleAppay = async (row?: FormVO) => {
   const res = await getForm(formId);
   if (vfRenderRef.value) {
     fromLoading.value = false
+    buttonLoading.value = false
     if (res.data.wfFormDefinitionVo && res.data.wfFormDefinitionVo.processDefinitionKey) {
       processDefinitionKey.value = res.data.wfFormDefinitionVo.processDefinitionKey
     }
@@ -146,7 +149,7 @@ const submitData = (status: string) => {
   if (vfRenderRef.value) {
     fromLoading.value = true
     buttonLoading.value = true;
-    vfRenderRef.value.getFormData().then((formData) => {
+    vfRenderRef.value.getFormData().then((formData: object) => {
       initFormData.value.contentValue = JSON.stringify(formData)
       if ('draft' === status) {
         addBusinessForm(initFormData.value).then(res => {
@@ -206,7 +209,7 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .from-font {
   font-size: 18px;
   font-weight: bold;

@@ -5,14 +5,22 @@
       <el-col :lg="4" :xs="24" style="">
         <el-card shadow="hover">
           <el-input placeholder="请输入流程分类名" v-model="categoryName" prefix-icon="Search" clearable />
-          <el-tree class="mt-2" ref="categoryTreeRef" node-key="id" :data="categoryOptions"
-            :props="{ label: 'categoryName', children: 'children' }" :expand-on-click-node="false"
-            :filter-node-method="filterNode" highlight-current default-expand-all @node-click="handleNodeClick"></el-tree>
+          <el-tree
+            class="mt-2"
+            ref="categoryTreeRef"
+            node-key="id"
+            :data="categoryOptions"
+            :props="{ label: 'categoryName', children: 'children' }"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            highlight-current
+            default-expand-all
+            @node-click="handleNodeClick"
+          ></el-tree>
         </el-card>
       </el-col>
       <el-col :lg="20" :xs="24">
-        <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
-          :leave-active-class="proxy?.animate.searchAnimate.leave">
+        <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div class="mb-[10px]" v-show="showSearch">
             <el-card shadow="hover">
               <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="120px">
@@ -30,8 +38,7 @@
             </el-card>
           </div>
         </transition>
-        <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
-          :leave-active-class="proxy?.animate.searchAnimate.leave">
+        <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div class="mb-[10px]" v-show="showSearch">
             <el-card shadow="hover">
               <el-button type="primary" icon="UploadFilled" @click="uploadDialog.visible = true">部署流程文件</el-button>
@@ -54,14 +61,12 @@
             <el-table-column align="center" prop="version" label="版本号" width="90">
               <template #default="scope"> v{{ scope.row.version }}.0</template>
             </el-table-column>
-            <el-table-column align="center" prop="resourceName" label="流程XML" min-width="80"
-              :show-overflow-tooltip="true">
+            <el-table-column align="center" prop="resourceName" label="流程XML" min-width="80" :show-overflow-tooltip="true">
               <template #default="scope">
                 <el-link type="primary" @click="clickPreviewXML(scope.row.id)">{{ scope.row.resourceName }}</el-link>
               </template>
             </el-table-column>
-            <el-table-column align="center" prop="diagramResourceName" label="流程图片" min-width="80"
-              :show-overflow-tooltip="true">
+            <el-table-column align="center" prop="diagramResourceName" label="流程图片" min-width="80" :show-overflow-tooltip="true">
               <template #default="scope">
                 <el-link type="primary" @click="clickPreviewImg(scope.row.id)">{{ scope.row.diagramResourceName
                 }}</el-link>
@@ -73,40 +78,31 @@
                 <el-tag type="danger" v-else>挂起</el-tag>
               </template>
             </el-table-column>
-            <el-table-column align="center" prop="deploymentTime" label="部署时间"
-              :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
             <el-table-column fixed="right" label="操作" align="center" width="200" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small"
-                      :icon="scope.row.suspensionState === 1 ? 'Lock' : 'Unlock'"
-                      @click="handleProcessDefState(scope.row)">
+                    <el-button link type="primary" size="small" :icon="scope.row.suspensionState === 1 ? 'Lock' : 'Unlock'" @click="handleProcessDefState(scope.row)">
                       {{ scope.row.suspensionState === 1 ? "挂起流程" : "激活流程" }}
                     </el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Delete"
-                      @click="handleDelete(scope.row)">删除</el-button>
+                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
                 </el-row>
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Sort" @click="handleConvertToModel(scope.row)"> 转换模型
-                    </el-button>
+                    <el-button link type="primary" size="small" icon="Sort" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Document"
-                      @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)">
-                      历史版本
-                    </el-button>
+                    <el-button link type="primary" size="small" icon="Document" @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)"> 历史版本 </el-button>
                   </el-col>
                 </el-row>
               </template>
             </el-table-column>
           </el-table>
-          <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
-            v-model:limit="queryParams.pageSize" @pagination="getList" />
+          <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
         </el-card>
       </el-col>
     </el-row>
@@ -115,8 +111,7 @@
 
     <!-- 部署文件 -->
     <el-dialog v-if="uploadDialog.visible" v-model="uploadDialog.visible" :title="uploadDialog.title" width="30%">
-      <el-upload class="upload-demo" drag accept="application/zip,application/xml,.bpmn"
-        :http-request="handerDeployProcessFile">
+      <el-upload class="upload-demo" drag accept="application/zip,application/xml,.bpmn" :http-request="handerDeployProcessFile">
         <el-icon class="UploadFilled"><upload-filled /></el-icon>
         <div class="el-upload__text"><em>点击上传，选择BPMN流程文件</em></div>
         <div class="el-upload__text">仅支持 .zip、.bpmn20.xml、bpmn 格式文件</div>
@@ -125,8 +120,7 @@
     </el-dialog>
 
     <!-- 历史版本 -->
-    <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible"
-      :title="processDefinitionDialog.title" width="70%">
+    <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible" :title="processDefinitionDialog.title" width="70%">
       <el-table v-loading="loading" :data="processDefinitionHistoryList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
@@ -140,8 +134,7 @@
             <el-link type="primary" @click="clickPreviewXML(scope.row.id)">{{ scope.row.resourceName }}</el-link>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="diagramResourceName" label="流程图片" min-width="80"
-          :show-overflow-tooltip="true">
+        <el-table-column align="center" prop="diagramResourceName" label="流程图片" min-width="80" :show-overflow-tooltip="true">
           <template #default="scope">
             <el-link type="primary" @click="clickPreviewImg(scope.row.id)">{{ scope.row.diagramResourceName }}</el-link>
           </template>
@@ -152,14 +145,12 @@
             <el-tag type="danger" v-else>挂起</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="deploymentTime" label="部署时间"
-          :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column fixed="right" label="操作" align="center" width="200" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button link type="primary" size="small" :icon="scope.row.suspensionState === 1 ? 'Lock' : 'Unlock'"
-                  @click="handleProcessDefState(scope.row)">
+                <el-button link type="primary" size="small" :icon="scope.row.suspensionState === 1 ? 'Lock' : 'Unlock'" @click="handleProcessDefState(scope.row)">
                   {{ scope.row.suspensionState === 1 ? "挂起流程" : "激活流程" }}
                 </el-button>
               </el-col>
@@ -169,8 +160,7 @@
             </el-row>
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button link type="primary" icon="Sort" size="small" @click="handleConvertToModel(scope.row)"> 转换模型
-                </el-button>
+                <el-button link type="primary" icon="Sort" size="small" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
               </el-col>
             </el-row>
           </template>
@@ -325,7 +315,7 @@ const clickPreviewImg = (id: string) => {
       url.value = [];
       url.value.push('data:image/png;base64,' + resp.data);
       loading.value = false;
-      previewRef.value.openDialog(url, 'png');
+      previewRef.value.openDialog(url.value, 'png');
     }
   })
 
@@ -338,7 +328,7 @@ const clickPreviewXML = (id: string) => {
       url.value = [];
       url.value = response.data.xml;
       loading.value = false;
-      previewRef.value.openDialog(url, 'xml');
+      previewRef.value.openDialog(url.value, 'xml');
     }
   });
 };

@@ -5,15 +5,9 @@ module.exports = {
     node: true
   },
   parser: 'vue-eslint-parser',
-  extends: [
-    'eslint:recommended',
-    'plugin:vue/vue3-essential',
-    'plugin:@typescript-eslint/recommended',
-    './.eslintrc-auto-import.json',
-    'plugin:prettier/recommended'
-  ],
+  extends: ['eslint:recommended', 'plugin:vue/vue3-essential', 'plugin:@typescript-eslint/recommended', './.eslintrc-auto-import.json', 'plugin:prettier/recommended'],
   parserOptions: {
-    ecmaVersion: '2020',
+    ecmaVersion: 'latest',
     sourceType: 'module',
     parser: '@typescript-eslint/parser'
   },

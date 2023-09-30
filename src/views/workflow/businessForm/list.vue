@@ -22,10 +22,6 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()"
-              v-hasPermi="['workflow:businessForm:edit']">修改</el-button>
-          </el-col>
-          <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport"
               v-hasPermi="['workflow:businessForm:export']">导出</el-button>
           </el-col>
@@ -99,7 +95,6 @@ import { BusinessFormVO, BusinessFormQuery, BusinessFormForm } from '@/api/workf
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import { startWorkFlow } from '@/api/workflow/task';
-
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
@@ -119,7 +114,7 @@ const total = ref(0);
 const processDefinitionKey = ref<string>('');
 
 const queryFormRef = ref<ElFormInstance>();
-const vfRenderRef = ref(null);
+const vfRenderRef = ref();
 
 const render = reactive<DialogOption>({
   visible: false,
@@ -133,7 +128,7 @@ const initFormData: BusinessFormForm = {
   formName: undefined,
   content: undefined,
   contentValue: undefined
-}
+};
 const data = reactive<PageData<BusinessFormForm, BusinessFormQuery>>({
   form: { ...initFormData },
   queryParams: {
@@ -141,8 +136,7 @@ const data = reactive<PageData<BusinessFormForm, BusinessFormQuery>>({
     pageSize: 10,
     applyCode: undefined,
     formName: undefined,
-    params: {
-    }
+    params: {}
   },
   rules: {}
 });
@@ -162,77 +156,76 @@ const getList = async () => {
   businessFormList.value = res.rows;
   total.value = res.total;
   loading.value = false;
-}
-
+};
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
-}
+};
 
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
-}
+};
 
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: BusinessFormVO[]) => {
-  ids.value = selection.map(item => item.id);
-  applyCodes.value = selection.map(item => item.applyCode);
+  ids.value = selection.map((item) => item.id);
+  applyCodes.value = selection.map((item) => item.applyCode);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
-}
+};
 
 /** 修改按钮操作 */
 const handleUpdate = async (row?: BusinessFormVO) => {
-  const _id = row?.id || ids.value[0]
-  fromLoading.value = true
-  buttonLoading.value = true
+  const _id = row?.id || ids.value[0];
+  fromLoading.value = true;
+  buttonLoading.value = true;
   render.visible = true;
   const res = await getBusinessForm(_id);
-  form.value = res.data
-  render.title = "修改单据";
+  form.value = res.data;
+  render.title = '修改单据';
   if (res.data.wfFormDefinitionVo && res.data.wfFormDefinitionVo.processDefinitionKey) {
-    processDefinitionKey.value = res.data.wfFormDefinitionVo.processDefinitionKey
+    processDefinitionKey.value = res.data.wfFormDefinitionVo.processDefinitionKey;
   }
   if (vfRenderRef.value) {
-    fromLoading.value = false
-    buttonLoading.value = false
+    fromLoading.value = false;
+    buttonLoading.value = false;
     vfRenderRef.value.setFormJson(res.data.content);
-    vfRenderRef.value.setFormData(JSON.parse(res.data.contentValue))
+    vfRenderRef.value.setFormData(JSON.parse(res.data.contentValue));
   }
-}
+};
 
 /** 提交按钮 */
 const submitData = (status: string) => {
   if (vfRenderRef.value) {
     buttonLoading.value = true;
     fromLoading.value = true;
-    vfRenderRef.value.getFormData().then((formData) => {
-      form.value.contentValue = JSON.stringify(formData)
+    vfRenderRef.value.getFormData().then((formData: object) => {
+      form.value.contentValue = JSON.stringify(formData);
       if ('draft' === status) {
-        updateBusinessForm(form.value).then(res => {
-          proxy?.$modal.msgSuccess("暂存成功");
+        updateBusinessForm(form.value).then((res) => {
+          proxy?.$modal.msgSuccess('暂存成功');
           render.visible = false;
           buttonLoading.value = false;
           fromLoading.value = false;
-        })
+        });
       } else {
         if (!processDefinitionKey.value) {
-          proxy?.$modal.msgError("未绑定流程!");
+          proxy?.$modal.msgError('未绑定流程!');
           buttonLoading.value = false;
           fromLoading.value = false;
-          return
+          return;
         }
-        updateBusinessForm(form.value).then(res => {
-          handleStartWorkFlow(res.data)
-        })
+        updateBusinessForm(form.value).then((res) => {
+          handleStartWorkFlow(res.data);
+        });
       }
-    })
+    });
   }
-}
+};
 //提交申请
 const handleStartWorkFlow = async (data: any) => {
   submitFormData.value.processKey = processDefinitionKey.value;
@@ -267,7 +260,7 @@ const handleDelete = async (row?: BusinessFormVO) => {
   proxy?.$modal.msgSuccess("删除成功");
   loading.value = false;
   await getList();
-}
+};
 
 /** 导出按钮操作 */
 const handleExport = () => {

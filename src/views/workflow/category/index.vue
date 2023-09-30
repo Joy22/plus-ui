@@ -29,14 +29,7 @@
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
-      <el-table
-        v-loading="loading"
-        :data="categoryList"
-        row-key="id"
-        :default-expand-all="isExpandAll"
-        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-        ref="categoryTableRef"
-      >
+      <el-table v-loading="loading" :data="categoryList" row-key="id" :default-expand-all="isExpandAll" :tree-props="{children: 'children', hasChildren: 'hasChildren'}" ref="categoryTableRef">
         <el-table-column label="分类名称" prop="categoryName" />
         <el-table-column label="分类编码" align="center" prop="categoryCode" />
         <el-table-column label="排序" align="center" prop="sortNum" />
@@ -132,6 +125,8 @@ const initFormData: CategoryForm = {
 const data = reactive<PageData<CategoryForm, CategoryQuery>>({
   form: {...initFormData},
   queryParams: {
+    pageNum: 1,
+    pageSize: 10,
     categoryName: undefined,
     categoryCode: undefined,
   },

@@ -36,4 +36,3 @@ export const getUserListByIds = (userIdList: Array<any>) => {
     method: 'get'
   });
 };
-
