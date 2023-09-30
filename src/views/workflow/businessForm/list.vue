@@ -26,10 +26,6 @@
               v-hasPermi="['workflow:businessForm:edit']">修改</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()"
-              v-hasPermi="['workflow:businessForm:remove']">删除</el-button>
-          </el-col>
-          <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport"
               v-hasPermi="['workflow:businessForm:export']">导出</el-button>
           </el-col>
@@ -39,20 +35,36 @@
 
       <el-table v-loading="loading" :data="businessFormList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="主键" align="center" prop="id" v-if="true" />
+        <el-table-column label="主键" align="center" prop="id" v-if="false" />
         <el-table-column label="申请编码" align="center" prop="applyCode" />
-        <el-table-column label="表单id" align="center" prop="formId" />
         <el-table-column label="表单名称" align="center" prop="formName" />
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
           <template #default="scope">
-            <el-tooltip content="修改" placement="top">
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
-                v-hasPermi="['workflow:businessForm:edit']"></el-button>
-            </el-tooltip>
-            <el-tooltip content="删除" placement="top">
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-                v-hasPermi="['workflow:businessForm:remove']"></el-button>
-            </el-tooltip>
+            <el-tag type="success">{{ scope.row.processInstanceVo.businessStatusName }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
+          <template #default="scope">
+            <el-row :gutter="10" class="mb8">
+              <el-col :span="1.5" v-if="scope.row.processInstanceVo.businessStatus !== 'draft'">
+                <el-button type="text" size="small" icon="Document"
+                  @click="handleApprovalRecord(scope.row.processInstanceVo.id)">审批记录</el-button>
+              </el-col>
+              <el-col :span="1.5"
+                v-if="scope.row.processInstanceVo.businessStatus === 'draft' || scope.row.processInstanceVo.businessStatus === 'cancel' || scope.row.processInstanceVo.businessStatus === 'back'">
+                <el-button v-hasPermi="['workflow:businessForm:remove']" type="text" size="small" icon="Delete"
+                  @click="handleDelete(scope.row)">删除</el-button>
+              </el-col>
+              <el-col :span="1.5" v-if="scope.row.processInstanceVo.businessStatus === 'waiting'">
+                <el-button type="text" size="small" icon="Notification"
+                  @click="handleCancelProcessApply(scope.row.processInstanceVo.id)">撤销</el-button>
+              </el-col>
+              <el-col :span="1.5"
+                v-if="scope.row.processInstanceVo.businessStatus === 'draft' || scope.row.processInstanceVo.businessStatus === 'cancel' || scope.row.processInstanceVo.businessStatus === 'back'">
+                <el-button v-hasPermi="['workflow:businessForm:edit']" type="text" size="small" icon="Edit"
+                  @click="handleUpdate(scope.row)">修改</el-button>
+              </el-col>
+            </el-row>
           </template>
         </el-table-column>
       </el-table>
@@ -75,16 +87,23 @@
     </el-dialog>
     <!-- 提交组件 -->
     <submitVerify ref="submitVerifyRef" @submitCallback="submitCallback" @cancelCallback="cancelCallback" />
+    <!-- 审批记录 -->
+    <approvalRecord ref="approvalRecordRef" />
   </div>
 </template>
 
 <script setup name="BusinessForm" lang="ts">
 import { listBusinessForm, getBusinessForm, delBusinessForm, updateBusinessForm } from '@/api/workflow/businessForm';
+import { cancelProcessApply } from '@/api/workflow/processInstance';
 import { BusinessFormVO, BusinessFormQuery, BusinessFormForm } from '@/api/workflow/businessForm/types';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
+import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import { startWorkFlow } from '@/api/workflow/task';
+
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
+//审批记录组件
+const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const businessFormList = ref<BusinessFormVO[]>([]);
@@ -243,8 +262,10 @@ const handleDelete = async (row?: BusinessFormVO) => {
   const _ids = row?.id || ids.value;
   const _applyCode = row?.applyCode || applyCodes.value;
   await proxy?.$modal.confirm('是否确认删除流程编号为【' + _applyCode + '】的数据项？').finally(() => loading.value = false);
+  loading.value = true;
   await delBusinessForm(_ids);
   proxy?.$modal.msgSuccess("删除成功");
+  loading.value = false;
   await getList();
 }
 
@@ -254,7 +275,20 @@ const handleExport = () => {
     ...queryParams.value
   }, `businessForm_${new Date().getTime()}.xlsx`)
 }
-
+//审批记录
+const handleApprovalRecord = (processInstanceId: string) => {
+  if (approvalRecordRef.value) {
+    approvalRecordRef.value.init(processInstanceId);
+  }
+};
+/** 撤销按钮操作 */
+const handleCancelProcessApply = async (processInstanceId: string) => {
+  await proxy?.$modal.confirm('是否确认撤销当前单据？');
+  loading.value = true;
+  await cancelProcessApply(processInstanceId).finally(() => (loading.value = false));
+  getList();
+  proxy?.$modal.msgSuccess('撤销成功');
+};
 onMounted(() => {
   getList();
 });

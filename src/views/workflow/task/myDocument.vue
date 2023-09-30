@@ -62,7 +62,7 @@
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
                     <el-button type="text" size="small" icon="Document"
-                      @click="handleApprovalRecord(scope.row)">审批记录</el-button>
+                      @click="handleApprovalRecord(scope.row.id)">审批记录</el-button>
                   </el-col>
                   <el-col :span="1.5"
                     v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'">
@@ -70,7 +70,7 @@
                   </el-col>
                   <el-col :span="1.5" v-if="scope.row.businessStatus === 'waiting'">
                     <el-button type="text" size="small" icon="Notification"
-                      @click="handleCancelProcessApply(scope.row)">撤销</el-button>
+                      @click="handleCancelProcessApply(scope.row.id)">撤销</el-button>
                   </el-col>
                   <el-col :span="1.5"
                     v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'">
@@ -180,9 +180,9 @@ const getTreeselect = async () => {
 };
 
 //审批记录
-const handleApprovalRecord = (row: any) => {
+const handleApprovalRecord = (processInstanceId: string) => {
   if (approvalRecordRef.value) {
-    approvalRecordRef.value.init(row.id);
+    approvalRecordRef.value.init(processInstanceId);
   }
 };
 /** 搜索按钮操作 */
@@ -226,12 +226,11 @@ const handleDelete = async (row: any) => {
 };
 
 /** 撤销按钮操作 */
-const handleCancelProcessApply = async (row: any) => {
-  const id = row.id || ids.value;
+const handleCancelProcessApply = async (processInstanceId: string) => {
   await proxy?.$modal.confirm('是否确认撤销当前单据？');
   loading.value = true;
   if ('running' === tab.value) {
-    await cancelProcessApply(id).finally(() => (loading.value = false));
+    await cancelProcessApply(processInstanceId).finally(() => (loading.value = false));
     getList();
   }
   proxy?.$modal.msgSuccess('撤销成功');
