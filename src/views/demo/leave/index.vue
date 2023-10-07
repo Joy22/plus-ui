@@ -56,7 +56,7 @@
                 v-hasPermi="['demo:leave:remove']"></el-button>
             </el-tooltip>
             <el-tooltip content="撤销" placement="top" v-if="scope.row.processInstanceVo.businessStatus === 'waiting'">
-              <el-button link type="primary" icon="Promotion"
+              <el-button link type="primary" icon="Notification"
                 @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"></el-button>
             </el-tooltip>
             <el-tooltip content="审批记录" placement="top" v-if="scope.row.processInstanceVo.businessStatus === 'waiting'">
@@ -209,14 +209,13 @@ const handleAdd = () => {
 
 /** 修改按钮操作 */
 const handleUpdate = (row?: LeaveVO) => {
-  loading.value = true;
+  buttonLoading.value = false;
   dialog.visible = true;
   dialog.title = '修改请假申请';
   nextTick(async () => {
     reset();
     const _id = row?.id || ids.value[0];
     const res = await getLeave(_id);
-    loading.value = false;
     Object.assign(form.value, res.data);
   });
 };
@@ -228,17 +227,18 @@ const submitForm = (status: string) => {
       buttonLoading.value = true;
       let res = {};
       if (form.value.id) {
-        res = await updateLeave(form.value).finally(() => (buttonLoading.value = false));
+        res = await updateLeave(form.value)
       } else {
-        res = await addLeave(form.value).finally(() => (buttonLoading.value = false));
+        res = await addLeave(form.value)
       }
+      form.value = res.data
       if (status === 'draft') {
+        buttonLoading.value = false
         proxy?.$modal.msgSuccess('暂存成功');
         dialog.visible = false;
       } else {
         handleStartWorkFlow(res.data);
       }
-      await getList();
     }
   });
 };
@@ -265,14 +265,16 @@ const handleExport = () => {
 
 //提交申请
 const handleStartWorkFlow = async (data: any) => {
-  submitFormData.value.processKey = 'test2';
+  submitFormData.value.processKey = 'demo01';
   submitFormData.value.businessKey = data.id;
+  //流程变量
   submitFormData.value.variables = {
+    entity: data,
     leaveDays: data.leaveDays,
-    userList: [1]
   };
   startWorkFlow(submitFormData.value).then((response: any) => {
     if (submitVerifyRef.value) {
+      buttonLoading.value = false
       submitVerifyRef.value.openDialog(response.data.taskId);
     }
   });

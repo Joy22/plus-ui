@@ -69,6 +69,8 @@
                     <el-button type="text" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
                   <el-col :span="1.5" v-if="scope.row.businessStatus === 'waiting'">
+                    <el-button type="text" size="small" icon="Notification"
+                      @click="handleCancelProcessApply(scope.row.id)">撤销</el-button>
                   </el-col>
                   <el-col :span="1.5"
                     v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'">
