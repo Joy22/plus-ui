@@ -92,7 +92,7 @@
       </template>
     </el-dialog>
     <!-- 提交组件 -->
-    <submitVerify ref="submitVerifyRef" @submitCallback="submitCallback" />
+    <submitVerify ref="submitVerifyRef" @submitCallback="submitCallback" :taskVariables="taskVariables"/>
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
   </div>
@@ -129,6 +129,8 @@ const submitFormData = ref<Record<string, any>>({
   processKey: '',
   variables: {}
 });
+const taskVariables = ref<Record<string, any>>({});
+
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -265,13 +267,15 @@ const handleExport = () => {
 
 //提交申请
 const handleStartWorkFlow = async (data: any) => {
-  submitFormData.value.processKey = 'demo01';
+  submitFormData.value.processKey = 'leave5';
   submitFormData.value.businessKey = data.id;
   //流程变量
-  submitFormData.value.variables = {
+  taskVariables.value = {
     entity: data,
     leaveDays: data.leaveDays,
-  };
+    userList:[1,2]
+  }
+  submitFormData.value.variables = taskVariables.value;
   startWorkFlow(submitFormData.value).then((response: any) => {
     if (submitVerifyRef.value) {
       buttonLoading.value = false

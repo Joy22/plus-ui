@@ -30,8 +30,15 @@ import { ref } from 'vue';
 import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
 import { completeTask, backProcess, getBusinessStatus } from '@/api/workflow/task';
+import { any } from 'vue-types';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
+const props = defineProps({
+  taskVariables: {
+    type:  Object as () => Record<string, any>,
+    default: {}
+  }
+});
 //遮罩层
 const loading = ref(true);
 //按钮
@@ -74,6 +81,7 @@ const emits = defineEmits(['submitCallback', 'cancelCallback']);
 /** 办理流程 */
 const handleCompleteTask = async () => {
   form.value.taskId = taskId.value;
+  form.value.taskVariables = props.taskVariables;
   await proxy?.$modal.confirm('是否确认提交？');
   loading.value = true
   buttonLoading.value = true
