@@ -36,8 +36,8 @@ angular.module('flowableModeler').controller('FlowableFormReferenceCtrl',
          scope: $scope
      };
 
-     // Open the dialog
-     _internalCreateModal(opts, $modal, $scope);
+     // Open the dialog 
+     //_internalCreateModal(opts, $modal, $scope);
 }]);
 
 angular.module('flowableModeler').controller('FlowableFormReferencePopupCtrl',

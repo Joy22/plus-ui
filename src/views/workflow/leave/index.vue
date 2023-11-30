@@ -99,9 +99,9 @@
 </template>
 
 <script setup name="Leave" lang="ts">
-import { listLeave, getLeave, delLeave, addLeave, updateLeave } from '@/api/demo/leave';
+import { listLeave, getLeave, delLeave, addLeave, updateLeave } from '@/api/workflow/leave';
 import { cancelProcessApply } from '@/api/workflow/processInstance';
-import { LeaveVO, LeaveQuery, LeaveForm } from '@/api/demo/leave/types';
+import { LeaveVO, LeaveQuery, LeaveForm } from '@/api/workflow/leave/types';
 import { startWorkFlow } from '@/api/workflow/task';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
@@ -267,7 +267,7 @@ const handleExport = () => {
 
 //提交申请
 const handleStartWorkFlow = async (data: any) => {
-  submitFormData.value.processKey = 'leave5';
+  submitFormData.value.processKey = 'leave7';
   submitFormData.value.businessKey = data.id;
   //流程变量
   taskVariables.value = {
