@@ -69,7 +69,6 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'vue-i18n',
         '@vueup/vue-quill',
         '@iconify/iconify',
-        '@/../lib/vform/designer.umd.js',
 
         'element-plus/es/components/form/style/css',
         'element-plus/es/components/form-item/style/css',
@@ -115,12 +114,6 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'element-plus/es/components/image/style/css',
         'element-plus/es/components/tab-pane/style/css'
       ]
-    },
-    build: {
-      commonjsOptions: {
-        // 把lib目录加进来，否则生产打包会报错！！
-        include: /node_modules|lib/
-      }
     }
   };
 });
