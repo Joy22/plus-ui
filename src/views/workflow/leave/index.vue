@@ -1,12 +1,8 @@
 <template>
   <div class="p-2">
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
-      :leave-active-class="proxy?.animate.searchAnimate.leave">
+    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div class="search" v-show="showSearch">
         <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="标题" prop="title">
-            <el-input v-model="queryParams.title" placeholder="请输入标题" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
           <el-form-item label="请假天数" prop="leaveDays">
             <el-input v-model="queryParams.leaveDays" placeholder="请输入请假天数" clearable @keyup.enter="handleQuery" />
           </el-form-item>
@@ -25,8 +21,7 @@
             <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['demo:leave:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="warning" plain icon="Download" @click="handleExport"
-              v-hasPermi="['demo:leave:export']">导出</el-button>
+            <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['demo:leave:export']">导出</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
@@ -34,10 +29,24 @@
 
       <el-table v-loading="loading" :data="leaveList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="主键" align="center" prop="id" v-if="true" />
-        <el-table-column label="标题" align="center" prop="title" />
+        <el-table-column label="主键" align="center" prop="id" v-if="false" />
+        <el-table-column label="请假类型" align="center">
+          <template #default="scope">
+            <el-tag type="primary">{{ options.find(e=>e.value === scope.row.leaveType)?.label }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="开始时间" align="center" prop="startDate">
+          <template #default="scope">
+            <span>{{ parseTime(scope.row.startDate,'{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="结束时间" align="center" prop="endDate">
+          <template #default="scope">
+            <span>{{ parseTime(scope.row.endDate,'{y}-{m}-{d}') }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="请假天数" align="center" prop="leaveDays" />
-        <el-table-column label="备注" align="center" prop="remark" />
+        <el-table-column label="请假原因" align="center" prop="remark" />
         <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
           <template #default="scope">
             <el-tag type="success">{{ scope.row.processInstanceVo.businessStatusName }}</el-tag>
@@ -45,42 +54,48 @@
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-tooltip content="修改" placement="top"
-              v-if="scope.row.processInstanceVo.businessStatus === 'draft' || scope.row.processInstanceVo.businessStatus === 'cancel' || scope.row.processInstanceVo.businessStatus === 'back'">
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)"
-                v-hasPermi="['demo:leave:edit']"></el-button>
+            <el-tooltip
+              content="修改"
+              placement="top"
+              v-if="scope.row.processInstanceVo.businessStatus === 'draft' || scope.row.processInstanceVo.businessStatus === 'cancel' || scope.row.processInstanceVo.businessStatus === 'back'"
+            >
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['demo:leave:edit']"></el-button>
             </el-tooltip>
-            <el-tooltip content="删除" placement="top"
-              v-if="scope.row.processInstanceVo.businessStatus === 'draft' || scope.row.processInstanceVo.businessStatus === 'cancel' || scope.row.processInstanceVo.businessStatus === 'back'">
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-                v-hasPermi="['demo:leave:remove']"></el-button>
+            <el-tooltip
+              content="删除"
+              placement="top"
+              v-if="scope.row.processInstanceVo.businessStatus === 'draft' || scope.row.processInstanceVo.businessStatus === 'cancel' || scope.row.processInstanceVo.businessStatus === 'back'"
+            >
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['demo:leave:remove']"></el-button>
             </el-tooltip>
             <el-tooltip content="撤销" placement="top" v-if="scope.row.processInstanceVo.businessStatus === 'waiting'">
-              <el-button link type="primary" icon="Notification"
-                @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"></el-button>
+              <el-button link type="primary" icon="Notification" @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"></el-button>
             </el-tooltip>
             <el-tooltip content="审批记录" placement="top" v-if="scope.row.processInstanceVo.businessStatus === 'waiting'">
-              <el-button link type="primary" icon="Document"
-                @click="handleApprovalRecord(scope.row.processInstanceVo.id)"></el-button>
+              <el-button link type="primary" icon="Document" @click="handleApprovalRecord(scope.row.processInstanceVo.id)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
 
-      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize" @pagination="getList" />
+      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改请假对话框 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
+    <el-dialog :title="dialog.title" v-model="dialog.visible" width="800px" append-to-body>
       <el-form ref="leaveFormRef" :model="form" :rules="rules" label-width="80px" v-loading="loading">
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入标题" />
+        <el-form-item label="请假类型" prop="leaveType">
+          <el-select v-model="form.leaveType" placeholder="请选择请假类型" style="width: 100%;">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="请假时间">
+          <el-date-picker v-model="leaveTime" type="daterange" range-separator="To" start-placeholder="开始时间" end-placeholder="结束时间" />
         </el-form-item>
         <el-form-item label="请假天数" prop="leaveDays">
-          <el-input v-model="form.leaveDays" type="number" placeholder="请输入请假天数" />
+          <el-input v-model="form.leaveDays" disabled type="number" placeholder="请输入请假天数" />
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" :rows="2" placeholder="请输入备注" />
+        <el-form-item label="请假原因" prop="remark">
+          <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入请假原因" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -92,7 +107,7 @@
       </template>
     </el-dialog>
     <!-- 提交组件 -->
-    <submitVerify ref="submitVerifyRef" @submitCallback="submitCallback" :taskVariables="taskVariables"/>
+    <submitVerify ref="submitVerifyRef" @submitCallback="submitCallback" :taskVariables="taskVariables" />
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
   </div>
@@ -116,6 +131,25 @@ const ids = ref<Array<string | number>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
+const leaveTime = ref<Array<string>>([]);
+const options = [
+  {
+    value: '1',
+    label: '事假'
+  },
+  {
+    value: '2',
+    label: '调休'
+  },
+  {
+    value: '3',
+    label: '病假'
+  },
+  {
+    value: '4',
+    label: '婚假'
+  }
+]
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
@@ -139,7 +173,9 @@ const dialog = reactive<DialogOption>({
 
 const initFormData: LeaveForm = {
   id: undefined,
-  title: undefined,
+  leaveType: undefined,
+  startDate: undefined,
+  endDate: undefined,
   leaveDays: undefined,
   remark: undefined
 };
@@ -148,12 +184,12 @@ const data = reactive<PageData<LeaveForm, LeaveQuery>>({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    title: undefined,
     leaveDays: undefined
   },
   rules: {
     id: [{ required: true, message: '主键不能为空', trigger: 'blur' }],
-    title: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
+    leaveType: [{ required: true, message: '请假类型不能为空', trigger: 'blur' }],
+    leaveTime: [{ required: true, message: '请假时间不能为空', trigger: 'blur' }],
     leaveDays: [{ required: true, message: '请假天数不能为空', trigger: 'blur' }]
   }
 });
@@ -178,6 +214,7 @@ const cancel = () => {
 /** 表单重置 */
 const reset = () => {
   form.value = { ...initFormData };
+  leaveTime.value = []
   leaveFormRef.value.resetFields();
 };
 
@@ -219,12 +256,27 @@ const handleUpdate = (row?: LeaveVO) => {
     const _id = row?.id || ids.value[0];
     const res = await getLeave(_id);
     Object.assign(form.value, res.data);
+    leaveTime.value = []
+    leaveTime.value.push(form.value.startDate)
+    leaveTime.value.push(form.value.endDate)
   });
 };
 
 /** 提交按钮 */
 const submitForm = (status: string) => {
+  if(leaveTime.value.length === 0){
+     proxy?.$modal.msgError('请假时间不能为空');
+     return
+  }
+
+  const startDate = new Date(leaveTime.value[0]).getTime()
+  const endDate = new Date(leaveTime.value[1]).getTime()
+  const diffInMilliseconds = endDate - startDate
+  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24))
+  form.value.leaveDays = diffInDays
   leaveFormRef.value.validate(async (valid: boolean) => {
+    form.value.startDate = leaveTime.value[0]
+    form.value.endDate = leaveTime.value[1]
     if (valid) {
       buttonLoading.value = true;
       let res = {};
@@ -238,6 +290,7 @@ const submitForm = (status: string) => {
         buttonLoading.value = false
         proxy?.$modal.msgSuccess('暂存成功');
         dialog.visible = false;
+        getList()
       } else {
         handleStartWorkFlow(res.data);
       }

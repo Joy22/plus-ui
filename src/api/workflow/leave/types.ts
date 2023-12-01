@@ -5,9 +5,19 @@ export interface LeaveVO {
   id: string | number;
 
   /**
-   * 标题
+   * 请假类型
    */
-  title: string;
+  leaveType: string;
+
+  /**
+   * 开始时间
+   */
+  startDate: string;
+
+  /**
+   * 结束时间
+   */
+  endDate: string;
 
   /**
    * 请假天数
@@ -15,10 +25,9 @@ export interface LeaveVO {
   leaveDays: number;
 
   /**
-   * 备注
+   * 请假原因
    */
   remark: string;
-
 }
 
 export interface LeaveForm extends BaseEntity {
@@ -28,9 +37,19 @@ export interface LeaveForm extends BaseEntity {
   id?: string | number;
 
   /**
-   * 标题
+   * 请假类型
    */
-  title?: string;
+  leaveType?: string;
+
+  /**
+   * 开始时间
+   */
+  startDate?: string;
+
+  /**
+   * 结束时间
+   */
+  endDate?: string;
 
   /**
    * 请假天数
@@ -38,21 +57,14 @@ export interface LeaveForm extends BaseEntity {
   leaveDays?: number;
 
   /**
-   * 备注
+   * 请假原因
    */
   remark?: string;
-
 }
 
 export interface LeaveQuery extends PageQuery {
   /**
-   * 标题
-   */
-  title?: string;
-
-  /**
    * 请假天数
    */
   leaveDays?: number;
-
 }
