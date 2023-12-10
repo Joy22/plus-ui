@@ -66,5 +66,9 @@ export interface LeaveQuery extends PageQuery {
   /**
    * 请假天数
    */
-  leaveDays?: number;
+  startLeaveDays?: number;
+  /**
+   * 请假天数
+   */
+  endLeaveDays?: number;
 }
