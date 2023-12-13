@@ -1,8 +1,9 @@
 declare module '*.vue' {
   import { DefineComponent } from 'vue';
-  const component: DefineComponent<{}, {}, any>;
-  export default component;
+  const Component: DefineComponent<{}, {}, any>;
+  export default Component;
 }
+
 declare module '*.avif' {
   const src: string;
   export default src;
@@ -68,6 +69,7 @@ interface ImportMetaEnv {
   VITE_APP_POWERJOB_ADMIN: string;
   VITE_APP_ENV: string;
   VITE_APP_RSA_PUBLIC_KEY: string;
+  VITE_APP_RSA_PRIVATE_KEY: string;
   VITE_APP_CLIENT_ID: string;
   VITE_APP_WEBSOCKET: string;
 }
