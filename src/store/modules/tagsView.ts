@@ -1,4 +1,4 @@
-import { TagView } from 'vue-router';
+import { TagView, RouteRecordNormalized } from 'vue-router';
 
 export const useTagsViewStore = defineStore('tagsView', () => {
   const visitedViews = ref<TagView[]>([]);
@@ -11,7 +11,7 @@ export const useTagsViewStore = defineStore('tagsView', () => {
   };
 
   const addIframeView = (view: TagView): void => {
-    if (iframeViews.value.some((v) => v.path === view.path)) return;
+    if (iframeViews.value.some((v: TagView) => v.path === view.path)) return;
     iframeViews.value.push(
       Object.assign({}, view, {
         title: view.meta?.title || 'no-name'
@@ -20,12 +20,12 @@ export const useTagsViewStore = defineStore('tagsView', () => {
   };
   const delIframeView = (view: TagView): Promise<TagView[]> => {
     return new Promise((resolve) => {
-      iframeViews.value = iframeViews.value.filter((item) => item.path !== view.path);
+      iframeViews.value = iframeViews.value.filter((item: TagView) => item.path !== view.path);
       resolve([...iframeViews.value]);
     });
   };
   const addVisitedView = (view: TagView): void => {
-    if (visitedViews.value.some((v) => v.path === view.path)) return;
+    if (visitedViews.value.some((v: TagView) => v.path === view.path)) return;
     visitedViews.value.push(
       Object.assign({}, view, {
         title: view.meta?.title || 'no-name'
@@ -35,7 +35,9 @@ export const useTagsViewStore = defineStore('tagsView', () => {
   const delView = (view: TagView): Promise<{ visitedViews: TagView[]; cachedViews: string[] }> => {
     return new Promise((resolve) => {
       delVisitedView(view);
-      delCachedView(view);
+      if (!isDynamicRoute(view)) {
+        delCachedView(view);
+      }
       resolve({
         visitedViews: [...visitedViews.value],
         cachedViews: [...cachedViews.value]
@@ -78,7 +80,7 @@ export const useTagsViewStore = defineStore('tagsView', () => {
 
   const delOthersVisitedViews = (view: TagView): Promise<TagView[]> => {
     return new Promise((resolve) => {
-      visitedViews.value = visitedViews.value.filter((v) => {
+      visitedViews.value = visitedViews.value.filter((v: TagView) => {
         return v.meta?.affix || v.path === view.path;
       });
       resolve([...visitedViews.value]);
@@ -109,7 +111,7 @@ export const useTagsViewStore = defineStore('tagsView', () => {
   };
   const delAllVisitedViews = (): Promise<TagView[]> => {
     return new Promise((resolve) => {
-      visitedViews.value = visitedViews.value.filter((tag) => tag.meta?.affix);
+      visitedViews.value = visitedViews.value.filter((tag: TagView) => tag.meta?.affix);
       resolve([...visitedViews.value]);
     });
   };
@@ -131,11 +133,11 @@ export const useTagsViewStore = defineStore('tagsView', () => {
   };
   const delRightTags = (view: TagView): Promise<TagView[]> => {
     return new Promise((resolve) => {
-      const index = visitedViews.value.findIndex((v) => v.path === view.path);
+      const index = visitedViews.value.findIndex((v: TagView) => v.path === view.path);
       if (index === -1) {
         return;
       }
-      visitedViews.value = visitedViews.value.filter((item, idx) => {
+      visitedViews.value = visitedViews.value.filter((item: TagView, idx: number) => {
         if (idx <= index || (item.meta && item.meta.affix)) {
           return true;
         }
@@ -150,11 +152,11 @@ export const useTagsViewStore = defineStore('tagsView', () => {
   };
   const delLeftTags = (view: TagView): Promise<TagView[]> => {
     return new Promise((resolve) => {
-      const index = visitedViews.value.findIndex((v) => v.path === view.path);
+      const index = visitedViews.value.findIndex((v: TagView) => v.path === view.path);
       if (index === -1) {
         return;
       }
-      visitedViews.value = visitedViews.value.filter((item, idx) => {
+      visitedViews.value = visitedViews.value.filter((item: TagView, idx: number) => {
         if (idx >= index || (item.meta && item.meta.affix)) {
           return true;
         }
@@ -175,6 +177,11 @@ export const useTagsViewStore = defineStore('tagsView', () => {
     if (!view.meta?.noCache) {
       cachedViews.value.push(viewName);
     }
+  };
+
+  const isDynamicRoute = (view: any): boolean => {
+    // 检查匹配的路由记录中是否有动态段
+    return view.matched.some((m: RouteRecordNormalized) => m.path.includes(':'));
   };
 
   return {
