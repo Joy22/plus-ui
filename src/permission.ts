@@ -20,6 +20,8 @@ router.beforeEach(async (to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' });
       NProgress.done();
+    } else if (whiteList.indexOf(to.path as string) !== -1) {
+      next();
     } else {
       if (useUserStore().roles.length === 0) {
         isRelogin.show = true;
@@ -38,7 +40,9 @@ router.beforeEach(async (to, from, next) => {
               router.addRoute(route); // 动态添加可访问路由表
             }
           });
-          next({ ...to, replace: true }); // hack方法 确保addRoutes已完成
+          const n = { ...to, replace: true };
+          console.log(n);
+          next({ path: to.path, replace: true, params: to.params, query: to.query, hash: to.hash, name: to.name as string }); // hack方法 确保addRoutes已完成
         }
       } else {
         next();
@@ -46,7 +50,7 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     // 没有token
-    if (whiteList.indexOf(to.path) !== -1) {
+    if (whiteList.indexOf(to.path as string) !== -1) {
       // 在免登录白名单，直接进入
       next();
     } else {

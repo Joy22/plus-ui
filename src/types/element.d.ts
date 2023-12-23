@@ -1,12 +1,13 @@
 import type * as ep from 'element-plus';
 declare global {
   declare type ElTagType = '' | 'success' | 'warning' | 'info' | 'danger' | 'default' | 'primary';
-  declare type ElFormInstance = InstanceType<typeof ep.ElForm>;
-  declare type ElTableInstance = InstanceType<typeof ep.ElTable>;
+  declare type ElFormInstance = ep.FormInstance;
+  declare type ElTableInstance = ep.TableInstance;
+  declare type ElUploadInstance = ep.UploadInstance;
+  declare type ElScrollbarInstance = ep.ScrollbarInstance;
   declare type ElTreeInstance = InstanceType<typeof ep.ElTree>;
   declare type ElTreeSelectInstance = InstanceType<typeof ep.ElTreeSelect>;
   declare type ElSelectInstance = InstanceType<typeof ep.ElSelect>;
-  declare type ElUploadInstance = InstanceType<typeof ep.ElUpload>;
   declare type ElCardInstance = InstanceType<typeof ep.ElCard>;
   declare type ElDialogInstance = InstanceType<typeof ep.ElDialog>;
   declare type ElInputInstance = InstanceType<typeof ep.ElInput>;
@@ -24,8 +25,6 @@ declare global {
   declare type ElColorPickerInstance = InstanceType<typeof ep.ElColorPicker>;
   declare type ElRateInstance = InstanceType<typeof ep.ElRate>;
   declare type ElSliderInstance = InstanceType<typeof ep.ElSlider>;
-  declare type ElUploadInstance = InstanceType<typeof ep.ElUpload>;
-  declare type ElScrollbarInstance = InstanceType<typeof ep.ElScrollbar>;
 
   declare type TransferKey = ep.TransferKey;
   declare type CheckboxValueType = ep.CheckboxValueType;

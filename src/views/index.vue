@@ -33,7 +33,7 @@
           * 部署方式 Docker 容器编排 一键部署业务集群<br />
           * 国际化 SpringMessage Spring标准国际化方案<br />
         </p>
-        <p><b>当前版本:</b> <span>v5.1.0</span></p>
+        <p><b>当前版本:</b> <span>v5.1.2</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
@@ -76,7 +76,7 @@
           * 分布式监控 Prometheus、Grafana 全方位性能监控<br />
           * 其余与 Vue 版本一致<br />
         </p>
-        <p><b>当前版本:</b> <span>v2.1.0</span></p>
+        <p><b>当前版本:</b> <span>v2.1.2</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
@@ -92,15 +92,9 @@
 </template>
 
 <script setup name="Index" lang="ts">
-import { initWebSocket } from '@/utils/websocket';
-
-onMounted(() => {
-  initWebSocket("ws://" + window.location.host + import.meta.env.VITE_APP_BASE_API + "/resource/websocket");
-});
-
-const goTarget = (url:string) => {
-  window.open(url, '__blank')
-}
+const goTarget = (url: string) => {
+  window.open(url, '__blank');
+};
 </script>
 
 <style scoped lang="scss">
@@ -126,7 +120,7 @@ const goTarget = (url:string) => {
     margin: 0;
   }
 
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'open sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 13px;
   color: #676a6c;
   overflow-x: hidden;
