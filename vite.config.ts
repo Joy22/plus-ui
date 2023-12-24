@@ -23,7 +23,7 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
     server: {
       host: '0.0.0.0',
       port: Number(env.VITE_APP_PORT),
-      open: false,
+      open: true,
       proxy: {
         [env.VITE_APP_BASE_API]: {
           target: 'http://localhost:8080',
