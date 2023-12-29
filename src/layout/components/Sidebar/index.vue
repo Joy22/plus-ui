@@ -13,7 +13,7 @@
           :collapse-transition="false"
           mode="vertical"
         >
-          <sidebar-item v-for="(r, index) in sidebarRouters" :key="r.path + index" :item="r" :base-path="r.path" />
+          <sidebar-item v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route" :base-path="route.path" />
         </el-menu>
       </transition>
     </el-scrollbar>
@@ -29,13 +29,13 @@ import useSettingsStore from '@/store/modules/settings';
 import usePermissionStore from '@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
 
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const route = useRoute();
 const appStore = useAppStore();
 const settingsStore = useSettingsStore();
 const permissionStore = usePermissionStore();
-const sidebarRouters = computed<RouteRecordRaw[]>(() => permissionStore.sidebarRouters);
+const sidebarRouters = computed<RouteRecordRaw[]>(() => permissionStore.getSidebarRoutes());
 const showLogo = computed(() => settingsStore.sidebarLogo);
 const sideTheme = computed(() => settingsStore.sideTheme);
 const theme = computed(() => settingsStore.theme);
