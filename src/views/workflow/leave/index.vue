@@ -95,7 +95,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="请假时间">
-          <el-date-picker v-model="leaveTime" type="daterange" range-separator="To" start-placeholder="开始时间" end-placeholder="结束时间" />
+          <el-date-picker @change="changeLeaveTime()" v-model="leaveTime" type="daterange" range-separator="To" start-placeholder="开始时间" end-placeholder="结束时间" />
         </el-form-item>
         <el-form-item label="请假天数" prop="leaveDays">
           <el-input v-model="form.leaveDays" disabled type="number" placeholder="请输入请假天数" />
@@ -253,6 +253,13 @@ const handleAdd = () => {
   });
 };
 
+const changeLeaveTime = () => {
+  const startDate = new Date(leaveTime.value[0]).getTime()
+  const endDate = new Date(leaveTime.value[1]).getTime()
+  const diffInMilliseconds = endDate - startDate
+  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24))
+  form.value.leaveDays = diffInDays
+};
 /** 修改按钮操作 */
 const handleUpdate = (row?: LeaveVO) => {
   buttonLoading.value = false;
@@ -275,12 +282,6 @@ const submitForm = (status: string) => {
      proxy?.$modal.msgError('请假时间不能为空');
      return
   }
-
-  const startDate = new Date(leaveTime.value[0]).getTime()
-  const endDate = new Date(leaveTime.value[1]).getTime()
-  const diffInMilliseconds = endDate - startDate
-  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24))
-  form.value.leaveDays = diffInDays
   leaveFormRef.value.validate(async (valid: boolean) => {
     form.value.startDate = leaveTime.value[0]
     form.value.endDate = leaveTime.value[1]
@@ -327,7 +328,7 @@ const handleExport = () => {
 
 //提交申请
 const handleStartWorkFlow = async (data: any) => {
-  submitFormData.value.processKey = 'leave7';
+  submitFormData.value.processKey = 'leave1';
   submitFormData.value.businessKey = data.id;
   //流程变量
   taskVariables.value = {
