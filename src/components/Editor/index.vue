@@ -2,7 +2,6 @@
   <div>
     <el-upload
       v-if="type === 'url'"
-      ref="uploadRef"
       :action="upload.url"
       :before-upload="handleBeforeUpload"
       :on-success="handleUploadSuccess"
@@ -12,17 +11,18 @@
       :show-file-list="false"
       :headers="upload.headers"
     >
+      <i ref="uploadRef"></i>
     </el-upload>
-    <div class="editor">
-      <quill-editor
-        ref="quillEditorRef"
-        v-model:content="content"
-        content-type="html"
-        :options="options"
-        :style="styles"
-        @text-change="(e: any) => $emit('update:modelValue', content)"
-      />
-    </div>
+  </div>
+  <div class="editor">
+    <quill-editor
+      ref="quillEditorRef"
+      v-model:content="content"
+      content-type="html"
+      :options="options"
+      :style="styles"
+      @text-change="(e: any) => $emit('update:modelValue', content)"
+    />
   </div>
 </template>
 
@@ -57,6 +57,7 @@ const upload = reactive<UploadOption>({
   url: import.meta.env.VITE_APP_BASE_API + '/resource/oss/upload'
 });
 const quillEditorRef = ref();
+const uploadRef = ref<HTMLDivElement>();
 
 const options = ref<any>({
   theme: 'snow',
@@ -78,10 +79,10 @@ const options = ref<any>({
         ['link', 'image', 'video'] // 链接、图片、视频
       ],
       handlers: {
-        image: function (value: any) {
+        image: (value: boolean) => {
           if (value) {
             // 调用element图片上传
-            (document.querySelector('.editor-img-uploader>.el-upload') as HTMLDivElement)?.click();
+            uploadRef.value.click();
           } else {
             Quill.format('image', true);
           }
@@ -107,7 +108,7 @@ const styles = computed(() => {
 const content = ref('');
 watch(
   () => props.modelValue,
-  (v) => {
+  (v: string) => {
     if (v !== content.value) {
       content.value = v === undefined ? '<p></p>' : v;
     }
@@ -129,7 +130,7 @@ const handleUploadSuccess = (res: any) => {
     quill.setSelection(length + 1);
     proxy?.$modal.closeLoading();
   } else {
-    proxy?.$modal.loading(res.msg);
+    proxy?.$modal.msgError('图片插入失败');
     proxy?.$modal.closeLoading();
   }
 };
@@ -157,7 +158,6 @@ const handleBeforeUpload = (file: any) => {
 
 // 图片失败拦截
 const handleUploadError = (err: any) => {
-  console.error(err);
   proxy?.$modal.msgError('上传文件失败');
 };
 </script>

@@ -101,14 +101,7 @@
             <el-table-column v-if="columns[0].visible" key="userId" label="用户编号" align="center" prop="userId" />
             <el-table-column v-if="columns[1].visible" key="userName" label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" />
             <el-table-column v-if="columns[2].visible" key="nickName" label="用户昵称" align="center" prop="nickName" :show-overflow-tooltip="true" />
-            <el-table-column
-              v-if="columns[3].visible"
-              key="deptName"
-              label="部门"
-              align="center"
-              prop="dept.deptName"
-              :show-overflow-tooltip="true"
-            />
+            <el-table-column v-if="columns[3].visible" key="deptName" label="部门" align="center" prop="deptName" :show-overflow-tooltip="true" />
             <el-table-column v-if="columns[4].visible" key="phonenumber" label="手机号码" align="center" prop="phonenumber" width="120" />
             <el-table-column v-if="columns[5].visible" key="status" label="状态" align="center">
               <template #default="scope">
@@ -298,12 +291,12 @@
 <script setup name="User" lang="ts">
 import api from '@/api/system/user';
 import { UserForm, UserQuery, UserVO } from '@/api/system/user/types';
-import { treeselect } from '@/api/system/dept';
 import { DeptVO } from '@/api/system/dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import { PostVO } from '@/api/system/post/types';
-import { to } from 'await-to-js';
+import { treeselect } from '@/api/system/dept';
 import { globalHeaders } from '@/utils/request';
+import { to } from 'await-to-js';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
