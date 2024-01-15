@@ -13,13 +13,13 @@
         <el-card shadow="hover">
           <el-form v-show="showSearch" ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
             <el-form-item label="任务名称" prop="name">
-              <el-input v-model="queryParams.name" placeholder="请输入任务名称" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.name" placeholder="请输入任务名称" @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="流程定义名称" label-width="100" prop="name">
-              <el-input v-model="queryParams.processDefinitionName" placeholder="请输入流程定义名称" clearable @keyup.enter="handleQuery" />
+            <el-form-item label="流程定义名称" label-width="100" prop="processDefinitionName">
+              <el-input v-model="queryParams.processDefinitionName" placeholder="请输入流程定义名称" @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="流程定义KEY" label-width="100" prop="name">
-              <el-input v-model="queryParams.processDefinitionKey" placeholder="请输入流程定义KEY" clearable @keyup.enter="handleQuery" />
+            <el-form-item label="流程定义KEY" label-width="100" prop="processDefinitionKey">
+              <el-input v-model="queryParams.processDefinitionKey" placeholder="请输入流程定义KEY" @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
