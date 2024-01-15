@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="Flowable工作流在线流程设计器" width="90%" height="100%" v-model="visible" v-if="visible" :before-close="handleClose">
+  <el-dialog v-if="visible" v-model="visible" title="Flowable工作流在线流程设计器" width="90%" height="100%" :before-close="handleClose">
     <div class="modeler">
       <iframe class="iframe" :src="src"></iframe>
     </div>
@@ -7,12 +7,15 @@
 </template>
 
 <script lang="ts">
+import { propTypes } from '@/utils/propTypes';
+
 const baseURL = import.meta.env.VITE_APP_BASE_API;
 import { getToken } from '@/utils/auth';
 export default {
   props: {
-    modelId: String
+    modelId: propTypes.string.isRequired
   },
+  emits: ['handleClose'],
 
   data() {
     return {
@@ -31,7 +34,7 @@ export default {
     },
     clientid() {
       return import.meta.env.VITE_APP_CLIENT_ID;
-    },
+    }
   },
   mounted() {
     //全局存入当前vue实例
@@ -39,10 +42,10 @@ export default {
   },
   methods: {
     async handleClose() {
-      await this.$modal.confirm('请记得点击左上角保存按钮，确定关闭设计窗口?').finally(() => (this as any).loading = false);
+      await this.$modal.confirm('请记得点击左上角保存按钮，确定关闭设计窗口?').finally(() => ((this as any).loading = false));
       this.visible = false;
       // 刷新数据
-      this.$emit("handleClose")
+      this.$emit('handleClose');
     }
   }
 };
@@ -51,6 +54,6 @@ export default {
 .iframe {
   width: 100%;
   height: calc(100vh - 120px);
-  border: 0px;
+  border: 0;
 }
 </style>

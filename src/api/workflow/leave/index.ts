@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { LeaveVO, LeaveForm, LeaveQuery } from '@/api/demo/leave/types';
+import { LeaveVO, LeaveQuery, LeaveForm } from '@/api/workflow/leave/types';
 
 /**
  * 查询请假列表
@@ -31,7 +31,7 @@ export const getLeave = (id: string | number): AxiosPromise<LeaveVO> => {
  * 新增请假
  * @param data
  */
-export const addLeave = (data: LeaveForm) => {
+export const addLeave = (data: LeaveForm): AxiosPromise<LeaveVO> => {
   return request({
     url: '/demo/leave',
     method: 'post',
@@ -43,7 +43,7 @@ export const addLeave = (data: LeaveForm) => {
  * 修改请假
  * @param data
  */
-export const updateLeave = (data: LeaveForm) => {
+export const updateLeave = (data: LeaveForm): AxiosPromise<LeaveVO> => {
   return request({
     url: '/demo/leave',
     method: 'put',

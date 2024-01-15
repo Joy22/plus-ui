@@ -1,11 +1,13 @@
 import request from '@/utils/request';
+import { AxiosPromise } from 'axios';
+import { ModelForm, ModelQuery, ModelVO } from '@/api/workflow/model/types';
 
 /**
  * 查询模型列表
  * @param query
  * @returns {*}
  */
-export const listModel = (query: object) => {
+export const listModel = (query: ModelQuery): AxiosPromise<ModelVO[]> => {
   return request({
     url: '/workflow/model/list',
     method: 'get',
@@ -15,10 +17,10 @@ export const listModel = (query: object) => {
 
 /**
  * 新增模型
- * @param query
+ * @param data
  * @returns {*}
  */
-export const addModel = (data: object) => {
+export const addModel = (data: ModelForm): AxiosPromise<void> => {
   return request({
     url: '/workflow/model/rest/models',
     method: 'post',
@@ -28,10 +30,10 @@ export const addModel = (data: object) => {
 
 /**
  * 按id删除模型
- * @param {模型id} id
  * @returns {*}
+ * @param id 模型id
  */
-export function delModel(id: object) {
+export function delModel(id: string | string[]): AxiosPromise<void> {
   return request({
     url: '/workflow/model/' + id,
     method: 'delete'
@@ -40,10 +42,10 @@ export function delModel(id: object) {
 
 /**
  * 模型部署
- * @param {模型id} id
  * @returns {*}
+ * @param id 模型id
  */
-export const modelDeploy = (id: string) => {
+export const modelDeploy = (id: string): AxiosPromise<void> => {
   return request({
     url: `/workflow/model/modelDeploy/${id}`,
     method: 'post'
