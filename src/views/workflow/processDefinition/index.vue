@@ -328,7 +328,6 @@ const getProcessDefinitionHitoryList = async (id: string, key: string) => {
 const clickPreviewImg = async (id: string) => {
   loading.value = true;
   const resp = await processDefinitionImage(id);
-  console.log(resp);
   if (previewRef.value) {
     url.value = [];
     url.value.push('data:image/png;base64,' + resp.data);
