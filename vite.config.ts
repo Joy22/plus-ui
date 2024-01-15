@@ -66,6 +66,8 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'vue-i18n',
         '@vueup/vue-quill',
 
+        'element-plus/es/components/radio-button/style/css',
+        'element-plus/es/components/checkbox-group/style/css',
         'element-plus/es/components/form/style/css',
         'element-plus/es/components/form-item/style/css',
         'element-plus/es/components/button/style/css',
