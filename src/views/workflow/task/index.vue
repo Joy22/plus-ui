@@ -1,21 +1,17 @@
 <template>
   <div class="p-2">
+    <div class="mb-[10px]">
+      <el-card shadow="hover" class="text-center">
+        <el-radio-group v-model="tab" @change="changeTab(tab)">
+          <el-radio-button label="waiting">待办任务</el-radio-button>
+          <el-radio-button label="finish">已办任务</el-radio-button>
+        </el-radio-group>
+      </el-card>
+    </div>
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="mb-[10px]">
+      <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
-          <center>
-            <el-radio-group v-model="tab" @change="changeTab(tab)">
-              <el-radio-button label="waiting">待办任务</el-radio-button>
-              <el-radio-button label="finish">已办任务</el-radio-button>
-            </el-radio-group>
-          </center>
-        </el-card>
-      </div>
-    </transition>
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="mb-[10px]" v-show="showSearch">
-        <el-card shadow="hover">
-          <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="68px">
+          <el-form v-show="showSearch" ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
             <el-form-item label="任务名称" prop="name">
               <el-input v-model="queryParams.name" placeholder="请输入任务名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
@@ -36,7 +32,7 @@
     <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
-          <right-toolbar v-model:showSearch="showSearch" @queryTable="handleQuery"></right-toolbar>
+          <right-toolbar v-model:showSearch="showSearch" @query-table="handleQuery"></right-toolbar>
         </el-row>
       </template>
 
@@ -47,9 +43,9 @@
         <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>
         <el-table-column fixed align="center" prop="assigneeName" label="办理人">
-          <template #default="scope" v-if="tab === 'waiting'">
+          <template v-if="tab === 'waiting'" #default="scope">
             <template v-if="scope.row.participantVo && scope.row.assignee === null">
-              <el-tag type="success" v-for="(item, index) in scope.row.participantVo.candidateName" :key="index">
+              <el-tag v-for="(item, index) in scope.row.participantVo.candidateName" :key="index" type="success">
                 {{ item }}
               </el-tag>
             </template>
@@ -59,7 +55,7 @@
               </el-tag>
             </template>
           </template>
-          <template #default="scope" v-else-if="tab === 'finish'">
+          <template v-else-if="tab === 'finish'" #default="scope">
             <el-tag type="success">
               {{ scope.row.assigneeName }}
             </el-tag>
@@ -67,8 +63,8 @@
         </el-table-column>
         <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
           <template #default="scope">
-            <el-tag type="success" v-if="tab === 'waiting'">{{ scope.row.businessStatusName }}</el-tag>
-            <el-tag type="success" v-else>已完成</el-tag>
+            <el-tag v-if="tab === 'waiting'" type="success">{{ scope.row.businessStatusName }}</el-tag>
+            <el-tag v-else type="success">已完成</el-tag>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
@@ -76,27 +72,38 @@
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button type="text" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
+                <el-button link type="primary" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
               </el-col>
-              <el-col :span="1.5" v-if="tab === 'waiting' && scope.row.participantVo && (scope.row.participantVo.claim === null || scope.row.participantVo.claim === true)">
-                <el-button type="text" size="small" icon="Edit" @click="submitVerifyOpen(scope.row.id)">办理</el-button>
+              <el-col
+                v-if="
+                  tab === 'waiting' && scope.row.participantVo && (scope.row.participantVo.claim === null || scope.row.participantVo.claim === true)
+                "
+                :span="1.5"
+              >
+                <el-button link type="primary" size="small" icon="Edit" @click="submitVerifyOpen(scope.row.id)">办理</el-button>
               </el-col>
-              <el-col :span="1.5" v-if="tab === 'waiting' && scope.row.participantVo && scope.row.participantVo.claim === true">
-                <el-button type="text" size="small" icon="Document" @click="handleReturnTask(scope.row.id)">归还</el-button>
+              <el-col v-if="tab === 'waiting' && scope.row.participantVo && scope.row.participantVo.claim === true" :span="1.5">
+                <el-button link type="primary" size="small" icon="Document" @click="handleReturnTask(scope.row.id)">归还</el-button>
               </el-col>
-              <el-col :span="1.5" v-if="tab === 'waiting' && scope.row.participantVo && scope.row.participantVo.claim === false">
-                <el-button type="text" size="small" icon="Document" @click="handleClaimTask(scope.row.id)">认领</el-button>
+              <el-col v-if="tab === 'waiting' && scope.row.participantVo && scope.row.participantVo.claim === false" :span="1.5">
+                <el-button link type="primary" size="small" icon="Document" @click="handleClaimTask(scope.row.id)">认领</el-button>
               </el-col>
             </el-row>
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
+      <pagination
+        v-show="total > 0"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        :total="total"
+        @pagination="handleQuery"
+      />
     </el-card>
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
     <!-- 提交组件 -->
-    <submitVerify ref="submitVerifyRef" @submitCallback="handleQuery" />
+    <submitVerify ref="submitVerifyRef" @submit-callback="handleQuery" />
   </div>
 </template>
 
@@ -105,10 +112,12 @@ import { getTaskWaitByPage, getTaskFinishByPage, claim, returnTask } from '@/api
 import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
+import { TaskQuery } from '@/api/workflow/task/types';
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
+const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 // 遮罩层
 const loading = ref(true);
@@ -125,7 +134,7 @@ const total = ref(0);
 // 模型定义表格数据
 const taskList = ref([]);
 // 查询参数
-const queryParams = ref<Record<string, any>>({
+const queryParams = ref<TaskQuery>({
   pageNum: 1,
   pageSize: 10,
   name: undefined,
@@ -152,7 +161,7 @@ const handleQuery = () => {
 };
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryParams.value = {};
+  queryFormRef.value?.resetFields();
   queryParams.value.pageNum = 1;
   queryParams.value.pageSize = 10;
   handleQuery();

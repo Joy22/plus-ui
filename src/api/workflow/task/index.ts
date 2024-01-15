@@ -1,11 +1,12 @@
 import request from '@/utils/request';
-
+import { AxiosPromise } from 'axios';
+import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 /**
  * 查询待办列表
  * @param query
  * @returns {*}
  */
-export const getTaskWaitByPage = (query: object) => {
+export const getTaskWaitByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
     url: '/workflow/task/getTaskWaitByPage',
     method: 'get',
@@ -18,7 +19,7 @@ export const getTaskWaitByPage = (query: object) => {
  * @param query
  * @returns {*}
  */
-export const getTaskFinishByPage = (query: object) => {
+export const getTaskFinishByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
     url: '/workflow/task/getTaskFinishByPage',
     method: 'get',
