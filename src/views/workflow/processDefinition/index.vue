@@ -4,10 +4,10 @@
       <!-- 流程分类树 -->
       <el-col :lg="4" :xs="24" style="">
         <el-card shadow="hover">
-          <el-input placeholder="请输入流程分类名" v-model="categoryName" prefix-icon="Search" clearable />
+          <el-input v-model="categoryName" placeholder="请输入流程分类名" prefix-icon="Search" clearable />
           <el-tree
-            class="mt-2"
             ref="categoryTreeRef"
+            class="mt-2"
             node-key="id"
             :data="categoryOptions"
             :props="{ label: 'categoryName', children: 'children' }"
@@ -21,9 +21,9 @@
       </el-col>
       <el-col :lg="20" :xs="24">
         <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-          <div class="mb-[10px]" v-show="showSearch">
+          <div v-show="showSearch" class="mb-[10px]">
             <el-card shadow="hover">
-              <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="120px">
+              <el-form v-show="showSearch" ref="queryFormRef" :model="queryParams" :inline="true" label-width="120px">
                 <el-form-item label="流程定义名称" prop="name">
                   <el-input v-model="queryParams.name" placeholder="请输入流程定义名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
@@ -39,7 +39,7 @@
           </div>
         </transition>
         <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-          <div class="mb-[10px]" v-show="showSearch">
+          <div v-show="showSearch" class="mb-[10px]">
             <el-card shadow="hover">
               <el-button type="primary" icon="UploadFilled" @click="uploadDialog.visible = true">部署流程文件</el-button>
             </el-card>
@@ -49,7 +49,7 @@
           <template #header>
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5"> </el-col>
-              <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+              <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
             </el-row>
           </template>
 
@@ -68,14 +68,13 @@
             </el-table-column>
             <el-table-column align="center" prop="diagramResourceName" label="流程图片" min-width="80" :show-overflow-tooltip="true">
               <template #default="scope">
-                <el-link type="primary" @click="clickPreviewImg(scope.row.id)">{{ scope.row.diagramResourceName
-                }}</el-link>
+                <el-link type="primary" @click="clickPreviewImg(scope.row.id)">{{ scope.row.diagramResourceName }}</el-link>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="suspensionState" label="状态" min-width="70">
               <template #default="scope">
-                <el-tag type="success" v-if="scope.row.suspensionState == 1">激活</el-tag>
-                <el-tag type="danger" v-else>挂起</el-tag>
+                <el-tag v-if="scope.row.suspensionState == 1" type="success">激活</el-tag>
+                <el-tag v-else type="danger">挂起</el-tag>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
@@ -83,8 +82,14 @@
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" :icon="scope.row.suspensionState === 1 ? 'Lock' : 'Unlock'" @click="handleProcessDefState(scope.row)">
-                      {{ scope.row.suspensionState === 1 ? "挂起流程" : "激活流程" }}
+                    <el-button
+                      link
+                      type="primary"
+                      size="small"
+                      :icon="scope.row.suspensionState === 1 ? 'Lock' : 'Unlock'"
+                      @click="handleProcessDefState(scope.row)"
+                    >
+                      {{ scope.row.suspensionState === 1 ? '挂起流程' : '激活流程' }}
                     </el-button>
                   </el-col>
                   <el-col :span="1.5">
@@ -96,13 +101,21 @@
                     <el-button link type="primary" size="small" icon="Sort" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Document" @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)"> 历史版本 </el-button>
+                    <el-button link type="primary" size="small" icon="Document" @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)">
+                      历史版本
+                    </el-button>
                   </el-col>
                 </el-row>
               </template>
             </el-table-column>
           </el-table>
-          <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
+          <pagination
+            v-show="total > 0"
+            v-model:page="queryParams.pageNum"
+            v-model:limit="queryParams.pageSize"
+            :total="total"
+            @pagination="getList"
+          />
         </el-card>
       </el-col>
     </el-row>
@@ -141,8 +154,8 @@
         </el-table-column>
         <el-table-column align="center" prop="suspensionState" label="状态" min-width="70">
           <template #default="scope">
-            <el-tag type="success" v-if="scope.row.suspensionState == 1">激活</el-tag>
-            <el-tag type="danger" v-else>挂起</el-tag>
+            <el-tag v-if="scope.row.suspensionState == 1" type="success">激活</el-tag>
+            <el-tag v-else type="danger">挂起</el-tag>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
@@ -150,8 +163,14 @@
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button link type="primary" size="small" :icon="scope.row.suspensionState === 1 ? 'Lock' : 'Unlock'" @click="handleProcessDefState(scope.row)">
-                  {{ scope.row.suspensionState === 1 ? "挂起流程" : "激活流程" }}
+                <el-button
+                  link
+                  type="primary"
+                  size="small"
+                  :icon="scope.row.suspensionState === 1 ? 'Lock' : 'Unlock'"
+                  @click="handleProcessDefState(scope.row)"
+                >
+                  {{ scope.row.suspensionState === 1 ? '挂起流程' : '激活流程' }}
                 </el-button>
               </el-col>
               <el-col :span="1.5">
@@ -181,16 +200,17 @@ import {
   deployProcessFile,
   getProcessDefinitionListByKey
 } from '@/api/workflow/processDefinition';
-import { ComponentInternalInstance } from 'vue';
 import ProcessPreview from './components/processPreview.vue';
 import { listCategory } from '@/api/workflow/category';
 import { CategoryVO } from '@/api/workflow/category/types';
-import { ElTree } from 'element-plus';
+import { ProcessDefinitionQuery, ProcessDefinitionVO } from '@/api/workflow/processDefinition/types';
+import { UploadRequestOptions } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const previewRef = ref<InstanceType<typeof ProcessPreview>>();
-const queryFormRef = ref(ElForm);
+const queryFormRef = ref<ElFormInstance>();
+const categoryTreeRef = ref<ElTreeInstance>();
 
 type CategoryOption = {
   categoryCode: string;
@@ -204,12 +224,11 @@ const single = ref(true);
 const multiple = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
-const processDefinitionList = ref<Array<any>>([]);
-const processDefinitionHistoryList = ref<Array<any>>([]);
-const url = ref<Array<string>>([]);
+const processDefinitionList = ref<ProcessDefinitionVO[]>([]);
+const processDefinitionHistoryList = ref<ProcessDefinitionVO[]>([]);
+const url = ref<string[]>([]);
 const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
-const categoryTreeRef = ref(ElTree);
 
 const uploadDialog = reactive<DialogOption>({
   visible: false,
@@ -222,7 +241,7 @@ const processDefinitionDialog = reactive<DialogOption>({
 });
 
 // 查询参数
-const queryParams = ref<Record<string, any>>({
+const queryParams = ref<ProcessDefinitionQuery>({
   pageNum: 1,
   pageSize: 10,
   name: undefined,
@@ -274,7 +293,7 @@ const handleQuery = () => {
 };
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryFormRef.value.resetFields();
+  queryFormRef.value?.resetFields();
   queryParams.value.categoryCode = '';
   queryParams.value.pageNum = 1;
   queryParams.value.pageSize = 10;
@@ -287,62 +306,58 @@ const handleSelectionChange = (selection: any) => {
   multiple.value = !selection.length;
 };
 //分页
-const getList = () => {
+const getList = async () => {
   loading.value = true;
-  listProcessDefinition(queryParams.value).then((resp) => {
-    processDefinitionList.value = resp.rows;
-    total.value = resp.total;
-    loading.value = false;
-  });
+  const resp = await listProcessDefinition(queryParams.value);
+  processDefinitionList.value = resp.rows;
+  total.value = resp.total;
+  loading.value = false;
 };
 //获取历史流程定义
-const getProcessDefinitionHitoryList = (id: string, key: string) => {
-  processDefinitionDialog.visible = true
+const getProcessDefinitionHitoryList = async (id: string, key: string) => {
+  processDefinitionDialog.visible = true;
   loading.value = true;
-  getProcessDefinitionListByKey(key).then((resp) => {
-    if (resp.data && resp.data.length > 0) {
-      processDefinitionHistoryList.value = resp.data.filter((item: any) => item.id !== id);
-    }
-    loading.value = false;
-  });
+  const resp = await getProcessDefinitionListByKey(key);
+  if (resp.data && resp.data.length > 0) {
+    processDefinitionHistoryList.value = resp.data.filter((item: any) => item.id !== id);
+  }
+  loading.value = false;
 };
 
 //预览图片
-const clickPreviewImg = (id: string) => {
+const clickPreviewImg = async (id: string) => {
   loading.value = true;
-  processDefinitionImage(id).then((resp) => {
-    if (previewRef.value) {
-      url.value = [];
-      url.value.push('data:image/png;base64,' + resp.data);
-      loading.value = false;
-      previewRef.value.openDialog(url.value, 'png');
-    }
-  })
-
+  const resp = await processDefinitionImage(id);
+  console.log(resp);
+  if (previewRef.value) {
+    url.value = [];
+    url.value.push('data:image/png;base64,' + resp.data);
+    loading.value = false;
+    previewRef.value.openDialog(url.value, 'png');
+  }
 };
 //预览xml
-const clickPreviewXML = (id: string) => {
+const clickPreviewXML = async (id: string) => {
   loading.value = true;
-  processDefinitionXml(id).then((response) => {
-    if (previewRef.value) {
-      url.value = [];
-      url.value = response.data.xml;
-      loading.value = false;
-      previewRef.value.openDialog(url.value, 'xml');
-    }
-  });
+  const resp = await processDefinitionXml(id);
+  if (previewRef.value) {
+    url.value = [];
+    url.value = resp.data.xml;
+    loading.value = false;
+    previewRef.value.openDialog(url.value, 'xml');
+  }
 };
 /** 删除按钮操作 */
-const handleDelete = async (row: any) => {
+const handleDelete = async (row: ProcessDefinitionVO) => {
   await proxy?.$modal.confirm('是否确认删除流程定义key为【' + row.key + '】的数据项？');
   loading.value = true;
   await deleteProcessDefinition(row.deploymentId, row.id).finally(() => (loading.value = false));
-  getList();
+  await getList();
   proxy?.$modal.msgSuccess('删除成功');
 };
 /** 挂起/激活 */
-const handleProcessDefState = async (row: any) => {
-  let msg = '';
+const handleProcessDefState = async (row: ProcessDefinitionVO) => {
+  let msg: string;
   if (row.suspensionState === 1) {
     msg = `暂停后，此流程下的所有任务都不允许往后流转，您确定挂起【${row.name || row.key}】吗？`;
   } else {
@@ -351,11 +366,11 @@ const handleProcessDefState = async (row: any) => {
   await proxy?.$modal.confirm(msg);
   loading.value = true;
   await updateProcessDefState(row.id).finally(() => (loading.value = false));
-  getList();
+  await getList();
   proxy?.$modal.msgSuccess('操作成功');
 };
 /** 流程定义转换为模型 */
-const handleConvertToModel = async (row: any) => {
+const handleConvertToModel = async (row: ProcessDefinitionVO) => {
   await proxy?.$modal.confirm('是否确认转换流程定义key为【' + row.key + '】的数据项？');
   await convertToModel(row.id).finally(() => (loading.value = false));
   getList();
@@ -363,21 +378,22 @@ const handleConvertToModel = async (row: any) => {
 };
 
 //部署文件
-const handerDeployProcessFile = async (data: any) => {
+const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => {
   let formData = new FormData();
   if (queryParams.value.categoryCode === 'ALL') {
     proxy?.$modal.msgError('顶级节点不可作为分类！');
-    return false;
+    return;
   }
   if (!queryParams.value.categoryCode) {
     proxy?.$modal.msgError('请选择左侧要上传的分类！');
-    return false;
+    return;
   }
   formData.append('file', data.file);
   formData.append('categoryCode', queryParams.value.categoryCode);
-  await deployProcessFile(formData);
-  uploadDialog.visible = false;
-  proxy?.$modal.msgSuccess('部署成功');
-  handleQuery();
+  deployProcessFile(formData).then(() => {
+    uploadDialog.visible = false;
+    proxy?.$modal.msgSuccess('部署成功');
+    handleQuery();
+  });
 };
 </script>

@@ -1,13 +1,15 @@
 import request from '@/utils/request';
+import { ProcessInstanceQuery, ProcessInstanceVO } from '@/api/workflow/processInstance/types';
+import { AxiosPromise } from 'axios';
+import { string } from 'vue-types';
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
-import { getToken } from '@/utils/auth';
 
 /**
  * 查询运行中实例列表
  * @param query
  * @returns {*}
  */
-export const getProcessInstanceRunningByPage = (query: object) => {
+export const getProcessInstanceRunningByPage = (query: ProcessInstanceQuery): AxiosPromise<ProcessInstanceVO[]> => {
   return request({
     url: '/workflow/processInstance/getProcessInstanceRunningByPage',
     method: 'get',
@@ -20,7 +22,7 @@ export const getProcessInstanceRunningByPage = (query: object) => {
  * @param query
  * @returns {*}
  */
-export const getProcessInstanceFinishByPage = (query: object) => {
+export const getProcessInstanceFinishByPage = (query: ProcessInstanceQuery): AxiosPromise<ProcessInstanceVO[]> => {
   return request({
     url: '/workflow/processInstance/getProcessInstanceFinishByPage',
     method: 'get',
@@ -68,7 +70,7 @@ export const deleteRuntimeProcessInst = (data: object) => {
  * @param processInstanceId 流程实例id
  * @returns
  */
-export const deleteRuntimeProcessAndHisInst = (processInstanceId: string) => {
+export const deleteRuntimeProcessAndHisInst = (processInstanceId: string | string[]) => {
   return request({
     url: `/workflow/processInstance/deleteRuntimeProcessAndHisInst/${processInstanceId}`,
     method: 'delete'
@@ -80,7 +82,7 @@ export const deleteRuntimeProcessAndHisInst = (processInstanceId: string) => {
  * @param processInstanceId 流程实例id
  * @returns
  */
-export const deleteFinishProcessAndHisInst = (processInstanceId: string) => {
+export const deleteFinishProcessAndHisInst = (processInstanceId: string | string[]) => {
   return request({
     url: `/workflow/processInstance/deleteFinishProcessAndHisInst/${processInstanceId}`,
     method: 'delete'
@@ -92,7 +94,7 @@ export const deleteFinishProcessAndHisInst = (processInstanceId: string) => {
  * @param query
  * @returns {*}
  */
-export const getCurrentSubmitByPage = (query: object) => {
+export const getCurrentSubmitByPage = (query: ProcessInstanceQuery): AxiosPromise<ProcessInstanceVO[]> => {
   return request({
     url: '/workflow/processInstance/getCurrentSubmitByPage',
     method: 'get',

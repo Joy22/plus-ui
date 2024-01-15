@@ -2,7 +2,7 @@ export interface CategoryVO {
   /**
    * 主键
    */
-  id: string | number;
+  id: string;
 
   /**
    * 分类名称

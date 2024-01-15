@@ -1,7 +1,7 @@
 export interface TaskQuery extends PageQuery {
-  name: string;
-  processDefinitionKey: string;
-  processDefinitionName: string;
+  name?: string;
+  processDefinitionKey?: string;
+  processDefinitionName?: string;
 }
 
 export interface ParticipantVo {

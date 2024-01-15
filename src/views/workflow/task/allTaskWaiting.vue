@@ -1,29 +1,25 @@
 <template>
   <div class="p-2">
+    <div class="mb-[10px]">
+      <el-card shadow="hover" class="text-center">
+        <el-radio-group v-model="tab" @change="changeTab(tab)">
+          <el-radio-button label="waiting">待办任务</el-radio-button>
+          <el-radio-button label="finish">已办任务</el-radio-button>
+        </el-radio-group>
+      </el-card>
+    </div>
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="mb-[10px]">
+      <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
-          <center>
-            <el-radio-group v-model="tab" @change="changeTab(tab)">
-              <el-radio-button label="waiting">待办任务</el-radio-button>
-              <el-radio-button label="finish">已办任务</el-radio-button>
-            </el-radio-group>
-          </center>
-        </el-card>
-      </div>
-    </transition>
-    <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="mb-[10px]" v-show="showSearch">
-        <el-card shadow="hover">
-          <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="68px">
+          <el-form v-show="showSearch" ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
             <el-form-item label="任务名称" prop="name">
-              <el-input v-model="queryParams.name" placeholder="请输入任务名称" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.name" placeholder="请输入任务名称" @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="流程定义名称" label-width="100" prop="name">
-              <el-input v-model="queryParams.processDefinitionName" placeholder="请输入流程定义名称" clearable @keyup.enter="handleQuery" />
+            <el-form-item label="流程定义名称" label-width="100" prop="processDefinitionName">
+              <el-input v-model="queryParams.processDefinitionName" placeholder="请输入流程定义名称" @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="流程定义KEY" label-width="100" prop="name">
-              <el-input v-model="queryParams.processDefinitionKey" placeholder="请输入流程定义KEY" clearable @keyup.enter="handleQuery" />
+            <el-form-item label="流程定义KEY" label-width="100" prop="processDefinitionKey">
+              <el-input v-model="queryParams.processDefinitionKey" placeholder="请输入流程定义KEY" @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -36,7 +32,7 @@
     <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
-          <right-toolbar v-model:showSearch="showSearch" @queryTable="handleQuery"></right-toolbar>
+          <right-toolbar v-model:showSearch="showSearch" @query-table="handleQuery"></right-toolbar>
         </el-row>
       </template>
 
@@ -47,9 +43,9 @@
         <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>
         <el-table-column fixed align="center" prop="assigneeName" label="办理人">
-          <template #default="scope" v-if="tab === 'waiting'">
+          <template v-if="tab === 'waiting'" #default="scope">
             <template v-if="scope.row.participantVo && scope.row.assignee === null">
-              <el-tag type="success" v-for="(item, index) in scope.row.participantVo.candidateName" :key="index">
+              <el-tag v-for="(item, index) in scope.row.participantVo.candidateName" :key="index" type="success">
                 {{ item }}
               </el-tag>
             </template>
@@ -59,7 +55,7 @@
               </el-tag>
             </template>
           </template>
-          <template #default="scope" v-else-if="tab === 'finish'">
+          <template v-else-if="tab === 'finish'" #default="scope">
             <el-tag type="success">
               {{ scope.row.assigneeName }}
             </el-tag>
@@ -67,8 +63,8 @@
         </el-table-column>
         <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
           <template #default="scope">
-            <el-tag type="success" v-if="tab === 'waiting'">{{ scope.row.businessStatusName }}</el-tag>
-            <el-tag type="success" v-else>已完成</el-tag>
+            <el-tag v-if="tab === 'waiting'" type="success">{{ scope.row.businessStatusName }}</el-tag>
+            <el-tag v-else type="success">已完成</el-tag>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
@@ -76,41 +72,48 @@
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button type="text" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
+                <el-button link type="primary" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
               </el-col>
-              <el-col :span="1.5" v-if="scope.row.multiInstance">
-                <el-button type="text" size="small" icon="CirclePlus" @click="addMultiInstanceUser(scope.row)">加签</el-button>
+              <el-col v-if="scope.row.multiInstance" :span="1.5">
+                <el-button link type="primary" size="small" icon="CirclePlus" @click="addMultiInstanceUser(scope.row)">加签</el-button>
               </el-col>
-              <el-col :span="1.5" v-if="scope.row.multiInstance">
-                <el-button type="text" size="small" icon="Remove" @click="deleteMultiInstanceUser(scope.row)">减签</el-button>
+              <el-col v-if="scope.row.multiInstance" :span="1.5">
+                <el-button link type="primary" size="small" icon="Remove" @click="deleteMultiInstanceUser(scope.row)">减签</el-button>
               </el-col>
             </el-row>
           </template>
         </el-table-column>
       </el-table>
-      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
+      <pagination
+        v-show="total > 0"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        :total="total"
+        @pagination="handleQuery"
+      />
     </el-card>
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
     <!-- 提交组件 -->
-    <submitVerify ref="submitVerifyRef" :taskId="taskId" @submitCallback="handleQuery" />
+    <submitVerify ref="submitVerifyRef" :task-id="taskId" @submit-callback="handleQuery" />
     <!-- 加签组件 -->
-    <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submitCallback="handleQuery" />
+    <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback="handleQuery" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { getAllTaskWaitByPage, getAllTaskFinishByPage } from '@/api/workflow/task';
-import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import MultiInstanceUser from '@/components/Process/multiInstance-user.vue';
+import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 //加签组件
 const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
+const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 // 遮罩层
 const loading = ref(true);
@@ -129,9 +132,8 @@ const taskList = ref([]);
 // 任务id
 const taskId = ref('');
 const title = ref('');
-const userIdList = ref<Array<any>>([]);
 // 查询参数
-const queryParams = ref<Record<string, any>>({
+const queryParams = ref<TaskQuery>({
   pageNum: 1,
   pageSize: 10,
   name: undefined,
@@ -143,20 +145,20 @@ onMounted(() => {
   getWaitingList();
 });
 //审批记录
-const handleApprovalRecord = (row: any) => {
+const handleApprovalRecord = (row: TaskVO) => {
   if (approvalRecordRef.value) {
     approvalRecordRef.value.init(row.processInstanceId);
   }
 };
 //加签
-const addMultiInstanceUser = (row: any) => {
+const addMultiInstanceUser = (row: TaskVO) => {
   if (multiInstanceUserRef.value) {
     title.value = '加签人员';
     multiInstanceUserRef.value.getAddMultiInstanceList(row.id, []);
   }
 };
 //减签
-const deleteMultiInstanceUser = (row: any) => {
+const deleteMultiInstanceUser = (row: TaskVO) => {
   if (multiInstanceUserRef.value) {
     title.value = '减签人员';
     multiInstanceUserRef.value.getDeleteMultiInstanceList(row.id);
@@ -172,7 +174,7 @@ const handleQuery = () => {
 };
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryParams.value = {};
+  queryFormRef.value?.resetFields();
   queryParams.value.pageNum = 1;
   queryParams.value.pageSize = 10;
   handleQuery();

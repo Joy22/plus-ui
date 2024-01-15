@@ -109,10 +109,9 @@
 
 <script lang="ts" setup>
 import { getTaskWaitByPage, getTaskFinishByPage, claim, returnTask } from '@/api/workflow/task';
-import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
-import { TaskQuery } from '@/api/workflow/task/types';
+import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
@@ -146,7 +145,7 @@ onMounted(() => {
   getWaitingList();
 });
 //审批记录
-const handleApprovalRecord = (row: any) => {
+const handleApprovalRecord = (row: TaskVO) => {
   if (approvalRecordRef.value) {
     approvalRecordRef.value.init(row.processInstanceId);
   }

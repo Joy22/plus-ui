@@ -1,13 +1,14 @@
 import request from '@/utils/request';
+import { ProcessDefinitionQuery, ProcessDefinitionVO, ProcessDefinitionXmlVO } from '@/api/workflow/processDefinition/types';
+import { AxiosPromise } from 'axios';
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
-import { getToken } from '@/utils/auth';
 
 /**
  * 获取流程定义列表
- * @param processInstanceId 流程实例id
+ * @param query 流程实例id
  * @returns
  */
-export const listProcessDefinition = (query: object) => {
+export const listProcessDefinition = (query: ProcessDefinitionQuery): AxiosPromise<ProcessDefinitionVO[]> => {
   return request({
     url: `/workflow/processDefinition/list`,
     method: 'get',
@@ -29,7 +30,7 @@ export const getProcessDefinitionListByKey = (key: string) => {
 /**
  * 通过流程定义id获取流程图
  */
-export const processDefinitionImage = (processDefinitionId: string) => {
+export const processDefinitionImage = (processDefinitionId: string): AxiosPromise<any> => {
   return request({
     url: `/workflow/processDefinition/processDefinitionImage/${processDefinitionId}` + '?t' + Math.random(),
     method: 'get'
@@ -41,7 +42,7 @@ export const processDefinitionImage = (processDefinitionId: string) => {
  * @param processDefinitionId 流程定义id
  * @returns
  */
-export const processDefinitionXml = (processDefinitionId: string) => {
+export const processDefinitionXml = (processDefinitionId: string): AxiosPromise<ProcessDefinitionXmlVO> => {
   return request({
     url: `/workflow/processDefinition/processDefinitionXml/${processDefinitionId}`,
     method: 'get'

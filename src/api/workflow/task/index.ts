@@ -32,7 +32,7 @@ export const getTaskFinishByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> =>
  * @param query
  * @returns {*}
  */
-export const getAllTaskWaitByPage = (query: object) => {
+export const getAllTaskWaitByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
     url: '/workflow/task/getAllTaskWaitByPage',
     method: 'get',
@@ -45,7 +45,7 @@ export const getAllTaskWaitByPage = (query: object) => {
  * @param query
  * @returns {*}
  */
-export const getAllTaskFinishByPage = (query: object) => {
+export const getAllTaskFinishByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
     url: '/workflow/task/getAllTaskFinishByPage',
     method: 'get',

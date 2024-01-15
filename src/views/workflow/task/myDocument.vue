@@ -4,20 +4,28 @@
       <!-- 流程分类树 -->
       <el-col :lg="4" :xs="24" style="">
         <el-card shadow="hover">
-          <el-input placeholder="请输入流程分类名" v-model="categoryName" prefix-icon="Search" clearable />
-          <el-tree class="mt-2" ref="categoryTreeRef" node-key="id" :data="categoryOptions"
-            :props="{ label: 'categoryName', children: 'children' }" :expand-on-click-node="false"
-            :filter-node-method="filterNode" highlight-current default-expand-all @node-click="handleNodeClick"></el-tree>
+          <el-input v-model="categoryName" placeholder="请输入流程分类名" prefix-icon="Search" clearable />
+          <el-tree
+            ref="categoryTreeRef"
+            class="mt-2"
+            node-key="id"
+            :data="categoryOptions"
+            :props="{ label: 'categoryName', children: 'children' }"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            highlight-current
+            default-expand-all
+            @node-click="handleNodeClick"
+          ></el-tree>
         </el-card>
       </el-col>
       <el-col :lg="20" :xs="24">
-        <transition :enter-active-class="proxy?.animate.searchAnimate.enter"
-          :leave-active-class="proxy?.animate.searchAnimate.leave">
-          <div class="mb-[10px]" v-show="showSearch">
+        <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
+          <div v-show="showSearch" class="mb-[10px]">
             <el-card shadow="hover">
-              <el-form :model="queryParams" ref="queryFormRef" :inline="true" v-show="showSearch" label-width="120px">
+              <el-form v-show="showSearch" ref="queryFormRef" :model="queryParams" :inline="true" label-width="120px">
                 <el-form-item label="流程定义名称" prop="name">
-                  <el-input v-model="queryParams.name" placeholder="请输入流程定义名称" clearable @keyup.enter="handleQuery" />
+                  <el-input v-model="queryParams.name" placeholder="请输入流程定义名称" @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -30,23 +38,23 @@
         <el-card shadow="hover">
           <template #header>
             <el-row :gutter="10" class="mb8">
-              <right-toolbar v-model:showSearch="showSearch" @queryTable="handleQuery"></right-toolbar>
+              <right-toolbar v-model:showSearch="showSearch" @query-table="handleQuery"></right-toolbar>
             </el-row>
           </template>
 
           <el-table v-loading="loading" :data="processInstanceList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
-            <el-table-column fixed align="center" prop="id" label="id" v-if="false"></el-table-column>
+            <el-table-column v-if="false" fixed align="center" prop="id" label="id"></el-table-column>
             <el-table-column fixed align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
             <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
             <el-table-column align="center" prop="processDefinitionVersion" label="版本号" width="90">
               <template #default="scope"> v{{ scope.row.processDefinitionVersion }}.0</template>
             </el-table-column>
-            <el-table-column align="center" prop="isSuspended" label="状态" min-width="70" v-if="tab === 'running'">
+            <el-table-column v-if="tab === 'running'" align="center" prop="isSuspended" label="状态" min-width="70">
               <template #default="scope">
-                <el-tag type="success" v-if="!scope.row.isSuspended">激活</el-tag>
-                <el-tag type="danger" v-else>挂起</el-tag>
+                <el-tag v-if="!scope.row.isSuspended" type="success">激活</el-tag>
+                <el-tag v-else type="danger">挂起</el-tag>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
@@ -55,58 +63,63 @@
               </template>
             </el-table-column>
             <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
-            <el-table-column align="center" v-if="tab === 'finish'" prop="endTime" label="结束时间"
-              width="160"></el-table-column>
+            <el-table-column v-if="tab === 'finish'" align="center" prop="endTime" label="结束时间" width="160"></el-table-column>
             <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
-                    <el-button type="text" size="small" icon="Document"
-                      @click="handleApprovalRecord(scope.row.id)">审批记录</el-button>
+                    <el-button link type="primary" size="small" icon="Document" @click="handleApprovalRecord(scope.row.id)">审批记录</el-button>
                   </el-col>
-                  <el-col :span="1.5"
-                    v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'">
-                    <el-button type="text" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+                  <el-col
+                    v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'"
+                    :span="1.5"
+                  >
+                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
-                  <el-col :span="1.5" v-if="scope.row.businessStatus === 'waiting'">
-                    <el-button type="text" size="small" icon="Notification"
-                      @click="handleCancelProcessApply(scope.row.id)">撤销</el-button>
+                  <el-col v-if="scope.row.businessStatus === 'waiting'" :span="1.5">
+                    <el-button link type="primary" size="small" icon="Notification" @click="handleCancelProcessApply(scope.row.id)">撤销</el-button>
                   </el-col>
-                  <el-col :span="1.5"
-                    v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'">
-                    <el-button type="text" size="small" icon="Edit"
-                      @click="submitVerifyOpen(scope.row.taskVoList[0].id)">提交</el-button>
+                  <el-col
+                    v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'"
+                    :span="1.5"
+                  >
+                    <el-button link type="primary" size="small" icon="Edit" @click="submitVerifyOpen(scope.row.taskVoList[0].id)">提交</el-button>
                   </el-col>
                 </el-row>
               </template>
             </el-table-column>
           </el-table>
-          <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
-            v-model:limit="queryParams.pageSize" @pagination="getList" />
+          <pagination
+            v-show="total > 0"
+            v-model:page="queryParams.pageNum"
+            v-model:limit="queryParams.pageSize"
+            :total="total"
+            @pagination="getList"
+          />
         </el-card>
       </el-col>
     </el-row>
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
     <!-- 提交组件 -->
-    <submitVerify ref="submitVerifyRef" @submitCallback="getList" />
+    <submitVerify ref="submitVerifyRef" @submit-callback="getList" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { getCurrentSubmitByPage, deleteRuntimeProcessAndHisInst, cancelProcessApply } from '@/api/workflow/processInstance';
-import { ComponentInternalInstance } from 'vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import { listCategory } from '@/api/workflow/category';
-import { ElTree } from 'element-plus';
 import { CategoryVO } from '@/api/workflow/category/types';
+import { ProcessInstanceQuery, ProcessInstanceVO } from '@/api/workflow/processInstance/types';
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const queryFormRef = ref(ElForm);
+const queryFormRef = ref<ElFormInstance>();
+const categoryTreeRef = ref<ElTreeInstance>();
 
 // 遮罩层
 const loading = ref(true);
@@ -121,21 +134,20 @@ const showSearch = ref(true);
 // 总条数
 const total = ref(0);
 // 模型定义表格数据
-const processInstanceList = ref([]);
+const processInstanceList = ref<ProcessInstanceVO[]>([]);
 
 const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
-const categoryTreeRef = ref(ElTree);
 
-type CategoryOption = {
+interface CategoryOption {
   categoryCode: string;
   categoryName: string;
   children?: CategoryOption[];
-};
+}
 
 const tab = ref('running');
 // 查询参数
-const queryParams = ref<Record<string, any>>({
+const queryParams = ref<ProcessInstanceQuery>({
   pageNum: 1,
   pageSize: 10,
   name: undefined,
@@ -191,14 +203,14 @@ const handleQuery = () => {
 };
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryFormRef.value.resetFields();
+  queryFormRef.value?.resetFields();
   queryParams.value.categoryCode = '';
   queryParams.value.pageNum = 1;
   queryParams.value.pageSize = 10;
   handleQuery();
 };
 // 多选框选中数据
-const handleSelectionChange = (selection: any) => {
+const handleSelectionChange = (selection: ProcessInstanceVO[]) => {
   ids.value = selection.map((item: any) => item.id);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
@@ -214,7 +226,7 @@ const getList = () => {
 };
 
 /** 删除按钮操作 */
-const handleDelete = async (row: any) => {
+const handleDelete = async (row: ProcessInstanceVO) => {
   const id = row.id || ids.value;
   await proxy?.$modal.confirm('是否确认删除id为【' + id + '】的数据项？');
   loading.value = true;
