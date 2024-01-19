@@ -15,6 +15,11 @@ import directive from './directive';
 // 注册插件
 import plugins from './plugins/index'; // plugins
 
+// 高亮组件
+import 'highlight.js/styles/a11y-light.css';
+import 'highlight.js/lib/common';
+import HighLight from '@highlightjs/vue-plugin';
+
 // svg图标
 import 'virtual:svg-icons-register';
 import ElementIcons from '@/plugins/svgicon';
@@ -27,6 +32,7 @@ import i18n from '@/lang/index';
 
 const app = createApp(App);
 
+app.use(HighLight);
 app.use(ElementIcons);
 app.use(router);
 app.use(store);

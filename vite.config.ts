@@ -65,7 +65,13 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'echarts',
         'vue-i18n',
         '@vueup/vue-quill',
+        'bpmn-js/lib/Modeler.js',
+        'bpmn-js-properties-panel',
+        'min-dash',
+        'bpmn-js/lib/features/palette/PaletteProvider',
+        'bpmn-js/lib/features/context-pad/ContextPadProvider',
 
+        'element-plus/es/components/button-group/style/css',
         'element-plus/es/components/radio-button/style/css',
         'element-plus/es/components/checkbox-group/style/css',
         'element-plus/es/components/form/style/css',
