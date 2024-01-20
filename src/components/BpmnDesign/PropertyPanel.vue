@@ -1,12 +1,14 @@
 <template>
   <div ref="propertyPanel" class="property-panel">
-    <div v-if="nodeName" class="node-name">{{ nodeName }}</div>
+    <div v-if="nodeName">{{ nodeName }}</div>
+    <el-divider />
     <component :is="component" v-if="element" :element="element" :modeler="modeler" :users="users" :groups="groups" :categorys="categorys" />
+    <!--    <TaskPanel :element="element" :modeler="modeler" :users="users" :groups="groups" :categorys="categorys"></TaskPanel>-->
   </div>
 </template>
 <script setup lang="ts" name="PropertyPanel">
-import { NodeName } from '@/components/BpmnDesign/assets/lang/zh';
-
+import { NodeName } from './assets/lang/zh';
+import TaskPanel from './panel/TaskPanel.vue';
 interface propsType {
   users: Array<any>;
   groups: Array<any>;
@@ -48,7 +50,7 @@ const component = computed(() => {
   if (!element.value) return null;
   const type = element.value.type;
   if (startEndType.includes(type)) return 'startEndPanel';
-  if (taskType.includes(type)) return 'taskPanel';
+  if (taskType.includes(type)) return TaskPanel;
   if (sequenceType.includes(type)) return 'sequenceFlowPanel';
   if (gatewayType.includes(type)) return 'gatewayPanel';
   if (processType.includes(type)) return 'processPanel';
@@ -73,17 +75,16 @@ const handleModeler = () => {
     }
   });
   props.modeler.on('element.click', (e) => {
-    const { element } = e;
-    if (element.type === 'bpmn:Process') {
-      element.value = element;
+    if (e.element.type === 'bpmn:Process') {
+      element.value = e.element;
     }
   });
   props.modeler.on('selection.changed', (e) => {
-    element.value = null;
+    // element.value = null;
     const newElement = e.newSelection[0];
     if (newElement) {
       nextTick(() => {
-        element.value = e.element;
+        element.value = newElement;
       });
     }
   });
@@ -93,3 +94,11 @@ onMounted(() => {
   handleModeler();
 });
 </script>
+
+<style scoped lang="scss">
+.el-divider {
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+}
+</style>

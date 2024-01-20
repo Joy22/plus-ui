@@ -71,6 +71,10 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'bpmn-js/lib/features/palette/PaletteProvider',
         'bpmn-js/lib/features/context-pad/ContextPadProvider',
 
+        'element-plus/es/components/container/style/css',
+        'element-plus/es/components/aside/style/css',
+        'element-plus/es/components/main/style/css',
+        'element-plus/es/components/header/style/css',
         'element-plus/es/components/button-group/style/css',
         'element-plus/es/components/radio-button/style/css',
         'element-plus/es/components/checkbox-group/style/css',

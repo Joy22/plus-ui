@@ -30,6 +30,10 @@ import './permission';
 // 国际化
 import i18n from '@/lang/index';
 
+// vxeTable
+import VXETable from 'vxe-table';
+import 'vxe-table/lib/style.css';
+
 const app = createApp(App);
 
 app.use(HighLight);
@@ -37,6 +41,7 @@ app.use(ElementIcons);
 app.use(router);
 app.use(store);
 app.use(i18n);
+app.use(VXETable);
 app.use(plugins);
 // 自定义指令
 directive(app);

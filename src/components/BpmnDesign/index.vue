@@ -61,7 +61,7 @@
 
 <script lang="ts" setup name="BpmnDesign">
 import PropertyPanel from './PropertyPanel.vue';
-import BpmnModeler from 'bpmn-js/lib/Modeler.js'; // 引入 bpmn-js
+import BpmnModeler from 'bpmn-js/lib/Modeler.js';
 import diagramXML from '@/components/BpmnDesign/assets/defaultXML';
 import flowableModdle from '@/components/BpmnDesign/assets/moddle/flowable';
 import Modules from './assets/module/index';
