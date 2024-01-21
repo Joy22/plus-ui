@@ -36,3 +36,16 @@ export const getUserListByIds = (userIdList: Array<any>) => {
     method: 'get'
   });
 };
+
+/**
+ * 分页查询用户
+ * @param query
+ * @returns {*}
+ */
+export const getUserListByPage = (query: object) => {
+  return request({
+    url: '/workflow/user/getUserListByPage',
+    method: 'get',
+    params: query
+  });
+};

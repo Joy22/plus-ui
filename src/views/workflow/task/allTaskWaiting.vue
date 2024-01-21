@@ -32,6 +32,9 @@
     <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
+          <el-col :span="1.5">
+            <el-button type="primary" plain icon="Edit" @click="handleUpdate">修改办理人</el-button>
+          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @query-table="handleQuery"></right-toolbar>
         </el-row>
       </template>
@@ -98,14 +101,17 @@
     <submitVerify ref="submitVerifyRef" :task-id="taskId" @submit-callback="handleQuery" />
     <!-- 加签组件 -->
     <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback="handleQuery" />
+    <!-- 加签组件 -->
+    <SysUser ref="sysUserRef" :multiple="false" @submit-callback="submitCallback" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { getAllTaskWaitByPage, getAllTaskFinishByPage } from '@/api/workflow/task';
+import { getAllTaskWaitByPage, getAllTaskFinishByPage, updateAssignee } from '@/api/workflow/task';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import MultiInstanceUser from '@/components/Process/multiInstance-user.vue';
+import SysUser from '@/components/Process/sys-user.vue';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
@@ -113,6 +119,9 @@ const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 //加签组件
 const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
+//选人组件
+const sysUserRef = ref<InstanceType<typeof SysUser>>();
+
 const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 // 遮罩层
@@ -209,5 +218,20 @@ const getFinishList = () => {
     total.value = resp.total;
     loading.value = false;
   });
+};
+const handleUpdate = () => {
+  if (sysUserRef.value) {
+    sysUserRef.value.getUserList([]);
+  }
+};
+//修改办理人
+const submitCallback = (data) => {
+  if(data && data.value.length > 0){
+    updateAssignee(ids.value,data.value[0].userId).then((resp) => {
+      sysUserRef.value.close();
+      proxy?.$modal.msgSuccess('操作成功');
+      handleQuery()
+    });
+  }
 };
 </script>

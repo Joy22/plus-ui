@@ -1,7 +1,7 @@
 <template>
   <el-dialog v-model="visible" draggable :title="title" :width="width" :height="height" append-to-body
     :close-on-click-modal="false">
-    <div class="p-2" v-if="multiInstance === 'add'">
+    <div class="p-2">
       <el-row :gutter="20">
         <!-- 部门树 -->
         <el-col :lg="4" :xs="24" style="">
@@ -22,8 +22,8 @@
                   <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px"
                     @keyup.enter="handleQuery" />
                 </el-form-item>
-                <el-form-item label="手机号码" prop="phonenumber">
-                  <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable style="width: 240px"
+                <el-form-item label="用户昵称" prop="nickName">
+                  <el-input v-model="queryParams.nickName" placeholder="请输入用户昵称" clearable style="width: 240px"
                     @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item>
@@ -66,13 +66,6 @@
         </el-col>
       </el-row>
     </div>
-    <div class="p-2" v-if="multiInstance === 'delete'">
-      <el-table v-loading="loading" :data="taskList" @selection-change="handleTaskSelection">
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="name" label="任务名称" />
-        <el-table-column prop="assigneeName" label="办理人" />
-      </el-table>
-    </div>
     <template #footer>
       <div class="dialog-footer">
         <el-button type="primary" @click="submitFileForm">确 定</el-button>
@@ -84,8 +77,7 @@
 
 <script setup name="User" lang="ts">
 import { deptTreeSelect } from '@/api/system/user';
-import { getWorkflowAddMultiListByPage, getWorkflowDeleteMultiInstanceList, getUserListByIds } from '@/api/workflow/workflowUser';
-import { addMultiInstanceExecution, deleteMultiInstanceExecution } from '@/api/workflow/task';
+import { getUserListByPage, getUserListByIds } from '@/api/workflow/workflowUser';
 import { UserVO } from '@/api/system/user/types';
 import { DeptVO } from '@/api/system/dept/types';
 import { ComponentInternalInstance } from 'vue';
@@ -106,7 +98,7 @@ const props = defineProps({
   // 标题
   title: {
     type: String,
-    default: '加签人员'
+    default: '用户'
   },
   //是否多选
   multiple: {
@@ -123,35 +115,30 @@ const deptTreeRef = ref(ElTree);
 const multipleTableRef = ref(ElTable);
 
 const userList = ref<UserVO[]>();
-const taskList = ref<Array<any>[]>();
 const loading = ref(true);
 const showSearch = ref(true);
-const selectionTask = ref<Array<any>[]>();
 const visible = ref(false);
 const total = ref(0);
 const deptName = ref('');
 const deptOptions = ref<DeptVO[]>([]);
 const chooseUserList = ref(ref<UserVO[]>());
 const userIds = ref<Array<number | string>>([]);
-//加签或者减签
-const multiInstance = ref('');
+//查询参数
 const queryParams = ref<Record<string, any>>({
   pageNum: 1,
   pageSize: 10,
-  userName: '',
-  nickName: '',
-  taskId: ''
+  userName: undefined,
+  nickName: undefined,
+  deptId: undefined
 });
 /** 查询用户列表 */
-const getAddMultiInstanceList = async (taskId: string, userIdList: Array<number | string>) => {
+const getUserList = async (userIdList: Array<number | string>) => {
   deptOptions.value = [];
   getTreeSelect();
-  multiInstance.value = 'add';
   userIds.value = userIdList;
   visible.value = true;
-  queryParams.value.taskId = taskId;
   loading.value = true;
-  const res = await getWorkflowAddMultiListByPage(queryParams.value);
+  const res = await getUserListByPage(queryParams.value);
   loading.value = false;
   userList.value = res.rows;
   total.value = res.total;
@@ -173,7 +160,7 @@ const getAddMultiInstanceList = async (taskId: string, userIdList: Array<number 
 
 const getList = async () => {
   loading.value = true;
-  const res = await getWorkflowAddMultiListByPage(queryParams.value);
+  const res = await getUserListByPage(queryParams.value);
   loading.value = false;
   userList.value = res.rows;
   total.value = res.total;
@@ -193,20 +180,10 @@ const getList = async () => {
   }
 };
 
-const getDeleteMultiInstanceList = async (taskId: string) => {
-  deptOptions.value = [];
-  loading.value = true;
-  queryParams.value.taskId = taskId;
-  multiInstance.value = 'delete';
-  visible.value = true;
-  const res = await getWorkflowDeleteMultiInstanceList(taskId);
-  taskList.value = res.data;
-  loading.value = false;
-};
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
-  getAddMultiInstanceList(queryParams.value.taskId, userIds.value);
+  getUserList(userIds.value);
 };
 
 /** 重置按钮操作 */
@@ -244,11 +221,6 @@ const handleSelectionChange = (selection: UserVO[]) => {
     }
   }
 };
-/** 选择条数  */
-const handleTaskSelection = (selection: any) => {
-  selectionTask.value = selection;
-};
-
 /** 查询部门下拉树结构 */
 const getTreeSelect = async () => {
   const res = await deptTreeSelect();
@@ -299,64 +271,22 @@ const handleCloseTag = (user: UserVO, index: any) => {
   }
 };
 const submitFileForm = async () => {
-  if (multiInstance.value === 'add') {
-    if (chooseUserList.value && chooseUserList.value.length > 0) {
-      loading.value = true;
-      let userIds = chooseUserList.value.map((item) => {
-        return item.userId;
-      });
-      let nickNames = chooseUserList.value.map((item) => {
-        return item.nickName;
-      });
-      let params = {
-        taskId: queryParams.value.taskId,
-        assignees: userIds,
-        assigneeNames: nickNames
-      };
-      await addMultiInstanceExecution(params);
-      emits('submitCallback');
-      loading.value = false;
-      proxy?.$modal.msgSuccess('操作成功');
-      visible.value = false;
-    }
-  } else {
-    if (selectionTask.value && selectionTask.value.length > 0) {
-      loading.value = true;
-      let taskIds = selectionTask.value.map((item: any) => {
-        return item.id;
-      });
-      let executionIds = selectionTask.value.map((item: any) => {
-        return item.executionId;
-      });
-      let assigneeIds = selectionTask.value.map((item: any) => {
-        return item.assignee;
-      });
-      let assigneeNames = selectionTask.value.map((item: any) => {
-        return item.assigneeName;
-      });
-      let params = {
-        taskId: queryParams.value.taskId,
-        taskIds: taskIds,
-        executionIds: executionIds,
-        assigneeIds: assigneeIds,
-        assigneeNames: assigneeNames
-      };
-      await deleteMultiInstanceExecution(params);
-      emits('submitCallback');
-      loading.value = false;
-      proxy?.$modal.msgSuccess('操作成功');
-      visible.value = false;
-    }
-  }
-};
+  loading.value =  true
+  emits('submitCallback',chooseUserList);
+}
+const close = async () => {
+  visible.value = false
+  loading.value =  false
+  emits('close');
+}
 //事件
-const emits = defineEmits(['submitCallback']);
+const emits = defineEmits(['submitCallback','close']);
 
 /**
  * 对外暴露子组件方法
  */
 defineExpose({
-  getAddMultiInstanceList,
-  getDeleteMultiInstanceList
+  getUserList,
+  close
 });
 </script>
