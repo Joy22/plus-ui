@@ -98,8 +98,8 @@ const groups = [
   { name: 'python组', id: 'python' }
 ];
 const categorys = [
-  { name: 'OA', id: 'oa' },
-  { name: '财务', id: 'finance' }
+  { label: 'OA', id: 'oa', value: 'id' },
+  { label: '财务', id: 'finance', value: 'finance' }
 ];
 
 onMounted(() => {

@@ -3,12 +3,12 @@
     <div v-if="nodeName">{{ nodeName }}</div>
     <el-divider />
     <component :is="component" v-if="element" :element="element" :modeler="modeler" :users="users" :groups="groups" :categorys="categorys" />
-    <!--    <TaskPanel :element="element" :modeler="modeler" :users="users" :groups="groups" :categorys="categorys"></TaskPanel>-->
   </div>
 </template>
 <script setup lang="ts" name="PropertyPanel">
 import { NodeName } from './assets/lang/zh';
 import TaskPanel from './panel/TaskPanel.vue';
+import ProcessPanel from './panel/ProcessPanel.vue';
 interface propsType {
   users: Array<any>;
   groups: Array<any>;
@@ -53,7 +53,7 @@ const component = computed(() => {
   if (taskType.includes(type)) return TaskPanel;
   if (sequenceType.includes(type)) return 'sequenceFlowPanel';
   if (gatewayType.includes(type)) return 'gatewayPanel';
-  if (processType.includes(type)) return 'processPanel';
+  if (processType.includes(type)) return ProcessPanel;
   return console.error('no ' + type + ' type panel');
 });
 

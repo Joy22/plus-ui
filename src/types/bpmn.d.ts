@@ -12,4 +12,18 @@ declare module 'bpmnDesign' {
     className: string;
     params: ParamVO[];
   }
+
+  export interface ExecutionListenerVO {
+    event: string;
+    type: string;
+    className: string;
+    params: ParamVO[];
+  }
+
+  export interface ProcessPanel {
+    processCategory: string;
+    id: string;
+    name: string;
+    description: string;
+  }
 }

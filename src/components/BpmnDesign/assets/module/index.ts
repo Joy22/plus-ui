@@ -5,4 +5,6 @@ import EnhancementContextPad from './ContextPad';
 // 翻译模块
 import TranslationModule from './Translate';
 
-export default [EnhancementPaletteProvider, EnhancementContextPad, TranslationModule];
+import { ModuleDeclaration } from 'didi';
+const Module: ModuleDeclaration[] = [EnhancementPaletteProvider, EnhancementContextPad, TranslationModule];
+export default Module;

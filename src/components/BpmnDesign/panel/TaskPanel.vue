@@ -1,9 +1,12 @@
 <template>
   <div>
-    <el-form ref="formRef">
+    <el-form ref="formRef" v-model="formData" label-width="80px">
+      <el-form-item prop="id" label="节点 id">
+        <el-input v-model="formData.id" placeholder="请输入"> </el-input>
+      </el-form-item>
       <el-form-item label="任务监听器">
         <el-badge :value="taskListenerCount">
-          <el-button @click="taskListenerRef.open()">编辑</el-button>
+          <el-button @click="taskListenerRef.openDialog()">编辑</el-button>
         </el-badge>
       </el-form-item>
     </el-form>
@@ -31,6 +34,7 @@ const elementType = computed(() => {
 const config = computed(() => showConfig[elementType.value] || {});
 const taskListenerRef = ref<InstanceType<typeof TaskListener>>();
 const taskListenerCount = ref(0);
+const formData = ref({});
 
 const refreshTaskListener = (count?: number) => {
   if (count) {
@@ -39,11 +43,6 @@ const refreshTaskListener = (count?: number) => {
     taskListenerCount.value =
       props.element.businessObject.extensionElements?.values?.filter((item) => item.$type === 'flowable:TaskListener').length ?? 0;
   }
-};
-
-const updateProperties = (properties: any) => {
-  const modeling = props.modeler.get('modeling');
-  modeling.updateProperties(props.element, properties);
 };
 </script>
 

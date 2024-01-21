@@ -33,6 +33,9 @@ import i18n from '@/lang/index';
 // vxeTable
 import VXETable from 'vxe-table';
 import 'vxe-table/lib/style.css';
+VXETable.config({
+  zIndex: 999999
+});
 
 const app = createApp(App);
 

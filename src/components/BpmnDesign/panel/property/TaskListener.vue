@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-dialog
-      :model-value="visible"
-      title="任务监听器"
+      v-model="visible"
+      :title="title"
       width="900px"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -66,20 +66,31 @@
           </template>
         </vxe-column>
       </vxe-table>
+
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" size="small" @click="submitForm">确 定</el-button>
+          <el-button @click="closeDialog">取 消</el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
         </div>
       </template>
     </el-dialog>
-    <ListenerParam v-if="showParamDialog" v-model:visible="showParamDialog" v-model="tableData[currentIndex].params" />
+
+    <ListenerParam
+      ref="listenerParamRef"
+      @update-data="
+        (data: ParamVO[]) => {
+          tableData[currentIndex].params = data;
+        }
+      "
+    />
   </div>
 </template>
 <script setup lang="ts">
 import ListenerParam from './ListenerParam.vue';
-import showConfig from '../../assets/showConfig';
 import { VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
-import { TaskListenerVO } from 'bpmnDesign';
+import { ParamVO, TaskListenerVO } from 'bpmnDesign';
+import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+import useDialog from '@/hooks/useDialog';
 
 const emit = defineEmits(['close']);
 
@@ -94,13 +105,15 @@ const props = withDefaults(defineProps<PropType>(), {
   categorys: () => []
 });
 
-const elementType = computed(() => {
-  const bizObj = props.element.businessObject;
-  return bizObj.eventDefinitions ? bizObj.eventDefinitions[0].$type : bizObj.$type;
+const { title, visible, openDialog, closeDialog } = useDialog({
+  title: '任务监听器'
 });
-const config = computed(() => showConfig[elementType.value] || {});
+const { showConfig, elementType, updateProperties } = usePanel({
+  modeler: props.modeler,
+  element: toRaw(props.element)
+});
 
-const visible = ref(false);
+const listenerParamRef = ref<InstanceType<typeof ListenerParam>>();
 const tableRef = ref<VxeTableInstance<TaskListenerVO>>();
 const currentIndex = ref(0);
 const tableData = ref<TaskListenerVO[]>([]);
@@ -126,18 +139,21 @@ const eventSelect = [
 const configParam = (i: number) => {
   currentIndex.value = i;
   showParamDialog.value = true;
+  listenerParamRef.value.openDialog();
 };
 const insertRow = async () => {
   const $table = tableRef.value;
   if ($table) {
-    tableData.value.push({
-      className: '',
-      type: '',
-      name: '',
-      event: '',
-      params: []
-    });
-    const { row: newRow } = await $table.insertAt({}, -1);
+    const { row: newRow } = await $table.insertAt(
+      {
+        className: '',
+        type: '',
+        name: '',
+        event: '',
+        params: []
+      },
+      -1
+    );
     // 插入一条数据并触发校验
     await $table.validate(newRow);
   }
@@ -164,7 +180,6 @@ const submitForm = async () => {
   }
 };
 
-const open = () => (visible.value = true);
 const updateElement = () => {
   if (tableData.value.length) {
     let extensionElements = props.element.businessObject.get('extensionElements');
@@ -199,12 +214,8 @@ const updateElement = () => {
   }
 };
 
-const updateProperties = (properties: any) => {
-  const modeling = props.modeler.get('modeling');
-  modeling.updateProperties(toRaw(props.element), properties);
-};
 defineExpose({
-  open
+  openDialog
 });
 </script>
 
