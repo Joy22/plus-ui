@@ -2,13 +2,13 @@
   <div>
     <el-form ref="formRef" v-model="formData" label-width="80px">
       <el-form-item prop="id" label="节点 ID">
-        <el-input v-model="formData.id"> </el-input>
+        <el-input v-model="formData.id" @change="idChange"> </el-input>
       </el-form-item>
       <el-form-item prop="name" label="节点名称">
-        <el-input v-model="formData.name"> </el-input>
+        <el-input v-model="formData.name" @change="nameChange"> </el-input>
       </el-form-item>
       <el-form-item prop="documentation" label="节点描述">
-        <el-input v-model="formData.documentation"> </el-input>
+        <el-input v-model="formData.documentation" @change="documentationChange"> </el-input>
       </el-form-item>
       <el-form-item prop="userType" label="人员类型">
         <el-input v-model="formData.userType"> </el-input>
@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
 import { TaskPanel } from 'bpmnDesign';
+import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 
 interface PropType {
   modeler: any;
@@ -31,6 +32,10 @@ interface PropType {
 }
 const props = withDefaults(defineProps<PropType>(), {
   categorys: () => []
+});
+const { documentationChange, nameChange, idChange } = usePanel({
+  modeler: props.modeler,
+  element: toRaw(props.element)
 });
 const { parse, formData } = useParseElement<TaskPanel>({
   modeler: props.modeler,
