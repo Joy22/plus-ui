@@ -1,8 +1,4 @@
-import type { Moddle } from 'moddle';
-import type Modeler from 'bpmn-js/lib/Modeler';
-import type Modeling from 'bpmn-js/lib/features/modeling/Modeling';
-import type Canvas from 'diagram-js/lib/core/Canvas';
-import type ElementRegistry from 'diagram-js/lib/core/ElementRegistry';
+import { Modeler, Modeling, Canvas, ElementRegistry, Moddle } from 'bpmn';
 
 type ModelerStore = {
   modeler: Modeler | undefined;
@@ -58,9 +54,9 @@ export const useModelerStore = defineStore('modeler', () => {
     }
   };
   // 设置流程定义根节点信息
-  const setProcDef = (modeler: any | undefined) => {
-    procDefId.value = modeler.get('canvas').getRootElement().businessObject.get('id');
-    procDefName.value = modeler.get('canvas').getRootElement().businessObject.get('name');
+  const setProcDef = (modeler: Modeler | undefined) => {
+    procDefId.value = modeler.get<Canvas>('canvas').getRootElement().businessObject.get('id');
+    procDefName.value = modeler.get<Canvas>('canvas').getRootElement().businessObject.get('name');
   };
 
   return {

@@ -75,12 +75,14 @@
 import ListenerParam from './ListenerParam.vue';
 import { VxeTableEvents, VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
 import { ExecutionListenerVO } from 'bpmnDesign';
+import { Moddle, Modeler } from 'bpmn';
+
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 import useDialog from '@/hooks/useDialog';
 
 const emit = defineEmits(['close']);
 interface PropType {
-  modeler: any;
+  modeler: Modeler;
   element: any;
   categorys?: any[];
 }
@@ -95,9 +97,6 @@ const formDialog = useDialog({
   title: selectRow.value ? '编辑&保存' : '新增&保存'
 });
 
-const { title, visible, openDialog, closeDialog } = useDialog({
-  title: '执行监听器'
-});
 const { showConfig, elementType, updateProperties } = usePanel({
   modeler: props.modeler,
   element: toRaw(props.element)
@@ -178,17 +177,17 @@ const updateElement = () => {
   if (data.length) {
     let extensionElements = props.element.businessObject.get('extensionElements');
     if (!extensionElements) {
-      extensionElements = props.modeler.get('moddle').create('bpmn:ExtensionElements');
+      extensionElements = props.modeler.get<Moddle>('moddle').create('bpmn:ExtensionElements');
     }
     // 清除旧值
     extensionElements.values = extensionElements.values?.filter((item) => item.$type !== 'flowable:ExecutionListener') ?? [];
     data.forEach((item) => {
-      const executionListener = props.modeler.get('moddle').create('flowable:ExecutionListener');
+      const executionListener = props.modeler.get<Moddle>('moddle').create('flowable:ExecutionListener');
       executionListener['event'] = item.event;
       executionListener[item.type] = item.className;
       if (item.params && item.params.length) {
         item.params.forEach((field) => {
-          const fieldElement = props.modeler.get('moddle').create('flowable:Field');
+          const fieldElement = props.modeler.get<Moddle>('moddle').create('flowable:Field');
           fieldElement['name'] = field.name;
           fieldElement[field.type] = field.value;
           executionListener.get('fields').push(fieldElement);
@@ -204,10 +203,6 @@ const updateElement = () => {
     }
   }
 };
-
-defineExpose({
-  openDialog
-});
 
 const cellDBLClickEvent: VxeTableEvents.CellDblclick<ExecutionListenerVO> = ({ row }) => {
   editEvent(row);

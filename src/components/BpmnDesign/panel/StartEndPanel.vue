@@ -16,12 +16,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { StartEndPanel } from 'bpmnDesign';
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+import { Modeler } from 'bpmn';
+import { StartEndPanel } from 'bpmnDesign';
 
 interface PropType {
-  modeler: any;
+  modeler: Modeler;
   element: any;
   categorys?: any[];
 }

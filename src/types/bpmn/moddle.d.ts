@@ -28,7 +28,6 @@ declare module 'moddle' {
     static hasType(element: ModdleElement, type?: string): boolean;
   }
 
-  // Factory
   export class Factory {
     model: Moddle;
     properties: Properties;
@@ -42,19 +41,10 @@ declare module 'moddle' {
   export type TypeConverters = {
     [T in Exclude<BuiltinsKeys, 'Element'>]: (s: string) => string | boolean | number;
   };
-  /**
-   * Convert a type to its real representation
-   */
   export type coerceType = <T extends Exclude<BuiltinsKeys, 'Element'>>(type: T, value: string) => ReturnType<TypeConverters[T]>;
 
-  /**
-   * Return whether the given type is built-in
-   */
   export function isBuiltIn(type: BuiltinsKeys): boolean;
 
-  /**
-   * Return whether the given type is simple
-   */
   export function isSimple(type: Exclude<BuiltinsKeys, 'Element'>): boolean;
 
   type ParsedName = {
@@ -63,15 +53,6 @@ declare module 'moddle' {
     localName: string;
   };
 
-  /**
-   * Parses a namespaced attribute name of the form (ns:)localName to an object,
-   * given a default prefix to assume in case no explicit namespace is given.
-   *
-   * @param {String} name
-   * @param {String} [defaultPrefix] the default prefix to take, if none is present.
-   *
-   * @return {ParsedName} the parsed name
-   */
   export function parseName(name: string, defaultPrefix?: string): ParsedName;
 
   // DescriptorBuilder
@@ -156,37 +137,15 @@ declare module 'moddle' {
 
     registerPackage(pkg: Package): number;
 
-    /**
-     * Register a type from a specific package with us
-     * @param {DescriptorType} type
-     * @param {Package} pkg
-     */
     registerType(type: DescriptorType, pkg: Package): void;
 
-    /**
-     * Traverse the type hierarchy from bottom to top,
-     * calling iterator with (type, inherited) for all elements in
-     * the inheritance chain.
-     *
-     * @param {Object} nsName
-     * @param {Function} iterator
-     * @param {Boolean} [trait=false]
-     */
     mapTypes(nsName: object, iterator: Function, trait?: boolean);
 
-    /**
-     * Returns the effective descriptor for a type.
-     *
-     * @param  {String} name the namespaced name (ns:localName) of the type
-     *
-     * @return {Descriptor} the resulting effective descriptor
-     */
     getEffectiveDescriptor(name: string): DescriptorBuilder;
 
     definePackage(target: Descriptor, pkg: Package): void;
   }
 
-  //Properties
   export class Properties {
     model: Moddle;
 
@@ -203,54 +162,30 @@ declare module 'moddle' {
     defineModel(target: Omit<ModdleElement, '$model'>, model: ModdleElement): void;
   }
 
-  // Moddle
   export class Moddle {
     properties: Properties;
     factory: Factory;
     registry: Registry;
     typeCache: Record<string, ModdleElement>;
-    /**
-     * Returns a registered package by uri or prefix
-     *
-     * @return {Object} the package
-     */
+
     getPackage: typeof Registry.prototype.getPackage;
-    /**
-     * Returns a snapshot of all known packages
-     *
-     * @return {Object} the package
-     */
+
     getPackages: typeof Registry.prototype.getPackages;
 
     constructor(packages: Package[]);
 
-    create(type: Descriptor | string, attrs: any): ModdleElement;
+    create(type: Descriptor | string, attrs?: any): ModdleElement;
 
     getType(type: string | Descriptor): DescriptorBuilder;
 
     createAny(name: string, nsUri: string, properties?: Properties): void;
 
-    /**
-     * Returns the descriptor for an element
-     */
     getElementDescriptor(element: ModdleElement): Descriptor;
 
-    /**
-     * Returns true if the given descriptor or instance
-     * represents the given type.
-     *
-     * May be applied to this, if element is omitted.
-     */
     hasType(element: ModdleElement | string, type?: string): boolean;
 
-    /**
-     * Returns the descriptor of an elements named property
-     */
     getPropertyDescriptor(element: ModdleElement, property: Property): Descriptor;
 
-    /**
-     * Returns a mapped type's descriptor
-     */
     getTypeDescriptor(type: string): Descriptor;
   }
 

@@ -22,12 +22,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { SequenceFlowPanel } from 'bpmnDesign';
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+import { Modeler } from 'bpmn';
+import { SequenceFlowPanel } from 'bpmnDesign';
 
 interface PropType {
-  modeler: any;
+  modeler: Modeler;
   element: any;
   categorys?: any[];
 }

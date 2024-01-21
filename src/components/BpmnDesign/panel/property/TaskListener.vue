@@ -74,13 +74,15 @@
 import ListenerParam from './ListenerParam.vue';
 import { VxeTableEvents, VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
 import { TaskListenerVO } from 'bpmnDesign';
+import { Moddle, Modeler } from 'bpmn';
+
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 import useDialog from '@/hooks/useDialog';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 interface PropType {
-  modeler: any;
+  modeler: Modeler;
   element: any;
   categorys?: any[];
 }
@@ -88,9 +90,6 @@ const props = withDefaults(defineProps<PropType>(), {
   categorys: () => []
 });
 
-const { title, visible, openDialog, closeDialog } = useDialog({
-  title: '任务监听器'
-});
 const selectRow = ref<TaskListenerVO | null>();
 const formDialog = useDialog({
   title: selectRow.value ? '编辑&保存' : '新增&保存'
@@ -178,17 +177,17 @@ const updateElement = () => {
   if (data.length) {
     let extensionElements = props.element.businessObject.get('extensionElements');
     if (!extensionElements) {
-      extensionElements = props.modeler.get('moddle').create('bpmn:ExtensionElements');
+      extensionElements = props.modeler.get<Moddle>('moddle').create('bpmn:ExtensionElements');
     }
     // 清除旧值
     extensionElements.values = extensionElements.values?.filter((item) => item.$type !== 'flowable:TaskListener') ?? [];
     data.forEach((item) => {
-      const taskListener = props.modeler.get('moddle').create('flowable:TaskListener');
+      const taskListener = props.modeler.get<Moddle>('moddle').create('flowable:TaskListener');
       taskListener['event'] = item.event;
       taskListener[item.type] = item.className;
       if (item.params && item.params.length) {
         item.params.forEach((field) => {
-          const fieldElement = props.modeler.get('moddle').create('flowable:Field');
+          const fieldElement = props.modeler.get<Moddle>('moddle').create('flowable:Field');
           fieldElement['name'] = field.name;
           fieldElement[field.type] = field.value;
           taskListener.get('fields').push(fieldElement);
@@ -205,9 +204,6 @@ const updateElement = () => {
   }
 };
 
-defineExpose({
-  openDialog
-});
 const cellDBLClickEvent: VxeTableEvents.CellDblclick<TaskListenerVO> = ({ row }) => {
   editEvent(row);
 };

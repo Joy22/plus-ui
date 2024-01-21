@@ -23,14 +23,15 @@
 
 <script setup lang="ts">
 import ExecutionListener from './property/ExecutionListener.vue';
-import { ProcessPanel } from 'bpmnDesign';
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+import { Modeler } from 'bpmn';
+import { ProcessPanel } from 'bpmnDesign';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 interface PropType {
-  modeler: any;
+  modeler: Modeler;
   element: any;
   categorys?: any[];
 }

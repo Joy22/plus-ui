@@ -1,8 +1,7 @@
-import { Ref } from 'vue';
 import showConfig from '@/components/BpmnDesign/assets/showConfig';
-
+import { Moddle, Modeler, Modeling } from 'bpmn';
 interface Options {
-  modeler: any;
+  modeler: Modeler;
   element: any;
 }
 
@@ -17,7 +16,7 @@ export default (ops: Options) => {
   const config = computed(() => showConfig[elementType.value] || {});
 
   const updateProperties = (properties: any) => {
-    const modeling = modeler.get('modeling');
+    const modeling = modeler.get<Modeling>('modeling');
     modeling.updateProperties(element, properties);
   };
 
@@ -33,7 +32,7 @@ export default (ops: Options) => {
   };
   const documentationChange = (newVal: string) => {
     if (newVal) {
-      const documentationElement = modeler.get('moddle').create('bpmn:Documentation', { text: newVal });
+      const documentationElement = modeler.get<Moddle>('moddle').create('bpmn:Documentation', { text: newVal });
       updateProperties({ documentation: [documentationElement] });
     } else {
       updateProperties({ documentation: null });

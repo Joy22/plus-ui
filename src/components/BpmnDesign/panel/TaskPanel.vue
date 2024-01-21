@@ -22,11 +22,12 @@
 </template>
 <script setup lang="ts">
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
-import { TaskPanel } from 'bpmnDesign';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+import { Modeler } from 'bpmn';
+import { TaskPanel } from 'bpmnDesign';
 
 interface PropType {
-  modeler: any;
+  modeler: Modeler;
   element: any;
   categorys?: any[];
 }
