@@ -9,7 +9,7 @@
               <el-button size="small" icon="FolderOpened" @click="loadXML" />
             </el-tooltip>
             <el-tooltip effect="dark" content="新建" placement="bottom">
-              <el-button size="small" icon="CirclePlus" @click="initDiagram" />
+              <el-button size="small" icon="CirclePlus" @click="newDiagram" />
             </el-tooltip>
             <el-tooltip effect="dark" content="自适应屏幕" placement="bottom">
               <el-button size="small" icon="Rank" @click="fitViewport" />
@@ -68,6 +68,7 @@ import diagramXML from '@/components/BpmnDesign/assets/defaultXML';
 import flowableModdle from '@/components/BpmnDesign/assets/moddle/flowable';
 import Modules from './assets/module/index';
 import useModelerStore from '@/store/modules/modeler';
+import { Canvas, Modeler } from 'bpmn';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -81,7 +82,7 @@ const xmlUploadRef = ref<ElUploadInstance>();
 const canvas = ref<HTMLDivElement>();
 const panel = ref<HTMLDivElement>();
 
-const bpmnModeler = ref();
+const bpmnModeler = ref<Modeler>();
 const zoom = ref(1);
 
 const perviewXMLShow = ref(false);
@@ -159,9 +160,15 @@ const initModel = () => {
 const closeDialog = () => {
   dialog.visible = false;
 };
-
 /**
  * 新建
+ */
+const newDiagram = async () => {
+  await proxy?.$modal.confirm('是否确认新建');
+  initDiagram();
+};
+/**
+ * 初始化
  */
 const initDiagram = () => {
   bpmnModeler.value.importXML(diagramXML);
@@ -171,7 +178,7 @@ const initDiagram = () => {
  * 自适应屏幕
  */
 const fitViewport = () => {
-  zoom.value = bpmnModeler.value.get('canvas').zoom('fit-viewport');
+  zoom.value = bpmnModeler.value.get<Canvas>('canvas').zoom('fit-viewport');
   const bbox = (document.querySelector('.app-containers .viewport') as SVGGElement).getBBox();
   const currentViewBox = bpmnModeler.value.get('canvas').viewbox();
   const elementMid = {
@@ -213,7 +220,7 @@ const downloadXML = async () => {
  */
 const downloadSVG = async () => {
   try {
-    const { svg } = await bpmnModeler.value.saveSVG({ format: true });
+    const { svg } = await bpmnModeler.value.saveSVG();
     downloadFile(getProcessElement().name, svg, 'image/svg+xml');
   } catch (e) {
     proxy?.$modal.msgError(e);
@@ -238,7 +245,7 @@ const previewXML = async () => {
  */
 const previewSVG = async () => {
   try {
-    const { svg } = await bpmnModeler.value.saveSVG({ format: true });
+    const { svg } = await bpmnModeler.value.saveSVG();
     svgData.value = svg;
     perviewSVGShow.value = true;
   } catch (e) {

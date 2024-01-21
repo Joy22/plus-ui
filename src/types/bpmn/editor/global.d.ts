@@ -5,6 +5,7 @@ declare global {
   interface Window {
     bpmnInstances: any;
     __messageBox: MessageApiInjection;
+    URL: any;
   }
 
   type BpmnElement = ElementLike & { type: string };
