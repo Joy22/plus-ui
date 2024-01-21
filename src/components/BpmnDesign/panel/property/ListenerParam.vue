@@ -45,7 +45,7 @@
   </vxe-table>
 </template>
 
-<script setup lang="ts" name="ListenerParam">
+<script setup lang="ts">
 import { VXETable, VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
 import { ParamVO } from 'bpmnDesign';
 import useDialog from '@/hooks/useDialog';

@@ -7,13 +7,13 @@
         </el-select>
       </el-form-item>
       <el-form-item label="流程标识" prop="id">
-        <el-input v-model="formData.id"></el-input>
+        <el-input v-model="formData.id" @change="idChange"></el-input>
       </el-form-item>
       <el-form-item label="流程名称" prop="name">
-        <el-input v-model="formData.name"></el-input>
+        <el-input v-model="formData.name" @change="nameChange"></el-input>
       </el-form-item>
-      <el-form-item label="节点描述" prop="description">
-        <el-input v-model="formData.documentation"></el-input>
+      <el-form-item label="节点描述" prop="documentation">
+        <el-input v-model="formData.documentation" @change="documentationChange"></el-input>
       </el-form-item>
       <el-form-item label="执行监听器" style="margin-bottom: 0"> </el-form-item>
       <ExecutionListener :modeler="modeler" :element="element"></ExecutionListener>
@@ -21,10 +21,11 @@
   </div>
 </template>
 
-<script setup lang="ts" name="ProcessPanel">
+<script setup lang="ts">
 import ExecutionListener from './property/ExecutionListener.vue';
 import { ProcessPanel } from 'bpmnDesign';
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
+import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -41,6 +42,10 @@ const { parse, formData } = useParseElement<ProcessPanel>({
   modeler: props.modeler,
   element: toRaw(props.element)
 });
+const { idChange, nameChange, documentationChange } = usePanel({
+  modeler: props.modeler,
+  element: toRaw(props.element)
+});
 
 // const formData = ref<ProcessPanel>({
 //   processCategory: '',
@@ -53,10 +58,6 @@ const formRules = ref<ElFormRules>({
   processCategory: [{ required: true, message: '请选择', trigger: 'blur' }],
   id: [{ required: true, message: '请输入', trigger: 'blur' }],
   name: [{ required: true, message: '请输入', trigger: 'blur' }]
-});
-
-onBeforeMount(() => {
-  parse();
 });
 </script>
 

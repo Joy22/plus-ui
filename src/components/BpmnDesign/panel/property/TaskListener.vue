@@ -1,98 +1,81 @@
 <template>
   <div>
+    <vxe-toolbar>
+      <template #buttons>
+        <el-button type="primary" link size="small" @click="insertEvent">新增</el-button>
+        <el-button type="primary" link size="small" @click="removeSelectRowEvent">删除</el-button>
+      </template>
+    </vxe-toolbar>
+    <vxe-table
+      ref="tableRef"
+      size="mini"
+      height="100px"
+      border
+      show-overflow
+      keep-source
+      :data="tableData"
+      :menu-config="menuConfig"
+      @cell-dblclick="cellDBLClickEvent"
+      @menu-click="contextMenuClickEvent"
+    >
+      <vxe-column type="seq" width="40"></vxe-column>
+      <vxe-column field="event" title="事件" min-width="100px">
+        <template #default="slotParams">
+          <span>{{ eventSelect.find((e) => e.value === slotParams.row.event)?.label }}</span>
+        </template>
+      </vxe-column>
+      <vxe-column field="type" title="类型" min-width="100px">
+        <template #default="slotParams">
+          <span>{{ typeSelect.find((e) => e.value === slotParams.row.type)?.label }}</span>
+        </template>
+      </vxe-column>
+      <vxe-column field="className" title="Java 类名" min-width="100px"> </vxe-column>
+    </vxe-table>
+
     <el-dialog
-      v-model="visible"
-      :title="title"
-      width="900px"
+      v-model="formDialog.visible.value"
+      :title="formDialog.title.value"
+      width="600px"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
       append-to-body
     >
-      <vxe-toolbar>
-        <template #buttons>
-          <el-button icon="Plus" @click="insertRow">新增</el-button>
-        </template>
-      </vxe-toolbar>
-      <vxe-table
-        ref="tableRef"
-        height="300px"
-        border
-        show-overflow
-        keep-source
-        :data="tableData"
-        :edit-rules="tableRules"
-        :edit-config="{ trigger: 'click', mode: 'row', showStatus: true }"
-      >
-        <vxe-column type="seq" width="40"></vxe-column>
-        <vxe-column field="event" title="事件" :edit-render="{}">
-          <template #default="slotParams">
-            <span>{{ eventSelect.find((e) => e.value === slotParams.row.event)?.label }}</span>
-          </template>
-          <template #edit="slotParams">
-            <vxe-select v-model="slotParams.row.event">
-              <vxe-option v-for="item in eventSelect" :key="item.id" :value="item.value" :label="item.label"></vxe-option>
-            </vxe-select>
-          </template>
-        </vxe-column>
-        <vxe-column field="type" title="类型" :edit-render="{}">
-          <template #default="slotParams">
-            <span>{{ typeSelect.find((e) => e.value === slotParams.row.type)?.label }}</span>
-          </template>
-          <template #edit="slotParams">
-            <vxe-select v-model="slotParams.row.type">
-              <vxe-option v-for="item in typeSelect" :key="item.id" :value="item.value" :label="item.label"></vxe-option>
-            </vxe-select>
-          </template>
-        </vxe-column>
-
-        <vxe-column field="className" title="Java 类名" :edit-render="{}">
-          <template #edit="slotParams">
-            <vxe-input v-model="slotParams.row.className" type="text"></vxe-input>
-          </template>
-        </vxe-column>
-        <vxe-column title="参数" width="100" show-overflow align="center">
-          <template #default="slotParams">
-            <el-badge :value="slotParams.row.params ? slotParams.row.params.length : 0" type="primary">
-              <el-button size="small" @click="configParam(slotParams.rowIndex)">配置</el-button>
-            </el-badge>
-          </template>
-        </vxe-column>
-        <vxe-column title="操作" width="100" show-overflow align="center">
-          <template #default="slotParams">
-            <el-tooltip content="删除" placement="top">
-              <el-button link type="danger" icon="Delete" @click="removeRow(slotParams.row)"></el-button>
-            </el-tooltip>
-          </template>
-        </vxe-column>
-      </vxe-table>
-
+      <el-form ref="formRef" :model="formData" :rules="tableRules" label-width="90px">
+        <el-form-item label="事件" prop="event">
+          <el-select v-model="formData.event">
+            <el-option v-for="item in eventSelect" :key="item.id" :value="item.value" :label="item.label"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-select v-model="formData.type">
+            <el-option v-for="item in typeSelect" :key="item.id" :value="item.value" :label="item.label"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Java 类名" prop="className">
+          <el-input v-model="formData.className" type="text"></el-input>
+        </el-form-item>
+      </el-form>
+      <el-tabs type="border-card">
+        <el-tab-pane label="参数">
+          <ListenerParam ref="listenerParamRef" :table-data="formData.params" />
+        </el-tab-pane>
+      </el-tabs>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="closeDialog">取 消</el-button>
-          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="formDialog.closeDialog">取 消</el-button>
+          <el-button type="primary" @click="submitEvent">确 定</el-button>
         </div>
       </template>
     </el-dialog>
-
-    <ListenerParam
-      ref="listenerParamRef"
-      @update-data="
-        (data: ParamVO[]) => {
-          tableData[currentIndex].params = data;
-        }
-      "
-    />
   </div>
 </template>
 <script setup lang="ts">
 import ListenerParam from './ListenerParam.vue';
-import { VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
-import { ParamVO, TaskListenerVO } from 'bpmnDesign';
+import { VxeTableEvents, VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
+import { TaskListenerVO } from 'bpmnDesign';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 import useDialog from '@/hooks/useDialog';
-
-const emit = defineEmits(['close']);
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -108,87 +91,97 @@ const props = withDefaults(defineProps<PropType>(), {
 const { title, visible, openDialog, closeDialog } = useDialog({
   title: '任务监听器'
 });
+const selectRow = ref<TaskListenerVO | null>();
+const formDialog = useDialog({
+  title: selectRow.value ? '编辑&保存' : '新增&保存'
+});
 const { showConfig, elementType, updateProperties } = usePanel({
   modeler: props.modeler,
   element: toRaw(props.element)
 });
-
+const initData: TaskListenerVO = {
+  event: '',
+  type: '',
+  className: '',
+  name: '',
+  params: []
+};
 const listenerParamRef = ref<InstanceType<typeof ListenerParam>>();
 const tableRef = ref<VxeTableInstance<TaskListenerVO>>();
+const formRef = ref<ElFormInstance>();
+
+const formData = ref<TaskListenerVO>(initData);
 const currentIndex = ref(0);
 const tableData = ref<TaskListenerVO[]>([]);
-const showParamDialog = ref(false);
 const tableRules = ref<VxeTablePropTypes.EditRules>({
   event: [{ required: true, message: '请选择', trigger: 'blur' }],
   type: [{ required: true, message: '请选择', trigger: 'blur' }],
   name: [{ required: true, message: '请输入', trigger: 'blur' }],
   className: [{ required: true, message: '请输入', trigger: 'blur' }]
 });
-const typeSelect = [
-  { id: '742fdeb7-23b4-416b-ac66-cd4ec8b901b7', label: '类', value: 'class' },
-  { id: '660c9c46-8fae-4bae-91a0-0335420019dc', label: '表达式', value: 'expression' },
-  { id: '4b8135ab-6bc3-4a0f-80be-22f58bc6c5fd', label: '委托表达式', value: 'delegateExpression' }
-];
-const eventSelect = [
-  { id: 'e6e0a51a-2d5d-4dc4-b847-b5c14f43a6ab', label: 'create', value: 'create' },
-  { id: '6da97c1e-15fc-4445-8943-75d09f49778e', label: 'assignment', value: 'assignment' },
-  { id: '6a2cbcec-e026-4f11-bef7-fff0b5c871e2', label: 'complete', value: 'complete' },
-  { id: '68801972-85f1-482f-bd86-1fad015c26ed', label: 'delete', value: 'delete' }
-];
 
-const configParam = (i: number) => {
-  currentIndex.value = i;
-  showParamDialog.value = true;
-  listenerParamRef.value.openDialog();
-};
-const insertRow = async () => {
-  const $table = tableRef.value;
-  if ($table) {
-    const { row: newRow } = await $table.insertAt(
-      {
-        className: '',
-        type: '',
-        name: '',
-        event: '',
-        params: []
-      },
-      -1
-    );
-    // 插入一条数据并触发校验
-    await $table.validate(newRow);
-  }
+const submitEvent = async () => {
+  const error = await listenerParamRef.value.validate();
+  await formRef.value.validate((validate) => {
+    if (validate && !error) {
+      const $table = tableRef.value;
+      if ($table) {
+        formData.value.params = listenerParamRef.value.getTableData();
+        if (selectRow.value) {
+          Object.assign(selectRow.value, formData.value);
+        } else {
+          $table.insertAt({ ...formData.value }, -1);
+        }
+        updateElement();
+        formDialog.closeDialog();
+      }
+    }
+  });
 };
 
-const removeRow = async (row: TaskListenerVO) => {
+const insertEvent = async () => {
+  Object.assign(formData.value, initData);
+  selectRow.value = null;
+  formDialog.openDialog();
+};
+
+const editEvent = (row: TaskListenerVO) => {
+  Object.assign(formData.value, row);
+  selectRow.value = row;
+  formDialog.openDialog();
+};
+const removeEvent = async (row: TaskListenerVO) => {
   await proxy?.$modal.confirm('您确定要删除该数据?');
   const $table = tableRef.value;
   if ($table) {
     await $table.remove(row);
-  }
-};
-const submitForm = async () => {
-  const $table = tableRef.value;
-  if ($table) {
-    const errMap = await $table.validate(true);
-    if (errMap) {
-      proxy.$modal.msgError('校验不通过');
-    } else {
-      updateElement();
-      visible.value = false;
-      emit('close', tableData.value.length);
-    }
+    updateElement();
   }
 };
 
+const removeSelectRowEvent = async () => {
+  const $table = tableRef.value;
+  if ($table) {
+    const selectCount = $table.getCheckboxRecords().length;
+    if (selectCount === 0) {
+      proxy?.$modal.msgWarning('请选择行');
+    } else {
+      await $table.removeCheckboxRow();
+      updateElement();
+    }
+  }
+};
 const updateElement = () => {
-  if (tableData.value.length) {
+  const $table = tableRef.value;
+  const data = $table.getTableData().fullData;
+  if (data.length) {
     let extensionElements = props.element.businessObject.get('extensionElements');
     if (!extensionElements) {
       extensionElements = props.modeler.get('moddle').create('bpmn:ExtensionElements');
     }
     // 清除旧值
     extensionElements.values = extensionElements.values?.filter((item) => item.$type !== 'flowable:TaskListener') ?? [];
-    tableData.value.forEach((item) => {
+    data.forEach((item) => {
       const taskListener = props.modeler.get('moddle').create('flowable:TaskListener');
       taskListener['event'] = item.event;
       taskListener[item.type] = item.className;
@@ -197,9 +190,6 @@ const updateElement = () => {
           const fieldElement = props.modeler.get('moddle').create('flowable:Field');
           fieldElement['name'] = field.name;
           fieldElement[field.type] = field.value;
-          // 注意：flowable.json 中定义的string和expression类为小写，不然会和原生的String类冲突，此处为hack
-          // const valueElement = this.modeler.get('moddle').create(`flowable:${field.type}`, { body: field.value })
-          // fieldElement[field.type] = valueElement
           taskListener.get('fields').push(fieldElement);
         });
       }
@@ -216,6 +206,86 @@ const updateElement = () => {
 
 defineExpose({
   openDialog
+});
+const cellDBLClickEvent: VxeTableEvents.CellDblclick<TaskListenerVO> = ({ row }) => {
+  editEvent(row);
+};
+
+const menuConfig = reactive<VxeTablePropTypes.MenuConfig<TaskListenerVO>>({
+  body: {
+    options: [
+      [
+        { code: 'edit', name: '编辑', prefixIcon: 'vxe-icon-edit', disabled: false },
+        { code: 'remove', name: '删除', prefixIcon: 'vxe-icon-delete', disabled: false }
+      ]
+    ]
+  },
+  visibleMethod({ options, column }) {
+    const isDisabled = !column;
+    options.forEach((list) => {
+      list.forEach((item) => {
+        item.disabled = isDisabled;
+      });
+    });
+    return true;
+  }
+});
+const contextMenuClickEvent: VxeTableEvents.MenuClick<TaskListenerVO> = ({ menu, row, column }) => {
+  const $table = tableRef.value;
+  if ($table) {
+    switch (menu.code) {
+      case 'edit':
+        editEvent(row);
+        break;
+      case 'remove':
+        removeEvent(row);
+        break;
+    }
+  }
+};
+const typeSelect = [
+  { id: '742fdeb7-23b4-416b-ac66-cd4ec8b901b7', label: '类', value: 'class' },
+  { id: '660c9c46-8fae-4bae-91a0-0335420019dc', label: '表达式', value: 'expression' },
+  { id: '4b8135ab-6bc3-4a0f-80be-22f58bc6c5fd', label: '委托表达式', value: 'delegateExpression' }
+];
+const eventSelect = [
+  { id: 'e6e0a51a-2d5d-4dc4-b847-b5c14f43a6ab', label: 'create', value: 'create' },
+  { id: '6da97c1e-15fc-4445-8943-75d09f49778e', label: 'assignment', value: 'assignment' },
+  { id: '6a2cbcec-e026-4f11-bef7-fff0b5c871e2', label: 'complete', value: 'complete' },
+  { id: '68801972-85f1-482f-bd86-1fad015c26ed', label: 'delete', value: 'delete' }
+];
+
+const initTableData = () => {
+  tableData.value =
+    props.element.businessObject.extensionElements?.values
+      .filter((item) => item.$type === 'flowable:TaskListener')
+      .map((item) => {
+        let type;
+        if ('class' in item) type = 'class';
+        if ('expression' in item) type = 'expression';
+        if ('delegateExpression' in item) type = 'delegateExpression';
+        return {
+          event: item.event,
+          type: type,
+          className: item[type],
+          params:
+            item.fields?.map((field) => {
+              let fieldType;
+              if ('stringValue' in field) fieldType = 'stringValue';
+              if ('expression' in field) fieldType = 'expression';
+              return {
+                name: field.name,
+                type: fieldType,
+                value: field[fieldType]
+              };
+            }) ?? []
+        };
+      }) ?? [];
+};
+
+onMounted(() => {
+  initTableData();
+  console.log(2222);
 });
 </script>
 

@@ -21,10 +21,34 @@ export default (ops: Options) => {
     modeling.updateProperties(element, properties);
   };
 
+  const idChange = (newVal: string) => {
+    if (newVal) {
+      updateProperties({ id: newVal });
+    }
+  };
+  const nameChange = (newVal: string) => {
+    if (newVal) {
+      updateProperties({ name: newVal });
+    }
+  };
+  const documentationChange = (newVal: string) => {
+    if (newVal) {
+      const documentationElement = modeler.get('moddle').create('bpmn:Documentation', { text: newVal });
+      updateProperties({ documentation: [documentationElement] });
+    } else {
+      const elements = element.businessObject;
+      delete elements.documentation;
+      updateProperties({ process: elements });
+    }
+  };
+
   return {
     elementType,
     showConfig: config,
 
-    updateProperties
+    updateProperties,
+    idChange,
+    nameChange,
+    documentationChange
   };
 };
