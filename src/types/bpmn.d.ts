@@ -24,6 +24,6 @@ declare module 'bpmnDesign' {
     processCategory: string;
     id: string;
     name: string;
-    description: string;
+    documentation: string;
   }
 }

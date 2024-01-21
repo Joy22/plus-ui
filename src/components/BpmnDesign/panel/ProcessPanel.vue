@@ -13,7 +13,7 @@
         <el-input v-model="formData.name"></el-input>
       </el-form-item>
       <el-form-item label="节点描述" prop="description">
-        <el-input v-model="formData.description"></el-input>
+        <el-input v-model="formData.documentation"></el-input>
       </el-form-item>
       <el-form-item label="执行监听器" style="margin-bottom: 0"> </el-form-item>
       <ExecutionListener :modeler="modeler" :element="element"></ExecutionListener>
@@ -24,6 +24,7 @@
 <script setup lang="ts" name="ProcessPanel">
 import ExecutionListener from './property/ExecutionListener.vue';
 import { ProcessPanel } from 'bpmnDesign';
+import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -36,17 +37,26 @@ const props = withDefaults(defineProps<PropType>(), {
   categorys: () => []
 });
 
-const formData = ref<ProcessPanel>({
-  processCategory: '',
-  id: '',
-  name: '',
-  description: ''
+const { parse, formData } = useParseElement<ProcessPanel>({
+  modeler: props.modeler,
+  element: toRaw(props.element)
 });
+
+// const formData = ref<ProcessPanel>({
+//   processCategory: '',
+//   id: '',
+//   name: '',
+//   documentation: ''
+// });
 
 const formRules = ref<ElFormRules>({
   processCategory: [{ required: true, message: '请选择', trigger: 'blur' }],
   id: [{ required: true, message: '请输入', trigger: 'blur' }],
   name: [{ required: true, message: '请输入', trigger: 'blur' }]
+});
+
+onBeforeMount(() => {
+  parse();
 });
 </script>
 
