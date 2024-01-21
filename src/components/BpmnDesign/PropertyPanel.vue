@@ -80,7 +80,8 @@ const handleModeler = () => {
     }
   });
   props.modeler.on('selection.changed', (e) => {
-    // element.value = null;
+    // 先给null为了让vue刷新
+    element.value = null;
     const newElement = e.newSelection[0];
     if (newElement) {
       nextTick(() => {

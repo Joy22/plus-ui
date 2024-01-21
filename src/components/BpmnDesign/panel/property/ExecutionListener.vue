@@ -89,13 +89,6 @@ const props = withDefaults(defineProps<PropType>(), {
 });
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const initData: ExecutionListenerVO = {
-  event: '',
-  type: '',
-  className: '',
-  params: []
-};
-const formData = ref<ExecutionListenerVO>(initData);
 
 const selectRow = ref<ExecutionListenerVO | null>();
 const formDialog = useDialog({
@@ -113,7 +106,14 @@ const { showConfig, elementType, updateProperties } = usePanel({
 const listenerParamRef = ref<InstanceType<typeof ListenerParam>>();
 const tableRef = ref<VxeTableInstance<ExecutionListenerVO>>();
 const formRef = ref<ElFormInstance>();
-const currentIndex = ref(0);
+
+const initData: ExecutionListenerVO = {
+  event: '',
+  type: '',
+  className: '',
+  params: []
+};
+const formData = ref<ExecutionListenerVO>({ ...initData });
 const tableData = ref<ExecutionListenerVO[]>([]);
 const tableRules = ref<ElFormRules>({
   event: [{ required: true, message: '请选择', trigger: 'blur' }],

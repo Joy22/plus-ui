@@ -24,6 +24,17 @@ declare module 'bpmnDesign' {
     processCategory: string;
     id: string;
     name: string;
+    documentation?: string;
+  }
+
+  export interface TaskPanel {
+    processCategory: string;
+    id: string;
+    name: string;
     documentation: string;
+    userType: string;
+    assignee: string;
+    candidateUsers: string;
+    candidateGroups: string;
   }
 }

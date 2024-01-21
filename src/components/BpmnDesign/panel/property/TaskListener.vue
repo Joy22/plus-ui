@@ -99,6 +99,11 @@ const { showConfig, elementType, updateProperties } = usePanel({
   modeler: props.modeler,
   element: toRaw(props.element)
 });
+
+const listenerParamRef = ref<InstanceType<typeof ListenerParam>>();
+const tableRef = ref<VxeTableInstance<TaskListenerVO>>();
+const formRef = ref<ElFormInstance>();
+
 const initData: TaskListenerVO = {
   event: '',
   type: '',
@@ -106,11 +111,7 @@ const initData: TaskListenerVO = {
   name: '',
   params: []
 };
-const listenerParamRef = ref<InstanceType<typeof ListenerParam>>();
-const tableRef = ref<VxeTableInstance<TaskListenerVO>>();
-const formRef = ref<ElFormInstance>();
-
-const formData = ref<TaskListenerVO>(initData);
+const formData = ref<TaskListenerVO>({ ...initData });
 const currentIndex = ref(0);
 const tableData = ref<TaskListenerVO[]>([]);
 const tableRules = ref<VxeTablePropTypes.EditRules>({
