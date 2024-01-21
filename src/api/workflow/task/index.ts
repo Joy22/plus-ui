@@ -153,3 +153,16 @@ export const deleteMultiInstanceExecution = (data: object) => {
     data: data
   });
 };
+
+/**
+ * 修改任务办理人
+ * @param taskIds 
+ * @param userId 
+ * @returns 
+ */
+export const updateAssignee = (taskIds: Array<string>,userId: string) => {
+  return request({
+    url: `/workflow/task/updateAssignee/${taskIds}/${userId}`,
+    method: 'put'
+  });
+};
