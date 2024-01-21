@@ -15,8 +15,6 @@
       keep-source
       :data="tableData"
       :menu-config="menuConfig"
-      :edit-rules="tableRules"
-      :edit-config="{ trigger: 'click', mode: 'row', showStatus: true }"
       @cell-dblclick="cellDBLClickEvent"
       @menu-click="contextMenuClickEvent"
     >
@@ -97,7 +95,7 @@ const initData: ExecutionListenerVO = {
   className: '',
   params: []
 };
-const formData = reactive<ExecutionListenerVO>(initData);
+const formData = ref<ExecutionListenerVO>(initData);
 
 const selectRow = ref<ExecutionListenerVO | null>();
 const formDialog = useDialog({
@@ -129,11 +127,11 @@ const submitEvent = async () => {
     if (validate && !error) {
       const $table = tableRef.value;
       if ($table) {
-        formData.params = listenerParamRef.value.getTableData();
+        formData.value.params = listenerParamRef.value.getTableData();
         if (selectRow.value) {
-          Object.assign(selectRow.value, formData);
+          Object.assign(selectRow.value, formData.value);
         } else {
-          $table.insertAt({ ...formData }, -1);
+          $table.insertAt({ ...formData.value }, -1);
         }
         updateElement();
         formDialog.closeDialog();
@@ -155,13 +153,13 @@ const removeSelectRowEvent = async () => {
   }
 };
 const insertEvent = async () => {
-  Object.assign(formData, initData);
+  Object.assign(formData.value, initData);
   selectRow.value = null;
   formDialog.openDialog();
 };
 
 const editEvent = (row: ExecutionListenerVO) => {
-  Object.assign(formData, row);
+  Object.assign(formData.value, row);
   selectRow.value = row;
   formDialog.openDialog();
 };
@@ -258,6 +256,38 @@ const eventSelect = [
   { id: '6da97c1e-15fc-4445-8943-75d09f49778e', label: 'end', value: 'end' },
   { id: '6a2cbcec-e026-4f11-bef7-fff0b5c871e2', label: 'take', value: 'take' }
 ];
+
+const initTableData = () => {
+  tableData.value =
+    props.element.businessObject.extensionElements?.values
+      .filter((item) => item.$type === 'flowable:ExecutionListener')
+      .map((item) => {
+        let type;
+        if ('class' in item) type = 'class';
+        if ('expression' in item) type = 'expression';
+        if ('delegateExpression' in item) type = 'delegateExpression';
+        return {
+          event: item.event,
+          type: type,
+          className: item[type],
+          params:
+            item.fields?.map((field) => {
+              let fieldType;
+              if ('stringValue' in field) fieldType = 'stringValue';
+              if ('expression' in field) fieldType = 'expression';
+              return {
+                name: field.name,
+                type: fieldType,
+                value: field[fieldType]
+              };
+            }) ?? []
+        };
+      }) ?? [];
+};
+
+onMounted(() => {
+  initTableData();
+});
 </script>
 
 <style scoped lang="scss">

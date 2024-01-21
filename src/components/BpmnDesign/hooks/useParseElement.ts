@@ -1,12 +1,19 @@
+import { Ref } from 'vue';
+import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+
 interface Options {
   modeler: any;
   element: any;
 }
-export default <T>(ops: Options) => {
+
+interface Data {
+  id: string;
+}
+
+export default <T extends Data>(ops: Options) => {
   const { modeler, element } = ops;
 
-  const formData = ref<T>();
-
+  const formData = ref<any>({});
   const parse = () => {
     const result = {
       ...element.businessObject,
@@ -32,8 +39,12 @@ export default <T>(ops: Options) => {
     return formData;
   };
 
+  onBeforeMount(() => {
+    parse();
+  });
+
   return {
     parse,
-    formData
+    formData: formData as Ref<T>
   };
 };
