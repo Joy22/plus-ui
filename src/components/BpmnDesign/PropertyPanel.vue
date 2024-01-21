@@ -9,6 +9,9 @@
 import { NodeName } from './assets/lang/zh';
 import TaskPanel from './panel/TaskPanel.vue';
 import ProcessPanel from './panel/ProcessPanel.vue';
+import StartEndPanel from './panel/StartEndPanel.vue';
+import GatewayPanel from './panel/GatewayPanel.vue';
+import SequenceFlowPanel from './panel/SequenceFlowPanel.vue';
 interface propsType {
   users: Array<any>;
   groups: Array<any>;
@@ -49,10 +52,10 @@ const processType = ['bpmn:Process'];
 const component = computed(() => {
   if (!element.value) return null;
   const type = element.value.type;
-  if (startEndType.includes(type)) return 'startEndPanel';
+  if (startEndType.includes(type)) return StartEndPanel;
   if (taskType.includes(type)) return TaskPanel;
-  if (sequenceType.includes(type)) return 'sequenceFlowPanel';
-  if (gatewayType.includes(type)) return 'gatewayPanel';
+  if (sequenceType.includes(type)) return SequenceFlowPanel;
+  if (gatewayType.includes(type)) return GatewayPanel;
   if (processType.includes(type)) return ProcessPanel;
   return console.error('no ' + type + ' type panel');
 });

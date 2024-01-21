@@ -10,19 +10,14 @@
       <el-form-item prop="documentation" label="节点描述">
         <el-input v-model="formData.documentation" @change="documentationChange"> </el-input>
       </el-form-item>
-      <el-form-item prop="userType" label="人员类型">
-        <el-input v-model="formData.userType"> </el-input>
-      </el-form-item>
       <el-form-item label="执行监听器" style="margin-bottom: 0"> </el-form-item>
       <ExecutionListener :modeler="modeler" :element="element"></ExecutionListener>
-      <el-form-item label="任务监听器" style="margin-bottom: 0"> </el-form-item>
-      <TaskListener :modeler="modeler" :element="element"></TaskListener>
     </el-form>
   </div>
 </template>
 <script setup lang="ts">
+import { GatewayPanel } from 'bpmnDesign';
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
-import { TaskPanel } from 'bpmnDesign';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 
 interface PropType {
@@ -37,7 +32,7 @@ const { documentationChange, nameChange, idChange } = usePanel({
   modeler: props.modeler,
   element: toRaw(props.element)
 });
-const { parse, formData } = useParseElement<TaskPanel>({
+const { parse, formData } = useParseElement<GatewayPanel>({
   modeler: props.modeler,
   element: toRaw(props.element)
 });

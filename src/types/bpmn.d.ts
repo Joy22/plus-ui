@@ -20,21 +20,27 @@ declare module 'bpmnDesign' {
     params: ParamVO[];
   }
 
-  export interface ProcessPanel {
-    processCategory: string;
+  interface BasePanel {
     id: string;
     name: string;
     documentation?: string;
   }
-
-  export interface TaskPanel {
+  export interface ProcessPanel extends BasePanel {
     processCategory: string;
-    id: string;
-    name: string;
-    documentation: string;
+  }
+
+  export interface TaskPanel extends BasePanel {
+    processCategory: string;
     userType: string;
     assignee: string;
     candidateUsers: string;
     candidateGroups: string;
+  }
+
+  export interface StartEndPanel extends BasePanel {}
+  export interface GatewayPanel extends BasePanel {}
+  export interface SequenceFlowPanel extends BasePanel {
+    conditionExpression: string;
+    skipExpression: string;
   }
 }

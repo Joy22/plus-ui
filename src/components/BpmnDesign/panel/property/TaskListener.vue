@@ -286,7 +286,6 @@ const initTableData = () => {
 
 onMounted(() => {
   initTableData();
-  console.log(2222);
 });
 </script>
 

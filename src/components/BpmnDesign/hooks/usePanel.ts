@@ -36,9 +36,7 @@ export default (ops: Options) => {
       const documentationElement = modeler.get('moddle').create('bpmn:Documentation', { text: newVal });
       updateProperties({ documentation: [documentationElement] });
     } else {
-      const elements = element.businessObject;
-      delete elements.documentation;
-      updateProperties({ process: elements });
+      updateProperties({ documentation: null });
     }
   };
 
