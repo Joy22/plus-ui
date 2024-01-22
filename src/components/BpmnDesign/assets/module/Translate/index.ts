@@ -2,7 +2,7 @@ import zh from '@/components/BpmnDesign/assets/lang/zh';
 
 const customTranslate = (template: any, replacements: any) => {
   replacements = replacements || {};
-  template = (zh as Record<string, string>)[template] || template;
+  template = zh[template] || template;
   return template.replace(/{([^}]+)}/g, function (_: any, key: any) {
     return replacements[key] || '{' + key + '}';
   });

@@ -63,7 +63,7 @@ const component = computed(() => {
 const nodeName = computed(() => {
   if (element.value) {
     const bizObj = element.value.businessObject;
-    const type = bizObj?.eventDefinitions ? bizObj.eventDefinitions[0].$type : bizObj.$type;
+    const type = bizObj?.eventDefinitions && bizObj?.eventDefinitions.length > 0 ? bizObj.eventDefinitions[0].$type : bizObj.$type;
     return NodeName[type] || type;
   }
 });

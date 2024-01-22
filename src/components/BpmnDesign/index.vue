@@ -2,7 +2,7 @@
   <el-dialog ref="flowDialogRef" v-model="dialog.visible" :title="dialog.title" width="95%" append-to-body @close="closeDialog">
     <div class="app-containers">
       <el-header style="border-bottom: 1px solid rgb(218 218 218); height: auto">
-        <div style="display: flex; padding: 10px 0; justify-content: space-between">
+        <div class="flex pb-3 justify-between">
           <div>
             <el-upload ref="xmlUploadRef" action="" style="display: none" />
             <el-tooltip effect="dark" content="加载xml" placement="bottom">
@@ -28,10 +28,11 @@
             </el-tooltip>
 
             <el-dialog v-model="perviewXMLShow" title="XML预览" width="80%">
+              <el-button>复制</el-button>
               <highlightjs :code="xmlStr" language="html" />
             </el-dialog>
 
-            <el-dialog v-model="perviewSVGShow" title="XML预览" width="80%">
+            <el-dialog v-model="perviewSVGShow" title="SVG预览" width="80%">
               <div style="text-align: center" v-html="svgData" />
             </el-dialog>
           </div>
