@@ -45,14 +45,13 @@
           </div>
         </div>
       </el-header>
-
       <el-container class="h-full">
         <el-container style="align-items: stretch">
           <el-main style="padding: 0">
             <div ref="canvas" class="canvas" />
           </el-main>
-          <el-scrollbar height="650px">
-            <el-aside style="width: 400px; min-height: 650px; background-color: #f0f2f5">
+          <el-scrollbar height="610px">
+            <el-aside style="width: 400px; min-height: 590px; background-color: #f0f2f5">
               <PropertyPanel v-if="bpmnModeler" :modeler="bpmnModeler" :users="users" :groups="groups" :categorys="categorys" />
             </el-aside>
           </el-scrollbar>
