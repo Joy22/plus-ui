@@ -1,9 +1,9 @@
 import { ModuleDeclaration } from 'didi';
-import enhancementPaletteProvider from './ehPalentte';
+import CustomPaletteProvider from './CustomPaletteProvider';
 
-const EnhancementPalette: ModuleDeclaration = {
-  __init__: ['enhancementPaletteProvider'],
-  enhancementPaletteProvider: ['type', enhancementPaletteProvider]
+const CustomPalette: ModuleDeclaration = {
+  __init__: ['CustomPaletteProvider'],
+  CustomPaletteProvider: ['type', CustomPaletteProvider]
 };
 
-export default EnhancementPalette;
+export default CustomPalette;

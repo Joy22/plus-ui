@@ -1,9 +1,9 @@
 import { ModuleDeclaration } from 'didi';
-import enhancementContextPadProvider from './ehContextPadProvider';
+import CustomContextPadProvider from './CustomContextPadProvider';
 
-const enhancementContextPad: ModuleDeclaration = {
-  __init__: ['enhancementContextPadProvider'],
-  enhancementContextPadProvider: ['type', enhancementContextPadProvider]
+const CustomContextPad: ModuleDeclaration = {
+  __init__: ['customContextPadProvider'],
+  customContextPadProvider: ['type', CustomContextPadProvider]
 };
 
-export default enhancementContextPad;
+export default CustomContextPad;

@@ -131,7 +131,7 @@ const initCanvas = () => {
     container: canvas.value,
     // 键盘
     keyboard: {
-      bindTo: document // 或者window，注意与外部表单的键盘监听事件是否冲突
+      bindTo: window // 或者window，注意与外部表单的键盘监听事件是否冲突
     },
     propertiesPanel: {
       parent: panel.value

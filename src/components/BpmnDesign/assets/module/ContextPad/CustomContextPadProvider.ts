@@ -15,7 +15,7 @@ import modeler from '@/store/modules/modeler';
 
 // @Description: 增强元素连线事件
 
-class EhContextPadProvider extends ContextPadProvider {
+class CustomContextPadProvider extends ContextPadProvider {
   private _contextPad: ContextPad;
   private _modeling: Modeling;
   private _elementFactory: ElementFactory;
@@ -40,6 +40,7 @@ class EhContextPadProvider extends ContextPadProvider {
     rules: Rules,
     translate
   ) {
+    // @ts-ignore
     super(config, injector, eventBus, contextPad, modeling, elementFactory, connect, create, popupMenu, canvas, rules, translate);
 
     this._contextPad = contextPad;
@@ -134,4 +135,4 @@ class EhContextPadProvider extends ContextPadProvider {
   }
 }
 
-export default EhContextPadProvider;
+export default CustomContextPadProvider;
