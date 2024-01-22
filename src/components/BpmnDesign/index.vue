@@ -356,4 +356,9 @@ const getProcessElement = () => {
     }
   }
 }
+.bpmn-icon-start-event-none:before {
+  //background-color: green;
+  //border-radius: 100%;
+  //font-size: 30px;
+}
 </style>

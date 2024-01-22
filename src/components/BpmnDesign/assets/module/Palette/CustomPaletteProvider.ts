@@ -11,7 +11,7 @@ import modeler from '@/store/modules/modeler';
 import BpmnFactory from 'bpmn-js/lib/features/modeling/BpmnFactory';
 
 // @Description: 增强左侧面板
-class EnhancementPaletteProvider extends PaletteProvider {
+class CustomPaletteProvider extends PaletteProvider {
   private readonly _palette: Palette;
   private readonly _create: Create;
   private readonly _elementFactory: ElementFactory;
@@ -137,6 +137,6 @@ class EnhancementPaletteProvider extends PaletteProvider {
   }
 }
 
-EnhancementPaletteProvider['$inject'] = ['palette', 'create', 'elementFactory', 'spaceTool', 'lassoTool', 'handTool', 'globalConnect', 'translate'];
+CustomPaletteProvider['$inject'] = ['palette', 'create', 'elementFactory', 'spaceTool', 'lassoTool', 'handTool', 'globalConnect', 'translate'];
 
-export default EnhancementPaletteProvider;
+export default CustomPaletteProvider;
