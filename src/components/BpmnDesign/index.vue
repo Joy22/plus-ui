@@ -52,7 +52,7 @@
           </el-main>
           <el-scrollbar height="610px">
             <el-aside style="width: 400px; min-height: 590px; background-color: #f0f2f5">
-              <PropertyPanel v-if="bpmnModeler" :modeler="bpmnModeler" :users="users" :groups="groups" :categorys="categorys" />
+              <PropertyPanel v-if="bpmnModeler" :modeler="bpmnModeler" :users="users" :groups="groups" />
             </el-aside>
           </el-scrollbar>
         </el-container>
@@ -100,10 +100,6 @@ const groups = [
   { name: 'web组', id: 'web' },
   { name: 'java组', id: 'java' },
   { name: 'python组', id: 'python' }
-];
-const categorys = [
-  { label: 'OA', id: 'oa', value: 'id' },
-  { label: '财务', id: 'finance', value: 'finance' }
 ];
 
 onMounted(() => {
