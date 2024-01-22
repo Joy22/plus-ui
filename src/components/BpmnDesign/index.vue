@@ -46,7 +46,7 @@
         </div>
       </el-header>
 
-      <el-container style="height: 100%">
+      <el-container class="h-full">
         <el-container style="align-items: stretch">
           <el-main style="padding: 0">
             <div ref="canvas" class="canvas" />
