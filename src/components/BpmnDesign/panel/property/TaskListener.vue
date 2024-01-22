@@ -74,7 +74,7 @@
 import ListenerParam from './ListenerParam.vue';
 import { VxeTableEvents, VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
 import { TaskListenerVO } from 'bpmnDesign';
-import { Moddle, Modeler } from 'bpmn';
+import { Moddle, Modeler, Element } from 'bpmn';
 
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 import useDialog from '@/hooks/useDialog';
@@ -83,7 +83,7 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 interface PropType {
   modeler: Modeler;
-  element: any;
+  element: Element;
   categorys?: any[];
 }
 const props = withDefaults(defineProps<PropType>(), {

@@ -1,10 +1,9 @@
 import { Ref } from 'vue';
-import usePanel from '@/components/BpmnDesign/hooks/usePanel';
-import { Modeler } from 'bpmn';
+import { Element, Modeler } from 'bpmn';
 
 interface Options {
   modeler: Modeler;
-  element: any;
+  element: Element;
 }
 
 interface Data {

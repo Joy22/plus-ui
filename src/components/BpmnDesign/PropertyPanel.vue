@@ -12,27 +12,16 @@ import ProcessPanel from './panel/ProcessPanel.vue';
 import StartEndPanel from './panel/StartEndPanel.vue';
 import GatewayPanel from './panel/GatewayPanel.vue';
 import SequenceFlowPanel from './panel/SequenceFlowPanel.vue';
+import { Modeler, Modeling, Element } from 'bpmn';
 interface propsType {
   users: Array<any>;
   groups: Array<any>;
   categorys: Array<any>;
-  modeler: any;
+  modeler: Modeler;
 }
 const props = withDefaults(defineProps<propsType>(), {});
 
-const element = ref<any>();
-
-const form = reactive({
-  id: '',
-  name: '',
-  color: null
-});
-
-const roles = ref([
-  { value: 'manager', label: '经理' },
-  { value: 'personnel', label: '人事' },
-  { value: 'charge', label: '主管' }
-]);
+const element = ref<Element>();
 
 const startEndType = ['bpmn:IntermediateThrowEvent', 'bpmn:StartEvent', 'bpmn:EndEvent'];
 const taskType = [
@@ -69,20 +58,24 @@ const nodeName = computed(() => {
 });
 
 const handleModeler = () => {
-  props.modeler.on('root.added', (e) => {
+  props.modeler.on('root.added', (e: any) => {
     if (e.element.type === 'bpmn:Process') {
       element.value = null;
       nextTick(() => {
         element.value = e.element;
+        // const modeling = props.modeler.get<Modeling>('modeling');
+        // modeling.setColor(e.element.children, {
+        //   fill: 'green'
+        // });
       });
     }
   });
-  props.modeler.on('element.click', (e) => {
+  props.modeler.on('element.click', (e: any) => {
     if (e.element.type === 'bpmn:Process') {
       element.value = e.element;
     }
   });
-  props.modeler.on('selection.changed', (e) => {
+  props.modeler.on('selection.changed', (e: any) => {
     // 先给null为了让vue刷新
     element.value = null;
     const newElement = e.newSelection[0];

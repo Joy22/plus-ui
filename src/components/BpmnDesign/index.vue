@@ -63,13 +63,14 @@
 </template>
 
 <script lang="ts" setup name="BpmnDesign">
+import { Canvas, ElementRegistry, Modeler } from 'bpmn';
 import PropertyPanel from './PropertyPanel.vue';
 import BpmnModeler from 'bpmn-js/lib/Modeler.js';
 import diagramXML from '@/components/BpmnDesign/assets/defaultXML';
 import flowableModdle from '@/components/BpmnDesign/assets/moddle/flowable';
 import Modules from './assets/module/index';
 import useModelerStore from '@/store/modules/modeler';
-import { Canvas, Modeler } from 'bpmn';
+const modelerStore = useModelerStore();
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -146,13 +147,12 @@ const initCanvas = () => {
  * 初始化Model
  */
 const initModel = () => {
-  let store = useModelerStore();
-  if (store.getModeler()) {
+  if (modelerStore.getModeler()) {
     // 清除旧 modeler
-    store.getModeler().destroy();
-    store.setModeler(undefined);
+    modelerStore.getModeler().destroy();
+    modelerStore.setModeler(undefined);
   }
-  store.setModeler(bpmnModeler.value);
+  modelerStore.setModeler(bpmnModeler.value);
 };
 
 /**
@@ -325,20 +325,6 @@ const getProcessElement = () => {
 @import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css';
 @import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
 
-.view-mode {
-  .el-header,
-  .el-aside,
-  .djs-palette,
-  .bjs-powered-by {
-    display: none;
-  }
-  .el-loading-mask {
-    background-color: initial;
-  }
-  .el-loading-spinner {
-    display: none;
-  }
-}
 .app-containers {
   width: 100%;
   height: 100%;

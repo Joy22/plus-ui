@@ -24,12 +24,12 @@
 <script setup lang="ts">
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
-import { Modeler } from 'bpmn';
+import { Modeler, Element } from 'bpmn';
 import { SequenceFlowPanel } from 'bpmnDesign';
 
 interface PropType {
   modeler: Modeler;
-  element: any;
+  element: Element;
   categorys?: any[];
 }
 const props = withDefaults(defineProps<PropType>(), {

@@ -75,7 +75,7 @@
 import ListenerParam from './ListenerParam.vue';
 import { VxeTableEvents, VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
 import { ExecutionListenerVO } from 'bpmnDesign';
-import { Moddle, Modeler } from 'bpmn';
+import { Moddle, Modeler, Element } from 'bpmn';
 
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 import useDialog from '@/hooks/useDialog';
@@ -83,7 +83,7 @@ import useDialog from '@/hooks/useDialog';
 const emit = defineEmits(['close']);
 interface PropType {
   modeler: Modeler;
-  element: any;
+  element: Element;
   categorys?: any[];
 }
 const props = withDefaults(defineProps<PropType>(), {

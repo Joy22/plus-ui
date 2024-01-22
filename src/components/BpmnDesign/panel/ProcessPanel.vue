@@ -25,14 +25,14 @@
 import ExecutionListener from './property/ExecutionListener.vue';
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
-import { Modeler } from 'bpmn';
+import { Modeler, Element } from 'bpmn';
 import { ProcessPanel } from 'bpmnDesign';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 interface PropType {
   modeler: Modeler;
-  element: any;
+  element: Element;
   categorys?: any[];
 }
 const props = withDefaults(defineProps<PropType>(), {

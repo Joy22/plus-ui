@@ -1,8 +1,8 @@
 import showConfig from '@/components/BpmnDesign/assets/showConfig';
-import { Moddle, Modeler, Modeling } from 'bpmn';
+import { Moddle, Modeler, Modeling, Element } from 'bpmn';
 interface Options {
   modeler: Modeler;
-  element: any;
+  element: Element;
 }
 
 export default (ops: Options) => {
