@@ -7,9 +7,6 @@
       <el-form-item prop="name" label="节点名称">
         <el-input v-model="formData.name" @change="nameChange"> </el-input>
       </el-form-item>
-      <el-form-item prop="documentation" label="节点描述">
-        <el-input v-model="formData.documentation" @change="documentationChange"> </el-input>
-      </el-form-item>
       <el-form-item prop="conditionExpression" label="跳过条件">
         <el-input v-model="formData.conditionExpression" @change="conditionExpressionChange"> </el-input>
       </el-form-item>
@@ -35,7 +32,7 @@ interface PropType {
 const props = withDefaults(defineProps<PropType>(), {
   categorys: () => []
 });
-const { documentationChange, nameChange, idChange, updateProperties } = usePanel({
+const { nameChange, idChange, updateProperties } = usePanel({
   modeler: props.modeler,
   element: toRaw(props.element)
 });

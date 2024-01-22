@@ -25,17 +25,14 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 interface PropType {
   modeler: Modeler;
   element: Element;
-  categorys?: any[];
 }
-const props = withDefaults(defineProps<PropType>(), {
-  categorys: () => []
-});
+const props = withDefaults(defineProps<PropType>(), {});
 
 const { parse, formData } = useParseElement<ProcessPanel>({
   modeler: props.modeler,
   element: toRaw(props.element)
 });
-const { idChange, nameChange, documentationChange } = usePanel({
+const { idChange, nameChange } = usePanel({
   modeler: props.modeler,
   element: toRaw(props.element)
 });

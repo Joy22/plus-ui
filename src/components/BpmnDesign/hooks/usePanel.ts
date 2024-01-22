@@ -30,14 +30,6 @@ export default (ops: Options) => {
       updateProperties({ name: newVal });
     }
   };
-  const documentationChange = (newVal: string) => {
-    if (newVal) {
-      const documentationElement = modeler.get<Moddle>('moddle').create('bpmn:Documentation', { text: newVal });
-      updateProperties({ documentation: [documentationElement] });
-    } else {
-      updateProperties({ documentation: null });
-    }
-  };
 
   return {
     elementType,
@@ -45,7 +37,6 @@ export default (ops: Options) => {
 
     updateProperties,
     idChange,
-    nameChange,
-    documentationChange
+    nameChange
   };
 };

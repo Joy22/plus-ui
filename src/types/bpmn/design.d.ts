@@ -23,7 +23,6 @@ declare module 'bpmnDesign' {
   interface BasePanel {
     id: string;
     name: string;
-    documentation?: string;
   }
   export interface ProcessPanel extends BasePanel {
     processCategory: string;

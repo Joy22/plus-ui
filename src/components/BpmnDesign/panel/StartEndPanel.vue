@@ -7,9 +7,6 @@
       <el-form-item prop="name" label="节点名称">
         <el-input v-model="formData.name" @change="nameChange"> </el-input>
       </el-form-item>
-      <el-form-item prop="documentation" label="节点描述">
-        <el-input v-model="formData.documentation" @change="documentationChange"> </el-input>
-      </el-form-item>
       <el-form-item label="执行监听器" style="margin-bottom: 0"> </el-form-item>
       <ExecutionListener :modeler="modeler" :element="element"></ExecutionListener>
     </el-form>
@@ -29,7 +26,7 @@ interface PropType {
 const props = withDefaults(defineProps<PropType>(), {
   categorys: () => []
 });
-const { documentationChange, nameChange, idChange } = usePanel({
+const { nameChange, idChange } = usePanel({
   modeler: props.modeler,
   element: toRaw(props.element)
 });
