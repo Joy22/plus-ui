@@ -30,7 +30,8 @@ const props = withDefaults(defineProps<PropType>(), {});
 
 const { parse, formData } = useParseElement<ProcessPanel>({
   modeler: props.modeler,
-  element: toRaw(props.element)
+  element: toRaw(props.element),
+  initData: {} as any
 });
 const { idChange, nameChange } = usePanel({
   modeler: props.modeler,

@@ -70,6 +70,8 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'min-dash',
         'bpmn-js/lib/features/palette/PaletteProvider',
         'bpmn-js/lib/features/context-pad/ContextPadProvider',
+        'diagram-js/lib/draw/BaseRenderer',
+        'tiny-svg',
 
         'element-plus/es/components/container/style/css',
         'element-plus/es/components/aside/style/css',

@@ -2,7 +2,7 @@
   <div ref="propertyPanel" class="property-panel">
     <div v-if="nodeName">{{ nodeName }}</div>
     <el-divider />
-    <component :is="component" v-if="element" :element="element" :modeler="modeler" :users="users" :groups="groups" :categorys="categorys" />
+    <component :is="component" v-if="element" :element="element" :modeler="modeler" :users="users" :groups="groups" />
   </div>
 </template>
 <script setup lang="ts" name="PropertyPanel">
@@ -16,7 +16,6 @@ import { Modeler, Modeling, Element } from 'bpmn';
 interface propsType {
   users: Array<any>;
   groups: Array<any>;
-  categorys: Array<any>;
   modeler: Modeler;
 }
 const props = withDefaults(defineProps<propsType>(), {});

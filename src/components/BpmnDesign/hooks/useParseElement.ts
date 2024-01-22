@@ -1,19 +1,21 @@
 import { Ref } from 'vue';
 import { Element, Modeler } from 'bpmn';
 
-interface Options {
+interface Options<T> {
   modeler: Modeler;
   element: Element;
+  initData: T;
 }
 
 interface Data {
   id: string;
 }
 
-export default <T extends Data>(ops: Options) => {
-  const { modeler, element } = ops;
+export default <T extends Data>(ops: Options<T>) => {
+  const { modeler, element, initData } = ops;
 
-  const formData = ref<any>({});
+  const formData = ref<T>(initData);
+
   const parse = () => {
     const result = {
       ...element.businessObject,
@@ -28,14 +30,7 @@ export default <T extends Data>(ops: Options) => {
         delete result[key];
       }
     }
-    if ('documentation' in result) {
-      let str = '';
-      result.documentation.forEach((item: any) => {
-        str += item.text;
-      });
-      result.documentation = str;
-    }
-    formData.value = result;
+    formData.value = { ...formData.value, ...result };
     return formData;
   };
 

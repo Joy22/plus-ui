@@ -1,5 +1,5 @@
 <template>
-  <el-dialog ref="flowDialogRef" v-model="dialog.visible" :title="dialog.title" width="95%" append-to-body @close="closeDialog">
+  <el-dialog ref="flowDialogRef" v-model="dialog.visible" :title="dialog.title" width="95%" @close="closeDialog">
     <div class="app-containers">
       <el-header style="border-bottom: 1px solid rgb(218 218 218); height: auto">
         <div class="flex pb-3 justify-between">
@@ -62,6 +62,10 @@
 </template>
 
 <script lang="ts" setup name="BpmnDesign">
+import 'bpmn-js/dist/assets/diagram-js.css';
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css';
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css';
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
 import { Canvas, ElementRegistry, Modeler } from 'bpmn';
 import PropertyPanel from './PropertyPanel.vue';
 import BpmnModeler from 'bpmn-js/lib/Modeler.js';
@@ -312,13 +316,9 @@ const getProcessElement = () => {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 /*左边工具栏以及编辑节点的样式*/
 //@import 'bpmn-js/dist/assets/bpmn-js.css';
-@import 'bpmn-js/dist/assets/diagram-js.css';
-@import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css';
-@import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css';
-@import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
 
 .app-containers {
   width: 100%;
@@ -342,15 +342,6 @@ const getProcessElement = () => {
   }
 }
 
-.el-overlay {
-  .el-overlay-dialog {
-    .el-dialog {
-      .el-dialog__body {
-        padding-top: 0 !important;
-      }
-    }
-  }
-}
 .bpmn-icon-start-event-none:before {
   //background-color: green;
   //border-radius: 100%;

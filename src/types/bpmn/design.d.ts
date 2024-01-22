@@ -1,4 +1,6 @@
 declare module 'bpmnDesign' {
+  import { AuditUserTypeEnum, SpecifyDescEnum, MultipleUserAuditTypeEnum } from '@/enums/bpmn/IndexEnums';
+
   export interface ParamVO {
     type: string;
     name: string;
@@ -30,7 +32,11 @@ declare module 'bpmnDesign' {
 
   export interface TaskPanel extends BasePanel {
     processCategory: string;
-    userType: string;
+    auditUserType: AuditUserTypeEnum;
+    specifyDesc: SpecifyDescEnum;
+    multipleUserAuditType: MultipleUserAuditTypeEnum;
+    users: string[];
+
     assignee: string;
     candidateUsers: string;
     candidateGroups: string;

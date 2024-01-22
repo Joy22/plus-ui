@@ -18,6 +18,7 @@
       @cell-dblclick="cellDBLClickEvent"
       @menu-click="contextMenuClickEvent"
     >
+      <vxe-column type="checkbox" width="40"></vxe-column>
       <vxe-column type="seq" width="40"></vxe-column>
       <vxe-column field="event" title="事件" min-width="100px">
         <template #default="slotParams">
