@@ -1,64 +1,76 @@
 <template>
-  <el-dialog ref="flowDialogRef" v-model="dialog.visible" width="95%" :title="dialog.title" @close="closeDialog">
-    <div class="app-containers">
-      <el-header style="border-bottom: 1px solid rgb(218 218 218); height: auto">
-        <div class="flex pb-3 justify-between">
-          <div>
-            <el-upload ref="xmlUploadRef" action="" style="display: none" />
-            <el-tooltip effect="dark" content="加载xml" placement="bottom">
-              <el-button size="small" icon="FolderOpened" @click="loadXML" />
-            </el-tooltip>
-            <el-tooltip effect="dark" content="新建" placement="bottom">
-              <el-button size="small" icon="CirclePlus" @click="newDiagram" />
-            </el-tooltip>
-            <el-tooltip effect="dark" content="自适应屏幕" placement="bottom">
-              <el-button size="small" icon="Rank" @click="fitViewport" />
-            </el-tooltip>
-            <el-tooltip effect="dark" content="放大" placement="bottom">
-              <el-button size="small" icon="ZoomIn" @click="zoomViewport(true)" />
-            </el-tooltip>
-            <el-tooltip effect="dark" content="缩小" placement="bottom">
-              <el-button size="small" icon="ZoomOut" @click="zoomViewport(false)" />
-            </el-tooltip>
-            <el-tooltip effect="dark" content="后退" placement="bottom">
-              <el-button size="small" icon="Back" @click="bpmnModeler.get('commandStack').undo()" />
-            </el-tooltip>
-            <el-tooltip effect="dark" content="前进" placement="bottom">
-              <el-button size="small" icon="Right" @click="bpmnModeler.get('commandStack').redo()" />
-            </el-tooltip>
+  <div class="containers">
+    <el-dialog ref="flowDialogRef" v-model="dialog.visible" width="100%" fullscreen :title="dialog.title" @close="closeDialog">
+      <div class="app-containers">
+        <el-container class="h-full">
+          <el-header>
+            <div class="">
+              <div>
+                <el-button size="small" type="primary">保 存</el-button>
+                <el-dropdown size="small" class="ml-[13px]">
+                  <el-button size="small" type="primary"> 预 览 </el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item icon="Document" @click="previewXML">XML预览</el-dropdown-item>
+                      <el-dropdown-item icon="View" @click="previewSVG"> SVG预览</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
 
-            <el-dialog v-model="perviewXMLShow" title="XML预览" width="80%">
-              <el-button>复制</el-button>
-              <highlightjs :code="xmlStr" language="html" />
-            </el-dialog>
+                <el-dropdown size="small" class="ml-[13px]">
+                  <el-button size="small" type="primary"> 下 载 </el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item icon="Download" @click="downloadXML">下载XML</el-dropdown-item>
+                      <el-dropdown-item icon="Download" @click="downloadSVG"> 下载SVG</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+                <el-upload ref="xmlUploadRef" action="" style="display: none" />
+                <el-tooltip effect="dark" content="加载xml" placement="bottom">
+                  <el-button class="ml-[13px]" size="small" icon="FolderOpened" @click="loadXML" />
+                </el-tooltip>
+                <el-tooltip effect="dark" content="新建" placement="bottom">
+                  <el-button size="small" icon="CirclePlus" @click="newDiagram" />
+                </el-tooltip>
+                <el-tooltip effect="dark" content="自适应屏幕" placement="bottom">
+                  <el-button size="small" icon="Rank" @click="fitViewport" />
+                </el-tooltip>
+                <el-tooltip effect="dark" content="放大" placement="bottom">
+                  <el-button size="small" icon="ZoomIn" @click="zoomViewport(true)" />
+                </el-tooltip>
+                <el-tooltip effect="dark" content="缩小" placement="bottom">
+                  <el-button size="small" icon="ZoomOut" @click="zoomViewport(false)" />
+                </el-tooltip>
+                <el-tooltip effect="dark" content="后退" placement="bottom">
+                  <el-button size="small" icon="Back" @click="bpmnModeler.get('commandStack').undo()" />
+                </el-tooltip>
+                <el-tooltip effect="dark" content="前进" placement="bottom">
+                  <el-button size="small" icon="Right" @click="bpmnModeler.get('commandStack').redo()" />
+                </el-tooltip>
 
-            <el-dialog v-model="perviewSVGShow" title="SVG预览" width="80%">
-              <div style="text-align: center" v-html="svgData" />
-            </el-dialog>
-          </div>
-          <div>
-            <el-button size="small" icon="Document" @click="previewXML">XML预览</el-button>
-            <el-button size="small" icon="View" @click="previewSVG">SVG预览</el-button>
-            <el-button size="small" icon="Download" @click="downloadXML">XML</el-button>
-            <el-button size="small" icon="Download" @click="downloadSVG">SVG</el-button>
-            <el-button size="small" type="primary">保 存</el-button>
-          </div>
-        </div>
-      </el-header>
-      <el-container class="h-full">
-        <el-container style="align-items: stretch">
-          <el-main style="padding: 0">
+                <el-dialog v-model="perviewXMLShow" title="XML预览" width="80%">
+                  <div v-code class="hljs-container">
+                    <highlightjs :code="xmlStr" :autodetect="false" language="XML" />
+                  </div>
+                </el-dialog>
+
+                <el-dialog v-model="perviewSVGShow" title="SVG预览" width="80%">
+                  <div style="text-align: center" v-html="svgData" />
+                </el-dialog>
+              </div>
+            </div>
+          </el-header>
+          <el-container class="pl-[20px] pr-[20px]" style="align-items: stretch">
             <div ref="canvas" class="canvas" />
-          </el-main>
-          <el-scrollbar height="610px">
-            <el-aside style="width: 400px; min-height: 590px; background-color: #fff; box-shadow: 0 0 5px 1px #999">
+            <div class="panel-div">
               <PropertyPanel v-if="bpmnModeler" :modeler="bpmnModeler" :users="users" :groups="groups" />
-            </el-aside>
-          </el-scrollbar>
+            </div>
+          </el-container>
         </el-container>
-      </el-container>
-    </div>
-  </el-dialog>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <script lang="ts" setup name="BpmnDesign">
@@ -73,13 +85,14 @@ import diagramXML from '@/components/BpmnDesign/assets/defaultXML';
 import flowableModdle from '@/components/BpmnDesign/assets/moddle/flowable';
 import Modules from './assets/module/index';
 import useModelerStore from '@/store/modules/modeler';
+
 const modelerStore = useModelerStore();
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const dialog = reactive({
   visible: true,
-  title: '流程设计器'
+  title: '编辑流程'
 });
 
 const xmlUploadRef = ref<ElUploadInstance>();
@@ -317,13 +330,39 @@ const getProcessElement = () => {
 </script>
 
 <style lang="scss" scoped>
-.app-containers {
-  width: 100%;
-  height: 100%;
-  .canvas {
+.containers {
+  .app-containers {
     width: 100%;
     height: 100%;
-    background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgMTBoNDBNMTAgMHY0ME0wIDIwaDQwTTIwIDB2NDBNMCAzMGg0ME0zMCAwdjQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNlMGUwZTAiIG9wYWNpdHk9Ii4yIi8+PHBhdGggZD0iTTQwIDBIMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTBlMGUwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+');
+    .canvas {
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgMTBoNDBNMTAgMHY0ME0wIDIwaDQwTTIwIDB2NDBNMCAzMGg0ME0zMCAwdjQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNlMGUwZTAiIG9wYWNpdHk9Ii4yIi8+PHBhdGggZD0iTTQwIDBIMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTBlMGUwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+');
+    }
+    .el-header {
+      border-bottom: -1px 0 1px solid rgb(218 218 218);
+      height: 30px;
+    }
+    .panel-div {
+      height: 100%;
+      box-shadow: 0 0 8px #cccccc;
+      overflow-x: hidden;
+      overflow-y: auto;
+      box-sizing: border-box;
+      width: 500px;
+      padding: 10px;
+      background-color: #fff;
+    }
+  }
+
+  :deep(.el-dialog .el-dialog__body) {
+    padding: 0 !important;
+    max-height: 100% !important;
+    height: 100%;
+    overflow: hidden;
+  }
+  :deep(.el-dialog) {
+    overflow: hidden;
   }
 }
 </style>

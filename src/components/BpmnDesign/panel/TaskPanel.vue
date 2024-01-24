@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-collapse>
-      <el-collapse-item title="Consistency" name="1">
+      <el-collapse-item title="常规" name="1">
         <el-form ref="formRef" size="small" :model="formData" :rules="formRules" label-width="90px">
           <el-form-item prop="id" label="节点 ID">
             <el-input v-model="formData.id" @change="idChange"> </el-input>

@@ -16,7 +16,8 @@ import directive from './directive';
 import plugins from './plugins/index'; // plugins
 
 // 高亮组件
-import 'highlight.js/styles/a11y-light.css';
+// import 'highlight.js/styles/a11y-light.css';
+import 'highlight.js/styles/atom-one-dark.css';
 import 'highlight.js/lib/common';
 import HighLight from '@highlightjs/vue-plugin';
 
