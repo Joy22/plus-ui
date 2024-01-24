@@ -102,7 +102,7 @@
     <!-- 加签组件 -->
     <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback="handleQuery" />
     <!-- 加签组件 -->
-    <SysUser ref="sysUserRef" :multiple="false" @submit-callback="submitCallback" />
+    <SysUser ref="sysUserRef" :multiple="true" @submit-callback="submitCallback" />
   </div>
 </template>
 
@@ -226,11 +226,11 @@ const handleUpdate = () => {
 };
 //修改办理人
 const submitCallback = (data) => {
-  if(data && data.value.length > 0){
-    updateAssignee(ids.value,data.value[0].userId).then((resp) => {
+  if (data && data.value.length > 0) {
+    updateAssignee(ids.value, data.value[0].userId).then((resp) => {
       sysUserRef.value.close();
       proxy?.$modal.msgSuccess('操作成功');
-      handleQuery()
+      handleQuery();
     });
   }
 };

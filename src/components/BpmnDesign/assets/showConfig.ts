@@ -5,16 +5,17 @@ export default {
     formKey: true
   },
   'bpmn:UserTask': {
-    userType: true,
-    assignee: true,
-    candidateUsers: true,
-    candidateGroups: true,
+    auditUserType: true,
+    users: true,
+    roles: true,
+    specifyDesc: true,
+    multipleUserAuditType: true,
     async: true,
     priority: true,
-    formKey: true,
     skipExpression: true,
     dueDate: true,
-    taskListener: true
+    taskListener: true,
+    executionListener: true
   },
   'bpmn:ServiceTask': {
     async: true,

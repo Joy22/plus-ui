@@ -31,15 +31,22 @@ declare module 'bpmnDesign' {
   }
 
   export interface TaskPanel extends BasePanel {
-    processCategory: string;
     auditUserType: AuditUserTypeEnum;
     specifyDesc: SpecifyDescEnum;
     multipleUserAuditType: MultipleUserAuditTypeEnum;
-    users: string[];
-
-    assignee: string;
-    candidateUsers: string;
-    candidateGroups: string;
+    users?: Record<string, any>[];
+    roles?: Record<string, any>[];
+    async?: boolean;
+    priority?: string;
+    skipExpression?: string;
+    isForCompensation?: boolean;
+    triggerServiceTask?: boolean;
+    autoStoreVariables?: boolean;
+    ruleVariablesInput?: string;
+    excludeTaskListener?: boolean;
+    exclude?: boolean;
+    class?: string;
+    dueDate?: string;
   }
 
   export interface StartEndPanel extends BasePanel {}

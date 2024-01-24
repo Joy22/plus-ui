@@ -31,7 +31,7 @@
                         v-model="queryParams.userName"
                         placeholder="请输入用户名称"
                         clearable
-                        style="width: 240px"
+                        style="width: 200px"
                         @keyup.enter="handleQuery"
                       />
                     </el-form-item>
@@ -40,25 +40,9 @@
                         v-model="queryParams.phonenumber"
                         placeholder="请输入手机号码"
                         clearable
-                        style="width: 240px"
+                        style="width: 200px"
                         @keyup.enter="handleQuery"
                       />
-                    </el-form-item>
-
-                    <el-form-item label="状态" prop="status">
-                      <el-select v-model="queryParams.status" placeholder="用户状态" clearable style="width: 240px">
-                        <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item label="创建时间" style="width: 308px">
-                      <el-date-picker
-                        v-model="dateRange"
-                        value-format="YYYY-MM-DD"
-                        type="daterange"
-                        range-separator="-"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                      ></el-date-picker>
                     </el-form-item>
                     <el-form-item>
                       <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -71,38 +55,37 @@
 
             <el-card shadow="hover">
               <template #header>
-                <el-row :gutter="10">
-                  <el-col :span="1.5">
-                    <el-button type="primary" plain icon="Plus">新增</el-button>
-                  </el-col>
-                  <right-toolbar v-model:showSearch="showSearch" :columns="columns" :search="true" @query-table="getList"></right-toolbar>
-                </el-row>
+                <el-tag v-for="user in selectUserList" :key="user.userId" closable style="margin: 2px" @close="handleCloseTag(user.userId)">{{
+                  user.userName
+                }}</el-tag>
               </template>
 
               <vxe-table
                 ref="tableRef"
-                height="500px"
+                height="400px"
                 border
                 show-overflow
                 :data="userList"
                 :loading="loading"
                 :row-config="{ keyField: 'userId' }"
-                :checkbox-config="{ reserve: true, checkRowKeys: modelValue }"
+                :checkbox-config="{ reserve: true, checkRowKeys: userIds }"
                 highlight-current-row
+                @checkbox-all="handleCheckboxAll"
+                @checkbox-change="handleCheckboxChange"
               >
                 <vxe-column type="checkbox" width="50" align="center" />
-                <vxe-column v-if="columns[0].visible" key="userId" title="用户编号" align="center" field="userId" />
-                <vxe-column v-if="columns[1].visible" key="userName" title="用户名称" align="center" field="userName" :show-overflow-tooltip="true" />
-                <vxe-column v-if="columns[2].visible" key="nickName" title="用户昵称" align="center" field="nickName" :show-overflow-tooltip="true" />
-                <vxe-column v-if="columns[3].visible" key="deptName" title="部门" align="center" field="deptName" :show-overflow-tooltip="true" />
-                <vxe-column v-if="columns[4].visible" key="phonenumber" title="手机号码" align="center" field="phonenumber" width="120" />
-                <vxe-column v-if="columns[5].visible" key="status" title="状态" align="center">
+                <vxe-column key="userId" title="用户编号" align="center" field="userId" />
+                <vxe-column key="userName" title="用户名称" align="center" field="userName" :show-overflow-tooltip="true" />
+                <vxe-column key="nickName" title="用户昵称" align="center" field="nickName" :show-overflow-tooltip="true" />
+                <vxe-column key="deptName" title="部门" align="center" field="deptName" :show-overflow-tooltip="true" />
+                <vxe-column key="phonenumber" title="手机号码" align="center" field="phonenumber" width="120" />
+                <vxe-column key="status" title="状态" align="center">
                   <template #default="scope">
                     <dict-tag :options="sys_normal_disable" :value="scope.row.status"></dict-tag>
                   </template>
                 </vxe-column>
 
-                <vxe-column v-if="columns[6].visible" title="创建时间" align="center" width="160">
+                <vxe-column title="创建时间" align="center" width="160">
                   <template #default="scope">
                     <span>{{ scope.row.createTime }}</span>
                   </template>
@@ -133,18 +116,19 @@
 import api from '@/api/system/user';
 import { UserQuery, UserVO } from '@/api/system/user/types';
 import { DeptVO } from '@/api/system/dept/types';
-import { globalHeaders } from '@/utils/request';
-import useDialog from '@/hooks/useDialog';
 import { VxeTableInstance } from 'vxe-table';
+import useDialog from '@/hooks/useDialog';
 
 interface PropType {
-  modelValue: string[];
+  modelValue: UserVO[];
 }
 const prop = defineProps<PropType>();
 const emit = defineEmits(['update:modelValue']);
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict('sys_normal_disable'));
+
+const userIds = computed(() => prop.modelValue.map((item) => item.userId as string));
 
 const userList = ref<UserVO[]>();
 const loading = ref(true);
@@ -153,17 +137,7 @@ const total = ref(0);
 const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
 const deptName = ref('');
 const deptOptions = ref<DeptVO[]>([]);
-
-// 列显隐信息
-const columns = ref<FieldOption[]>([
-  { key: 0, label: `用户编号`, visible: false, children: [] },
-  { key: 1, label: `用户名称`, visible: true, children: [] },
-  { key: 2, label: `用户昵称`, visible: true, children: [] },
-  { key: 3, label: `部门`, visible: true, children: [] },
-  { key: 4, label: `手机号码`, visible: true, children: [] },
-  { key: 5, label: `状态`, visible: true, children: [] },
-  { key: 6, label: `创建时间`, visible: true, children: [] }
-]);
+const selectUserList = ref<UserVO[]>([]);
 
 const deptTreeRef = ref<ElTreeInstance>();
 const queryFormRef = ref<ElFormInstance>();
@@ -199,17 +173,8 @@ watchEffect(
 );
 
 const confirm = () => {
-  const $table = tableRef.value;
-  if ($table) {
-    // 获取当前列表选中行
-    const checkboxRecords = $table.getCheckboxRecords();
-    // 获取其他列表选中行
-    const checkboxReserveRecords = $table.getCheckboxReserveRecords();
-    const data: UserVO[] = [...checkboxRecords, ...checkboxReserveRecords];
-    const userIds = data.map((item) => item.userId);
-    emit('update:modelValue', userIds);
-    userDialog.closeDialog();
-  }
+  emit('update:modelValue', [...selectUserList.value]);
+  userDialog.closeDialog();
 };
 
 /** 查询部门下拉树结构 */
@@ -248,9 +213,42 @@ const resetQuery = () => {
   handleQuery();
 };
 
+const handleCheckboxChange = (checked) => {
+  const row = checked.row;
+  if (checked.checked) {
+    selectUserList.value.push(row);
+  } else {
+    selectUserList.value = selectUserList.value.filter((item) => {
+      return item.userId !== row.userId;
+    });
+  }
+};
+const handleCheckboxAll = (checked) => {
+  const rows = userList.value;
+  if (checked.checked) {
+    rows.forEach((row) => {
+      if (!selectUserList.value.some((item) => item.userId === row.userId)) {
+        selectUserList.value.push(row);
+      }
+    });
+  } else {
+    selectUserList.value = selectUserList.value.filter((item) => {
+      return !rows.some((row) => row.userId === item.userId);
+    });
+  }
+};
+
+const handleCloseTag = (userId: string | number) => {
+  // 删除选中用户
+  selectUserList.value = selectUserList.value.filter((item) => {
+    return item.userId !== userId;
+  });
+};
+
 onMounted(() => {
   getTreeSelect(); // 初始化部门数据
   getList(); // 初始化列表数据
+  Object.assign(selectUserList.value, prop.modelValue);
 });
 
 defineExpose({

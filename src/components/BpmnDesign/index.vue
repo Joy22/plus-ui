@@ -1,5 +1,5 @@
 <template>
-  <el-dialog ref="flowDialogRef" v-model="dialog.visible" :title="dialog.title" width="95%" @close="closeDialog">
+  <el-dialog ref="flowDialogRef" v-model="dialog.visible" width="95%" :title="dialog.title" @close="closeDialog">
     <div class="app-containers">
       <el-header style="border-bottom: 1px solid rgb(218 218 218); height: auto">
         <div class="flex pb-3 justify-between">
@@ -51,7 +51,7 @@
             <div ref="canvas" class="canvas" />
           </el-main>
           <el-scrollbar height="610px">
-            <el-aside style="width: 400px; min-height: 590px; background-color: #f0f2f5">
+            <el-aside style="width: 400px; min-height: 590px; background-color: #fff; box-shadow: 0 0 5px 1px #999">
               <PropertyPanel v-if="bpmnModeler" :modeler="bpmnModeler" :users="users" :groups="groups" />
             </el-aside>
           </el-scrollbar>
@@ -317,9 +317,6 @@ const getProcessElement = () => {
 </script>
 
 <style lang="scss" scoped>
-/*左边工具栏以及编辑节点的样式*/
-//@import 'bpmn-js/dist/assets/bpmn-js.css';
-
 .app-containers {
   width: 100%;
   height: 100%;
@@ -328,23 +325,5 @@ const getProcessElement = () => {
     height: 100%;
     background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgMTBoNDBNMTAgMHY0ME0wIDIwaDQwTTIwIDB2NDBNMCAzMGg0ME0zMCAwdjQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNlMGUwZTAiIG9wYWNpdHk9Ii4yIi8+PHBhdGggZD0iTTQwIDBIMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTBlMGUwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+');
   }
-  .panel {
-    position: absolute;
-    right: 0;
-    top: 50px;
-    width: 300px;
-  }
-  .load {
-    margin-right: 10px;
-  }
-  .el-form-item__label {
-    font-size: 13px;
-  }
-}
-
-.bpmn-icon-start-event-none:before {
-  //background-color: green;
-  //border-radius: 100%;
-  //font-size: 30px;
 }
 </style>
