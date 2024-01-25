@@ -3,70 +3,78 @@
     <el-dialog ref="flowDialogRef" v-model="dialog.visible" width="100%" fullscreen :title="dialog.title" @close="closeDialog">
       <div class="app-containers">
         <el-container class="h-full">
-          <el-header>
-            <div class="">
-              <div>
-                <el-button size="small" type="primary">保 存</el-button>
-                <el-dropdown size="small" class="ml-[13px]">
-                  <el-button size="small" type="primary"> 预 览 </el-button>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item icon="Document" @click="previewXML">XML预览</el-dropdown-item>
-                      <el-dropdown-item icon="View" @click="previewSVG"> SVG预览</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
+          <el-container style="align-items: stretch">
+            <el-header>
+              <div class="process-toolbar">
+                <el-space wrap :size="10">
+                  <el-button size="small" type="primary">保 存</el-button>
+                  <el-dropdown size="small">
+                    <el-button size="small" type="primary"> 预 览 </el-button>
+                    <template #dropdown>
+                      <el-dropdown-menu>
+                        <el-dropdown-item icon="Document" @click="previewXML">XML预览</el-dropdown-item>
+                        <el-dropdown-item icon="View" @click="previewSVG"> SVG预览</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
 
-                <el-dropdown size="small" class="ml-[13px]">
-                  <el-button size="small" type="primary"> 下 载 </el-button>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item icon="Download" @click="downloadXML">下载XML</el-dropdown-item>
-                      <el-dropdown-item icon="Download" @click="downloadSVG"> 下载SVG</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-                <el-upload ref="xmlUploadRef" action="" style="display: none" />
-                <el-tooltip effect="dark" content="加载xml" placement="bottom">
-                  <el-button class="ml-[13px]" size="small" icon="FolderOpened" @click="loadXML" />
-                </el-tooltip>
-                <el-tooltip effect="dark" content="新建" placement="bottom">
-                  <el-button size="small" icon="CirclePlus" @click="newDiagram" />
-                </el-tooltip>
-                <el-tooltip effect="dark" content="自适应屏幕" placement="bottom">
-                  <el-button size="small" icon="Rank" @click="fitViewport" />
-                </el-tooltip>
-                <el-tooltip effect="dark" content="放大" placement="bottom">
-                  <el-button size="small" icon="ZoomIn" @click="zoomViewport(true)" />
-                </el-tooltip>
-                <el-tooltip effect="dark" content="缩小" placement="bottom">
-                  <el-button size="small" icon="ZoomOut" @click="zoomViewport(false)" />
-                </el-tooltip>
-                <el-tooltip effect="dark" content="后退" placement="bottom">
-                  <el-button size="small" icon="Back" @click="bpmnModeler.get('commandStack').undo()" />
-                </el-tooltip>
-                <el-tooltip effect="dark" content="前进" placement="bottom">
-                  <el-button size="small" icon="Right" @click="bpmnModeler.get('commandStack').redo()" />
-                </el-tooltip>
+                  <el-dropdown size="small">
+                    <el-button size="small" type="primary"> 下 载 </el-button>
+                    <template #dropdown>
+                      <el-dropdown-menu>
+                        <el-dropdown-item icon="Download" @click="downloadXML">下载XML</el-dropdown-item>
+                        <el-dropdown-item icon="Download" @click="downloadSVG"> 下载SVG</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
+                  <el-upload ref="xmlUploadRef" action="" style="display: none" />
+                  <el-tooltip effect="dark" content="加载xml" placement="bottom">
+                    <el-button size="small" icon="FolderOpened" @click="loadXML" />
+                  </el-tooltip>
+                  <el-tooltip effect="dark" content="新建" placement="bottom">
+                    <el-button size="small" icon="CirclePlus" @click="newDiagram" />
+                  </el-tooltip>
+                  <el-tooltip effect="dark" content="自适应屏幕" placement="bottom">
+                    <el-button size="small" icon="Rank" @click="fitViewport" />
+                  </el-tooltip>
+                  <el-tooltip effect="dark" content="放大" placement="bottom">
+                    <el-button size="small" icon="ZoomIn" @click="zoomViewport(true)" />
+                  </el-tooltip>
+                  <el-tooltip effect="dark" content="缩小" placement="bottom">
+                    <el-button size="small" icon="ZoomOut" @click="zoomViewport(false)" />
+                  </el-tooltip>
+                  <el-tooltip effect="dark" content="后退" placement="bottom">
+                    <el-button size="small" icon="Back" @click="bpmnModeler.get('commandStack').undo()" />
+                  </el-tooltip>
+                  <el-tooltip effect="dark" content="前进" placement="bottom">
+                    <el-button size="small" icon="Right" @click="bpmnModeler.get('commandStack').redo()" />
+                  </el-tooltip>
 
-                <el-dialog v-model="perviewXMLShow" title="XML预览" width="80%">
-                  <div v-code class="hljs-container">
-                    <highlightjs :code="xmlStr" :autodetect="false" language="XML" />
-                  </div>
-                </el-dialog>
+                  <el-dialog v-model="perviewXMLShow" title="XML预览" width="80%">
+                    <highlightjs :code="xmlStr" language="XML" />
+                  </el-dialog>
 
-                <el-dialog v-model="perviewSVGShow" title="SVG预览" width="80%">
-                  <div style="text-align: center" v-html="svgData" />
-                </el-dialog>
+                  <el-dialog v-model="perviewSVGShow" title="SVG预览" width="80%">
+                    <div style="text-align: center" v-html="svgData" />
+                  </el-dialog>
+                </el-space>
+              </div>
+            </el-header>
+            <div ref="canvas" class="canvas" />
+          </el-container>
+          <div :class="{ 'process-panel': true, 'hide': panelFlag }">
+            <div class="process-panel-bar" @click="panelFlag = !panelFlag">
+              <div class="open-bar">
+                <el-link type="default" :underline="false">
+                  <svg-icon class-name="open-bar" :icon-class="panelFlag ? 'caret-back' : 'caret-forward'"></svg-icon>
+                </el-link>
               </div>
             </div>
-          </el-header>
-          <el-container class="pl-[20px] pr-[20px]" style="align-items: stretch">
-            <div ref="canvas" class="canvas" />
-            <div class="panel-div">
-              <PropertyPanel v-if="bpmnModeler" :modeler="bpmnModeler" :users="users" :groups="groups" />
+
+            <div v-show="!panelFlag" v-if="bpmnModeler" class="panel-content">
+              <PropertyPanel :modeler="bpmnModeler" :users="users" :groups="groups" />
             </div>
-          </el-container>
+          </div>
         </el-container>
       </div>
     </el-dialog>
@@ -94,6 +102,8 @@ const dialog = reactive({
   visible: true,
   title: '编辑流程'
 });
+
+const panelFlag = ref(false);
 
 const xmlUploadRef = ref<ElUploadInstance>();
 
@@ -340,29 +350,76 @@ const getProcessElement = () => {
       background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgMTBoNDBNMTAgMHY0ME0wIDIwaDQwTTIwIDB2NDBNMCAzMGg0ME0zMCAwdjQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNlMGUwZTAiIG9wYWNpdHk9Ii4yIi8+PHBhdGggZD0iTTQwIDBIMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTBlMGUwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+');
     }
     .el-header {
-      border-bottom: -1px 0 1px solid rgb(218 218 218);
-      height: 30px;
+      height: 35px;
+      padding: 0;
     }
-    .panel-div {
-      height: 100%;
-      box-shadow: 0 0 8px #cccccc;
-      overflow-x: hidden;
-      overflow-y: auto;
-      box-sizing: border-box;
-      width: 500px;
-      padding: 10px;
-      background-color: #fff;
+
+    .process-panel {
+      transition: width 0.25s ease-in;
+      .process-panel-bar {
+        width: 34px;
+        height: 40px;
+        .open-bar {
+          width: 34px;
+          line-height: 40px;
+        }
+      }
+      // 收起面板样式
+      &.hide {
+        width: 34px;
+        overflow: hidden;
+        padding: 0;
+        .process-panel-bar {
+          width: 34px;
+          height: 100%;
+          box-sizing: border-box;
+          display: block;
+          text-align: left;
+          line-height: 34px;
+        }
+        .process-panel-bar:hover {
+          background-color: #f5f7fa;
+        }
+      }
     }
   }
 
   :deep(.el-dialog .el-dialog__body) {
-    padding: 0 !important;
     max-height: 100% !important;
-    height: 100%;
-    overflow: hidden;
+    height: calc(100vh - 50px);
   }
-  :deep(.el-dialog) {
-    overflow: hidden;
+
+  .process-toolbar {
+    pre {
+      margin: 0;
+      height: 100%;
+      max-height: calc(80vh - 32px);
+      overflow-x: hidden;
+      overflow-y: auto;
+      :deep(.hljs) {
+        word-break: break-word;
+        white-space: pre-wrap;
+        padding: 0.5em;
+      }
+    }
+  }
+}
+.open-bar {
+  font-size: 20px;
+  cursor: pointer;
+  text-align: center;
+  color: #606266;
+}
+.process-panel {
+  box-sizing: border-box;
+  padding: 0 8px 0 8px;
+  border-left: 1px solid #eeeeee;
+  box-shadow: #cccccc 0 0 8px;
+  max-height: 100%;
+  width: 480px;
+  :deep(.el-collapse) {
+    height: calc(100vh - 162px);
+    overflow: auto;
   }
 }
 </style>

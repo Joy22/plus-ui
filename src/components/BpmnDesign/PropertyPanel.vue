@@ -1,7 +1,6 @@
 <template>
-  <div ref="propertyPanel" class="property-panel">
-    <div v-if="nodeName">{{ nodeName }}</div>
-    <el-divider />
+  <div ref="propertyPanel">
+    <div v-if="nodeName" class="node-name">{{ nodeName }}</div>
     <component :is="component" v-if="element" :element="element" :modeler="modeler" :users="users" :groups="groups" />
   </div>
 </template>
@@ -92,9 +91,9 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.el-divider {
-  margin-top: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
+.node-name {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
 }
 </style>
