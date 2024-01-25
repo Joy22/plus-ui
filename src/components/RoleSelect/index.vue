@@ -80,9 +80,11 @@ import { RoleVO, RoleQuery } from '@/api/system/role/types';
 import { VxeTableInstance } from 'vxe-table';
 import useDialog from '@/hooks/useDialog';
 interface PropType {
-  modelValue: RoleVO[];
+  modelValue?: RoleVO[];
 }
-const prop = defineProps<PropType>();
+const prop = withDefaults(defineProps<PropType>(), {
+  modelValue: () => []
+});
 const emit = defineEmits(['update:modelValue']);
 
 const router = useRouter();

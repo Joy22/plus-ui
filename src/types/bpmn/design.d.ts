@@ -37,7 +37,7 @@ declare module 'bpmnDesign' {
     users?: Record<string, any>[];
     roles?: Record<string, any>[];
     async?: boolean;
-    priority?: string;
+    priority?: number;
     skipExpression?: string;
     isForCompensation?: boolean;
     triggerServiceTask?: boolean;
@@ -47,6 +47,10 @@ declare module 'bpmnDesign' {
     exclude?: boolean;
     class?: string;
     dueDate?: string;
+
+    candidateUsers?: string;
+    assignee?: string;
+    candidateGroups?: string;
   }
 
   export interface StartEndPanel extends BasePanel {}

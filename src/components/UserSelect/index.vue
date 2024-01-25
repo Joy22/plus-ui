@@ -112,9 +112,11 @@ import { VxeTableInstance } from 'vxe-table';
 import useDialog from '@/hooks/useDialog';
 
 interface PropType {
-  modelValue: UserVO[];
+  modelValue?: UserVO[];
 }
-const prop = defineProps<PropType>();
+const prop = withDefaults(defineProps<PropType>(), {
+  modelValue: () => []
+});
 const emit = defineEmits(['update:modelValue']);
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;

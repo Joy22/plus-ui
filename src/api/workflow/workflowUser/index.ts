@@ -1,4 +1,6 @@
 import request from '@/utils/request';
+import { AxiosPromise } from 'axios';
+import { UserVO } from '@/api/system/user/types';
 
 /**
  * 分页查询工作流选择加签人员
@@ -27,10 +29,10 @@ export const getWorkflowDeleteMultiInstanceList = (taskId: string) => {
 
 /**
  * 按照用户id查询用户
- * @param query
+ * @param userIdList
  * @returns {*}
  */
-export const getUserListByIds = (userIdList: Array<any>) => {
+export const getUserListByIds = (userIdList: any[]): AxiosPromise<UserVO[]> => {
   return request({
     url: '/workflow/user/getUserListByIds/' + userIdList,
     method: 'get'

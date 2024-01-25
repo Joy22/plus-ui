@@ -73,6 +73,9 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'diagram-js/lib/draw/BaseRenderer',
         'tiny-svg',
 
+        'element-plus/es/components/collapse-item/style/css',
+        'element-plus/es/components/collapse/style/css',
+        'element-plus/es/components/space/style/css',
         'element-plus/es/components/container/style/css',
         'element-plus/es/components/aside/style/css',
         'element-plus/es/components/main/style/css',

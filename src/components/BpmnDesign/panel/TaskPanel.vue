@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form ref="formRef" size="small" :model="formData" :rules="formRules" label-width="90px">
-      <el-collapse>
+      <el-collapse v-model="currentCollapseItem">
         <el-collapse-item name="1">
           <template #title>
             <div class="collapse__title">
@@ -42,13 +42,13 @@
               </el-select>
             </el-form-item>
             <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.USER && showConfig.users" style="">
-              <el-badge :value="formData.users.length" :max="99">
+              <el-badge :value="selectUserLength" :max="99">
                 <el-button type="primary" @click="openUserSelect">选择人员</el-button>
                 <UserSelect ref="userSelectRef" v-model="formData.users"></UserSelect>
               </el-badge>
             </el-form-item>
             <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.ROLE && showConfig.roles" style="">
-              <el-badge :value="formData.roles.length" :max="99">
+              <el-badge :value="selectRoleLength" :max="99">
                 <el-button type="primary" @click="openUserSelect">选择角色</el-button>
                 <RoleSelect ref="userSelectRef" v-model="formData.roles"></RoleSelect>
               </el-badge>
@@ -131,6 +131,10 @@ import { Element, Modeler } from 'bpmn';
 import { TaskPanel } from 'bpmnDesign';
 import { AuditUserTypeEnum, MultipleUserAuditTypeEnum, SpecifyDescEnum } from '@/enums/bpmn/IndexEnums';
 import { BellFilled, Checked, InfoFilled } from '@element-plus/icons-vue';
+import { getUserListByIds } from '@/api/workflow/workflowUser';
+import { UserVO } from '@/api/system/user/types';
+
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 interface PropType {
   modeler: Modeler;
@@ -147,8 +151,8 @@ const { parse, formData } = useParseElement<TaskPanel>({
   initData: {
     id: '',
     name: '',
-    users: [],
-    roles: [],
+    // users: [],
+    // roles: [],
     dueDate: '',
     multipleUserAuditType: MultipleUserAuditTypeEnum.SERIAL,
     auditUserType: AuditUserTypeEnum.USER,
@@ -156,6 +160,7 @@ const { parse, formData } = useParseElement<TaskPanel>({
   }
 });
 
+const currentCollapseItem = ref(['1', '2']);
 const userSelectRef = ref<InstanceType<typeof UserSelect>>();
 const dueDateRef = ref<InstanceType<typeof DueDate>>();
 const openUserSelect = () => {
@@ -168,7 +173,20 @@ const openDueDate = () => {
 const syncChange = (newVal) => {
   updateProperties({ 'flowable:async': newVal });
 };
-
+const selectUserLength = computed(() => {
+  if (formData.value.users) {
+    return formData.value.users.length;
+  } else {
+    return 0;
+  }
+});
+const selectRoleLength = computed(() => {
+  if (formData.value.roles) {
+    return formData.value.roles.length;
+  } else {
+    return 0;
+  }
+});
 watch(
   () => formData.value.auditUserType,
   (val, oldVal) => {
@@ -179,7 +197,7 @@ watch(
 watch(
   () => formData.value.roles,
   (newVal: Record<string, any>[]) => {
-    if (newVal.length > 0) {
+    if (newVal?.length > 0) {
       // 获取userId 用逗号,隔开
       const roleIds = newVal.map((item) => item.roleId).join(',');
       updateProperties({ 'flowable:candidateGroups': roleIds });
@@ -191,14 +209,15 @@ watch(
 );
 watch(
   () => formData.value.users,
-  (newVal: Record<string, any>[]) => {
-    if (newVal.length === 1) {
+  (newVal: UserVO[]) => {
+    console.log(newVal);
+    if (newVal?.length === 1) {
       const user = newVal[0];
       const userId = user.userId;
       updateProperties({ 'flowable:assignee': userId });
       updateProperties({ 'flowable:candidateUsers': undefined });
       // 删除会签属性
-    } else if (newVal.length > 1) {
+    } else if (newVal?.length > 1) {
       // 获取userId 用逗号,隔开
       const userIds = newVal.map((item) => item.userId).join(',');
       updateProperties({ 'flowable:candidateUsers': userIds });
@@ -210,7 +229,56 @@ watch(
   },
   { deep: true }
 );
-
+watch(
+  () => formData.value.async,
+  (newVal: boolean) => {
+    if (newVal) {
+      updateProperties({ 'flowable:async': true });
+    } else {
+      updateProperties({ 'flowable:async': undefined });
+    }
+  }
+);
+watch(
+  () => formData.value.skipExpression,
+  (newVal: string) => {
+    if (newVal) {
+      updateProperties({ 'flowable:skipExpression': newVal });
+    } else {
+      updateProperties({ 'flowable:skipExpression': undefined });
+    }
+  }
+);
+watch(
+  () => formData.value.priority,
+  (newVal: number) => {
+    if (newVal) {
+      updateProperties({ 'flowable:priority': newVal });
+    } else {
+      updateProperties({ 'flowable:priority': undefined });
+    }
+  }
+);
+watch(
+  () => formData.value.dueDate,
+  (newVal: string) => {
+    if (newVal) {
+      updateProperties({ 'flowable:dueDate': newVal });
+    } else {
+      updateProperties({ 'flowable:dueDate': undefined });
+    }
+  }
+);
+const initUsers = async () => {
+  if (formData.value.candidateUsers) {
+    const userIds = formData.value.candidateUsers.split(',');
+    const res = await getUserListByIds(userIds);
+    formData.value.users = res.data;
+  }
+};
+onBeforeMount(() => {
+  initUsers();
+});
 const formRules = ref<ElFormRules>({
   id: [{ required: true, message: '请输入', trigger: 'blur' }],
   name: [{ required: true, message: '请输入', trigger: 'blur' }]
