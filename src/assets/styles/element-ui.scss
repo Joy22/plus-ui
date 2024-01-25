@@ -1,4 +1,15 @@
-// cover some element-ui styles
+
+.el-collapse {
+  .collapse__title {
+    font-weight: 600;
+    padding: 0 8px;
+    font-size: 1.0em;
+    line-height: 1.1em;
+  }
+  .el-collapse-item__content {
+    padding: 0 8px;
+  }
+}
 
 .el-divider--horizontal {
   margin-bottom: 10px;

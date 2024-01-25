@@ -1,6 +1,6 @@
 <template>
   <div class="containers">
-    <el-dialog ref="flowDialogRef" v-model="dialog.visible" width="100%" fullscreen :title="dialog.title" @close="closeDialog">
+    <el-dialog ref="flowDialogRef" v-model="dialog.visible" width="100%" fullscreen :title="dialog.title">
       <div class="app-containers">
         <el-container class="h-full">
           <el-container style="align-items: stretch">
@@ -408,7 +408,6 @@ const getProcessElement = () => {
   font-size: 20px;
   cursor: pointer;
   text-align: center;
-  color: #606266;
 }
 .process-panel {
   box-sizing: border-box;
