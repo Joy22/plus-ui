@@ -82,7 +82,46 @@ const customMonthValue = ref(1);
 const hourValueConst = ['4', '8', '12', '24'];
 const dayAndWeekAndMonthValueConst = ['1', '2', '3', '4'];
 
-const initValue = () => {};
+const initValue = () => {
+  formValue.value = prop.modelValue;
+  if (prop.modelValue) {
+    const lastStr = prop.modelValue.substring(prop.modelValue.length - 1);
+    if (lastStr === 'H') {
+      const hourValueValue = prop.modelValue.substring(2, prop.modelValue.length - 1);
+      if (hourValueConst.includes(hourValueValue)) {
+        hourValue.value = hourValueValue;
+      } else {
+        hourValue.value = '自定义';
+        customHourValue.value = Number(hourValueValue);
+      }
+    }
+    const dayAndWeekAndMonthValue = prop.modelValue.substring(1, prop.modelValue.length - 1);
+    if (lastStr === 'D') {
+      if (dayAndWeekAndMonthValueConst.includes(dayAndWeekAndMonthValue)) {
+        dayValue.value = dayAndWeekAndMonthValue;
+      } else {
+        dayValue.value = '自定义';
+        customDayValue.value = Number(dayAndWeekAndMonthValue);
+      }
+    }
+    if (lastStr === 'W') {
+      if (dayAndWeekAndMonthValueConst.includes(dayAndWeekAndMonthValue)) {
+        weekValue.value = dayAndWeekAndMonthValue;
+      } else {
+        weekValue.value = '自定义';
+        customWeekValue.value = Number(dayAndWeekAndMonthValue);
+      }
+    }
+    if (lastStr === 'M') {
+      if (dayAndWeekAndMonthValueConst.includes(dayAndWeekAndMonthValue)) {
+        monthValue.value = dayAndWeekAndMonthValue;
+      } else {
+        monthValue.value = '自定义';
+        customMonthValue.value = Number(dayAndWeekAndMonthValue);
+      }
+    }
+  }
+};
 
 const confirm = () => {
   // 深拷贝赋值更新modelValue
@@ -91,7 +130,6 @@ const confirm = () => {
 };
 
 const customHourValueChange = (customHourValue) => {
-  valueType.value = 'H';
   formValue.value = `PT${customHourValue}H`;
 
   dayValue.value = '';
@@ -102,7 +140,6 @@ const customHourValueChange = (customHourValue) => {
   customMonthValue.value = 1;
 };
 const customDayValueChange = (customDayValue) => {
-  valueType.value = 'D';
   formValue.value = `P${customDayValue}D`;
   hourValue.value = '';
   weekValue.value = '';
@@ -114,7 +151,6 @@ const customDayValueChange = (customDayValue) => {
 };
 
 const customWeekValueChange = (customWeekValue) => {
-  valueType.value = 'W';
   formValue.value = `P${customWeekValue}W`;
   hourValue.value = '';
   dayValue.value = '';
@@ -126,7 +162,6 @@ const customWeekValueChange = (customWeekValue) => {
 };
 
 const customMonthValueChange = (customMonthValue) => {
-  valueType.value = 'M';
   formValue.value = `P${customMonthValue}M`;
   hourValue.value = '';
   dayValue.value = '';
@@ -138,7 +173,6 @@ const customMonthValueChange = (customMonthValue) => {
 };
 
 const hourChange = (hourValue) => {
-  valueType.value = 'H';
   if (hourValue === '自定义') {
     formValue.value = `PT${customHourValue.value}H`;
   } else {
@@ -153,7 +187,6 @@ const hourChange = (hourValue) => {
   customMonthValue.value = 1;
 };
 const dayChange = (dayValue) => {
-  valueType.value = 'D';
   if (dayValue === '自定义') {
     formValue.value = `P${customDayValue.value}D`;
   } else {
@@ -169,7 +202,6 @@ const dayChange = (dayValue) => {
   customMonthValue.value = 1;
 };
 const weekChange = (weekValue) => {
-  valueType.value = 'W';
   if (weekValue === '自定义') {
     formValue.value = `P${customWeekValue.value}W`;
   } else {
@@ -185,7 +217,6 @@ const weekChange = (weekValue) => {
   customMonthValue.value = 1;
 };
 const monthChange = (monthValue) => {
-  valueType.value = 'M';
   if (monthValue === '自定义') {
     formValue.value = `P${customMonthValue.value}M`;
   } else {

@@ -48,9 +48,9 @@
               </el-badge>
             </el-form-item>
             <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.ROLE && showConfig.roles" style="">
-              <el-badge :value="formData.users.length" :max="99">
-                <el-button type="primary" disabled @click="openUserSelect">选择角色</el-button>
-                <UserSelect ref="userSelectRef" v-model="formData.roles"></UserSelect>
+              <el-badge :value="formData.roles.length" :max="99">
+                <el-button type="primary" @click="openUserSelect">选择角色</el-button>
+                <RoleSelect ref="userSelectRef" v-model="formData.roles"></RoleSelect>
               </el-badge>
             </el-form-item>
             <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.SPECIFY && showConfig.specifyDesc" style="">
@@ -74,6 +74,32 @@
           </div>
         </el-collapse-item>
 
+        <el-collapse-item v-if="showConfig.taskListener" name="3">
+          <template #title>
+            <div class="collapse__title">
+              <el-icon>
+                <BellFilled />
+              </el-icon>
+              任务监听器
+            </div>
+          </template>
+          <div>
+            <TaskListener v-if="showConfig.taskListener" :modeler="modeler" :element="element"></TaskListener>
+          </div>
+        </el-collapse-item>
+        <el-collapse-item v-if="showConfig.executionListener" name="4">
+          <template #title>
+            <div class="collapse__title">
+              <el-icon>
+                <BellFilled />
+              </el-icon>
+              执行监听器
+            </div>
+          </template>
+          <div>
+            <ExecutionListener v-if="showConfig.executionListener" :modeler="modeler" :element="element"></ExecutionListener>
+          </div>
+        </el-collapse-item>
         <el-form-item v-if="showConfig.isForCompensation" prop="isForCompensation" label="是否为补偿">
           <el-switch v-model="formData.isForCompensation" inline-prompt active-text="是" inactive-text="否" />
         </el-form-item>
@@ -92,11 +118,6 @@
         <el-form-item v-if="showConfig.class" prop="class" label="类">
           <el-input v-model="formData.class"> </el-input>
         </el-form-item>
-
-        <el-form-item v-if="showConfig.executionListener" label="执行监听器" style="margin-bottom: 0"> </el-form-item>
-        <ExecutionListener v-if="showConfig.executionListener" :modeler="modeler" :element="element"></ExecutionListener>
-        <el-form-item v-if="showConfig.taskListener" label="任务监听器" style="margin-bottom: 0"> </el-form-item>
-        <TaskListener v-if="showConfig.taskListener" :modeler="modeler" :element="element"></TaskListener>
       </el-collapse>
     </el-form>
   </div>
@@ -109,7 +130,7 @@ import DueDate from '@/components/BpmnDesign/panel/property/DueDate.vue';
 import { Element, Modeler } from 'bpmn';
 import { TaskPanel } from 'bpmnDesign';
 import { AuditUserTypeEnum, MultipleUserAuditTypeEnum, SpecifyDescEnum } from '@/enums/bpmn/IndexEnums';
-import { Checked, InfoFilled } from '@element-plus/icons-vue';
+import { BellFilled, Checked, InfoFilled } from '@element-plus/icons-vue';
 
 interface PropType {
   modeler: Modeler;
