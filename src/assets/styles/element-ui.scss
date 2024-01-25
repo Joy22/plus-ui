@@ -68,6 +68,12 @@
       .el-dialog__body {
         padding: 15px !important;
       }
+      .el-dialog__header {
+        padding: 16px 16px 8px 16px;
+        box-sizing: border-box;
+        border-bottom: 1px solid #e8e8e8;
+        margin-right: 0;
+      }
     }
   }
 }
