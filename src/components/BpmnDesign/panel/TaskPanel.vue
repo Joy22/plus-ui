@@ -169,21 +169,29 @@ const syncChange = (newVal) => {
   updateProperties({ 'flowable:async': newVal });
 };
 
-const dueDateChange = (newVal) => {
-  console.log(newVal);
-  updateProperties({ 'flowable:dueDate': newVal });
-};
-
 watch(
   () => formData.value.auditUserType,
   (val, oldVal) => {
     formData.value.users = [];
+    formData.value.roles = [];
   }
+);
+watch(
+  () => formData.value.roles,
+  (newVal: Record<string, any>[]) => {
+    if (newVal.length > 0) {
+      // 获取userId 用逗号,隔开
+      const roleIds = newVal.map((item) => item.roleId).join(',');
+      updateProperties({ 'flowable:candidateGroups': roleIds });
+    } else {
+      updateProperties({ 'flowable:candidateGroups': undefined });
+    }
+  },
+  { deep: true }
 );
 watch(
   () => formData.value.users,
   (newVal: Record<string, any>[]) => {
-    updateProperties({ 'flowable:candidateGroups': undefined });
     if (newVal.length === 1) {
       const user = newVal[0];
       const userId = user.userId;
