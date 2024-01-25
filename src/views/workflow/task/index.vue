@@ -205,6 +205,7 @@ const submitVerifyOpen = async (id: string) => {
 
 /** 认领任务 */
 const handleClaimTask = async (taskId: string) => {
+  loading.value = true;
   await claim(taskId).finally(() => (loading.value = false));
   getWaitingList();
   proxy?.$modal.msgSuccess('操作成功');
@@ -212,6 +213,7 @@ const handleClaimTask = async (taskId: string) => {
 
 /** 归还任务 */
 const handleReturnTask = async (taskId: string) => {
+  loading.value = true;
   await returnTask(taskId).finally(() => (loading.value = false));
   getWaitingList();
   proxy?.$modal.msgSuccess('操作成功');

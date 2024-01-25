@@ -124,12 +124,14 @@
 
     <!-- 部署文件 -->
     <el-dialog v-if="uploadDialog.visible" v-model="uploadDialog.visible" :title="uploadDialog.title" width="30%">
-      <el-upload class="upload-demo" drag accept="application/zip,application/xml,.bpmn" :http-request="handerDeployProcessFile">
-        <el-icon class="UploadFilled"><upload-filled /></el-icon>
-        <div class="el-upload__text"><em>点击上传，选择BPMN流程文件</em></div>
-        <div class="el-upload__text">仅支持 .zip、.bpmn20.xml、bpmn 格式文件</div>
-        <div class="el-upload__text">PS:如若部署请部署从本项目模型管理导出的数据</div>
+      <div v-loading="uploadDialogLoading">
+        <el-upload class="upload-demo" drag accept="application/zip,application/xml,.bpmn" :http-request="handerDeployProcessFile">
+          <el-icon class="UploadFilled"><upload-filled /></el-icon>
+          <div class="el-upload__text"><em>点击上传，选择BPMN流程文件</em></div>
+          <div class="el-upload__text">仅支持 .zip、.bpmn20.xml、bpmn 格式文件</div>
+          <div class="el-upload__text">PS:如若部署请部署从本项目模型管理导出的数据</div>
       </el-upload>
+      </div>
     </el-dialog>
 
     <!-- 历史版本 -->
@@ -224,6 +226,7 @@ const single = ref(true);
 const multiple = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
+const uploadDialogLoading = ref(false);
 const processDefinitionList = ref<ProcessDefinitionVO[]>([]);
 const processDefinitionHistoryList = ref<ProcessDefinitionVO[]>([]);
 const url = ref<string[]>([]);
@@ -387,11 +390,13 @@ const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => 
     proxy?.$modal.msgError('请选择左侧要上传的分类！');
     return;
   }
+  uploadDialogLoading.value = true
   formData.append('file', data.file);
   formData.append('categoryCode', queryParams.value.categoryCode);
   deployProcessFile(formData).then(() => {
     uploadDialog.visible = false;
     proxy?.$modal.msgSuccess('部署成功');
+    uploadDialogLoading.value = false
     handleQuery();
   });
 };
