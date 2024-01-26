@@ -1,7 +1,17 @@
+import { Ref } from 'vue';
+
 interface Options {
   title?: string;
 }
-export default (ops?: Options) => {
+
+interface Return {
+  title: Ref<string>;
+  visible: Ref<boolean>;
+
+  openDialog: () => void;
+  closeDialog: () => void;
+}
+export default (ops?: Options): Return => {
   const visible = ref(false);
   const title = ref(ops.title || '');
 
