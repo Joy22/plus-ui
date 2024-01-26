@@ -47,7 +47,7 @@
           </transition>
 
           <el-card shadow="hover">
-            <template #header>
+            <template v-if="prop.multiple" #header>
               <el-tag v-for="user in selectUserList" :key="user.userId" closable style="margin: 2px" @close="handleCloseTag(user)">
                 {{ user.userName }}
               </el-tag>
@@ -60,13 +60,15 @@
               show-overflow
               :data="userList"
               :loading="loading"
-              :row-config="{ keyField: 'userId' }"
-              :checkbox-config="{ reserve: true, checkRowKeys: userIds }"
-              highlight-current-row
+              :row-config="{ keyField: 'userId', isHover: true }"
+              :checkbox-config="checkBoxConfig"
+              :radio-config="radioBoxConfig"
               @checkbox-all="handleCheckboxAll"
               @checkbox-change="handleCheckboxChange"
+              @radio-change="handleRadioChange"
             >
-              <vxe-column type="checkbox" width="50" align="center" />
+              <vxe-column v-if="prop.multiple" type="checkbox" width="50" align="center" />
+              <vxe-column v-else type="radio" width="50"></vxe-column>
               <vxe-column key="userId" title="用户编号" align="center" field="userId" />
               <vxe-column key="userName" title="用户名称" align="center" field="userName" />
               <vxe-column key="nickName" title="用户昵称" align="center" field="nickName" />
@@ -112,18 +114,19 @@ import { VxeTableInstance } from 'vxe-table';
 import useDialog from '@/hooks/useDialog';
 
 interface PropType {
-  modelValue?: UserVO[];
+  modelValue: UserVO[] | UserVO | undefined;
+  multiple?: boolean;
 }
 const prop = withDefaults(defineProps<PropType>(), {
-  modelValue: () => []
+  multiple: true
 });
 const emit = defineEmits(['update:modelValue']);
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict('sys_normal_disable'));
 
-const userIds = computed(() => prop.modelValue.map((item) => item.userId as string));
-
+const defaultSelectUserIds = ref([]);
+const defaultSelectUserId = ref();
 const userList = ref<UserVO[]>();
 const loading = ref(true);
 const showSearch = ref(true);
@@ -132,6 +135,7 @@ const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
 const deptName = ref('');
 const deptOptions = ref<DeptVO[]>([]);
 const selectUserList = ref<UserVO[]>([]);
+const selectUserObj = ref<UserVO>();
 
 const deptTreeRef = ref<ElTreeInstance>();
 const queryFormRef = ref<ElFormInstance>();
@@ -151,6 +155,14 @@ const queryParams = ref<UserQuery>({
   roleId: ''
 });
 
+const checkBoxConfig = ref({
+  reserve: true,
+  checkRowKeys: defaultSelectUserIds.value
+});
+const radioBoxConfig = ref({
+  checkRowKeys: defaultSelectUserId.value
+});
+
 /** 通过条件过滤节点  */
 const filterNode = (value: string, data: any) => {
   if (!value) return true;
@@ -167,7 +179,11 @@ watchEffect(
 );
 
 const confirm = () => {
-  emit('update:modelValue', [...selectUserList.value]);
+  if (prop.multiple) {
+    emit('update:modelValue', selectUserList.value);
+  } else {
+    emit('update:modelValue', selectUserObj.value);
+  }
   userDialog.closeDialog();
 };
 
@@ -207,6 +223,10 @@ const resetQuery = () => {
   handleQuery();
 };
 
+const handleRadioChange = (checked) => {
+  selectUserObj.value = checked.row;
+};
+
 const handleCheckboxChange = (checked) => {
   const row = checked.row;
   if (checked.checked) {
@@ -240,17 +260,23 @@ const handleCloseTag = (user: UserVO) => {
   tableRef.value?.setCheckboxRow(rows, false);
   selectUserList.value.splice(index, 1);
 };
-watch(
-  () => prop.modelValue,
-  (newVal, oldValue) => {
-    Object.assign(selectUserList.value, newVal);
-  },
-  { deep: true }
-);
+
+const init = () => {
+  if (!prop.modelValue) return;
+  if (prop.multiple) {
+    selectUserList.value = [...prop.modelValue];
+    defaultSelectUserIds.value = (prop.modelValue as UserVO[]).map((item) => item.userId);
+  } else {
+    const userObj = prop.modelValue as UserVO;
+    selectUserObj.value = { ...userObj };
+    defaultSelectUserId.value = userObj.userId;
+  }
+};
 
 onMounted(() => {
   getTreeSelect(); // 初始化部门数据
   getList(); // 初始化列表数据
+  init();
 });
 
 defineExpose({
