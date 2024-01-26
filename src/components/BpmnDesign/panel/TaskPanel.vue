@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form ref="formRef" size="small" :model="formData" :rules="formRules" label-width="90px">
+    <el-form ref="formRef" size="default" :model="formData" :rules="formRules" label-width="100px">
       <el-collapse v-model="currentCollapseItem">
         <el-collapse-item name="1">
           <template #title>
@@ -36,21 +36,43 @@
             <el-form-item v-if="showConfig.async" prop="sync" label="是否异步">
               <el-switch v-model="formData.async" inline-prompt active-text="是" inactive-text="否" @change="syncChange" />
             </el-form-item>
-            <el-form-item v-if="showConfig.auditUserType" prop="auditUserType" label="人员类型">
-              <el-select v-model="formData.auditUserType">
-                <el-option v-for="item in AuditUserTypeSelect" :key="item.id" :value="item.value" :label="item.label"> </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.USER && showConfig.users" style="">
-              <el-badge :value="selectUserLength" :max="99">
-                <el-button type="primary" @click="openUserSelect">选择人员</el-button>
-                <UserSelect ref="userSelectRef" v-model="formData.users"></UserSelect>
-              </el-badge>
-            </el-form-item>
+
+            <el-tabs tab-position="left" style="" class="demo-tabs">
+              <el-tab-pane label="身份存储">
+                <el-form-item v-if="showConfig.user" label="分配人员">
+                  <el-input v-model="formData.user.userName">
+                    <template #append>
+                      <el-button icon="Search" size="small" type="primary" @click="openSingleUserSelect" />
+                    </template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item v-if="showConfig.users" label="候选人员">
+                  <el-badge :value="selectUserLength" :max="99">
+                    <el-button size="small" type="primary" @click="openUserSelect">选择人员</el-button>
+                  </el-badge>
+                </el-form-item>
+                <el-form-item v-if="showConfig.roles" label="候选组">
+                  <el-badge :value="selectRoleLength" :max="99">
+                    <el-button size="small" type="primary" @click="openRoleSelect">选择组</el-button>
+                  </el-badge>
+                </el-form-item>
+              </el-tab-pane>
+              <el-tab-pane label="固定值">开发中</el-tab-pane>
+            </el-tabs>
+
+            <!--            <el-form-item v-if="showConfig.auditUserType" prop="auditUserType" label="人员类型">-->
+            <!--              <el-select v-model="formData.auditUserType">-->
+            <!--                <el-option v-for="item in AuditUserTypeSelect" :key="item.id" :value="item.value" :label="item.label"> </el-option>-->
+            <!--              </el-select>-->
+            <!--            </el-form-item>-->
+            <!--            <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.USER && showConfig.users" style="">-->
+            <!--              <el-badge :value="selectUserLength" :max="99">-->
+            <!--                <el-button type="primary" @click="openUserSelect">选择人员</el-button>-->
+            <!--              </el-badge>-->
+            <!--            </el-form-item>-->
             <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.ROLE && showConfig.roles" style="">
               <el-badge :value="selectRoleLength" :max="99">
-                <el-button type="primary" @click="openUserSelect">选择角色</el-button>
-                <RoleSelect ref="userSelectRef" v-model="formData.roles"></RoleSelect>
+                <el-button type="primary" @click="openRoleSelect">选择角色</el-button>
               </el-badge>
             </el-form-item>
             <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.SPECIFY && showConfig.specifyDesc" style="">
@@ -64,9 +86,7 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item v-if="showConfig.dueDate" prop="dueDate" label="到期时间">
-              <!--              <el-date-picker v-model="formData.dueDate" type="datetime" @change="dueDateChange" />-->
               <el-input v-model="formData.dueDate" @click="openDueDate"></el-input>
-              <DueDate ref="dueDateRef" v-model="formData.dueDate"></DueDate>
             </el-form-item>
             <el-form-item v-if="showConfig.priority" prop="priority" label="优先级">
               <el-input-number v-model="formData.priority" :min="0"> </el-input-number>
@@ -120,12 +140,17 @@
         </el-form-item>
       </el-collapse>
     </el-form>
+    <UserSelect ref="singleUserSelectRef" v-model="formData.user" :multiple="false"></UserSelect>
+    <UserSelect ref="userSelectRef" v-model="formData.users"></UserSelect>
+    <RoleSelect ref="roleSelectRef" v-model="formData.roles"></RoleSelect>
+    <DueDate ref="dueDateRef" v-model="formData.dueDate"></DueDate>
   </div>
 </template>
 <script setup lang="ts">
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 import UserSelect from '@/components/UserSelect';
+import RoleSelect from '@/components/RoleSelect';
 import DueDate from '@/components/BpmnDesign/panel/property/DueDate.vue';
 import { Element, Modeler } from 'bpmn';
 import { TaskPanel } from 'bpmnDesign';
@@ -151,7 +176,7 @@ const { parse, formData } = useParseElement<TaskPanel>({
   initData: {
     id: '',
     name: '',
-    // users: [],
+    user: {},
     // roles: [],
     dueDate: '',
     multipleUserAuditType: MultipleUserAuditTypeEnum.SERIAL,
@@ -162,9 +187,17 @@ const { parse, formData } = useParseElement<TaskPanel>({
 
 const currentCollapseItem = ref(['1', '2']);
 const userSelectRef = ref<InstanceType<typeof UserSelect>>();
+const singleUserSelectRef = ref<InstanceType<typeof UserSelect>>();
+const roleSelectRef = ref<InstanceType<typeof RoleSelect>>();
 const dueDateRef = ref<InstanceType<typeof DueDate>>();
 const openUserSelect = () => {
   userSelectRef.value.open();
+};
+const openSingleUserSelect = () => {
+  singleUserSelectRef.value.open();
+};
+const openRoleSelect = () => {
+  roleSelectRef.value.open();
 };
 const openDueDate = () => {
   dueDateRef.value.openDialog();

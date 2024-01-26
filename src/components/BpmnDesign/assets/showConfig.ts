@@ -7,6 +7,7 @@ export default {
   'bpmn:UserTask': {
     auditUserType: true,
     users: true,
+    user: true,
     roles: true,
     specifyDesc: true,
     multipleUserAuditType: true,

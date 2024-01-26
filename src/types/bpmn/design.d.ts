@@ -35,6 +35,7 @@ declare module 'bpmnDesign' {
     specifyDesc: SpecifyDescEnum;
     multipleUserAuditType: MultipleUserAuditTypeEnum;
     users?: Record<string, any>[];
+    user?: Record<string, any>;
     roles?: Record<string, any>[];
     async?: boolean;
     priority?: number;
