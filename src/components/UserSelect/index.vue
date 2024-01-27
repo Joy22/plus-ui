@@ -61,14 +61,11 @@
               :data="userList"
               :loading="loading"
               :row-config="{ keyField: 'userId', isHover: true }"
-              :checkbox-config="checkBoxConfig"
-              :radio-config="radioBoxConfig"
+              :checkbox-config="{ reserve: true, trigger: 'row', highlight: true, checkRowKeys: defaultSelectUserIds, showHeader: prop.multiple }"
               @checkbox-all="handleCheckboxAll"
               @checkbox-change="handleCheckboxChange"
-              @radio-change="handleRadioChange"
             >
-              <vxe-column v-if="prop.multiple" type="checkbox" width="50" align="center" />
-              <vxe-column v-else type="radio" width="50"></vxe-column>
+              <vxe-column type="checkbox" width="50" align="center" />
               <vxe-column key="userId" title="用户编号" align="center" field="userId" />
               <vxe-column key="userName" title="用户名称" align="center" field="userName" />
               <vxe-column key="nickName" title="用户昵称" align="center" field="nickName" />
@@ -114,19 +111,20 @@ import { VxeTableInstance } from 'vxe-table';
 import useDialog from '@/hooks/useDialog';
 
 interface PropType {
-  modelValue: UserVO[] | UserVO | undefined;
+  modelValue?: UserVO[] | UserVO | undefined;
   multiple?: boolean;
+  data?: string | number | (string | number)[];
 }
 const prop = withDefaults(defineProps<PropType>(), {
-  multiple: true
+  multiple: true,
+  modelValue: undefined,
+  data: undefined
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'confirmCallBack']);
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict('sys_normal_disable'));
 
-const defaultSelectUserIds = ref([]);
-const defaultSelectUserId = ref();
 const userList = ref<UserVO[]>();
 const loading = ref(true);
 const showSearch = ref(true);
@@ -135,7 +133,6 @@ const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
 const deptName = ref('');
 const deptOptions = ref<DeptVO[]>([]);
 const selectUserList = ref<UserVO[]>([]);
-const selectUserObj = ref<UserVO>();
 
 const deptTreeRef = ref<ElTreeInstance>();
 const queryFormRef = ref<ElFormInstance>();
@@ -155,19 +152,51 @@ const queryParams = ref<UserQuery>({
   roleId: ''
 });
 
-const checkBoxConfig = ref({
-  reserve: true,
-  checkRowKeys: defaultSelectUserIds.value
-});
-const radioBoxConfig = ref({
-  checkRowKeys: defaultSelectUserId.value
+const confirm = () => {
+  if (prop.multiple) {
+    emit('update:modelValue', selectUserList.value);
+    emit('confirmCallBack', selectUserList.value);
+  } else {
+    const data = selectUserList.value.length > 0 ? selectUserList.value[0] : undefined;
+    emit('update:modelValue', data);
+    emit('confirmCallBack', data);
+  }
+  userDialog.closeDialog();
+};
+
+const refreshDefaultUser = async (data) => {
+  const ids = computedIds(data);
+  if (ids.length > 0) {
+    // const { data } = await api.optionSelect(ids);
+    // await tableRef.value?.setCheckboxRow(data, true);
+    // selectUserList.value = data;
+  }
+};
+
+const computedIds = (data) => {
+  if (data instanceof Array) {
+    return [...data];
+  } else if (typeof data === 'string') {
+    return data.split(',');
+  } else if (typeof data === 'number') {
+    return [data];
+  } else {
+    console.warn('The data type of data should be array or string or number, but I received other');
+    return [];
+  }
+};
+
+const defaultSelectUserIds = computed(() => {
+  return computedIds(prop.data);
 });
 
-/** 通过条件过滤节点  */
-const filterNode = (value: string, data: any) => {
-  if (!value) return true;
-  return data.label.indexOf(value) !== -1;
-};
+watch(
+  () => prop.data,
+  (newVal) => {
+    refreshDefaultUser(newVal);
+  },
+  { deep: true }
+);
 /** 根据名称筛选部门树 */
 watchEffect(
   () => {
@@ -178,13 +207,10 @@ watchEffect(
   }
 );
 
-const confirm = () => {
-  if (prop.multiple) {
-    emit('update:modelValue', selectUserList.value);
-  } else {
-    emit('update:modelValue', selectUserObj.value);
-  }
-  userDialog.closeDialog();
+/** 通过条件过滤节点  */
+const filterNode = (value: string, data: any) => {
+  if (!value) return true;
+  return data.label.indexOf(value) !== -1;
 };
 
 /** 查询部门下拉树结构 */
@@ -223,11 +249,11 @@ const resetQuery = () => {
   handleQuery();
 };
 
-const handleRadioChange = (checked) => {
-  selectUserObj.value = checked.row;
-};
-
 const handleCheckboxChange = (checked) => {
+  if (!prop.multiple && checked.checked) {
+    tableRef.value.setCheckboxRow(selectUserList.value, false);
+    selectUserList.value = [];
+  }
   const row = checked.row;
   if (checked.checked) {
     selectUserList.value.push(row);
@@ -261,22 +287,15 @@ const handleCloseTag = (user: UserVO) => {
   selectUserList.value.splice(index, 1);
 };
 
-const init = () => {
-  if (!prop.modelValue) return;
-  if (prop.multiple) {
-    selectUserList.value = [...prop.modelValue];
-    defaultSelectUserIds.value = (prop.modelValue as UserVO[]).map((item) => item.userId);
-  } else {
-    const userObj = prop.modelValue as UserVO;
-    selectUserObj.value = { ...userObj };
-    defaultSelectUserId.value = userObj.userId;
-  }
+const initData = async () => {
+  const { data } = await api.optionSelect(defaultSelectUserIds.value);
+  selectUserList.value = data;
 };
 
 onMounted(() => {
   getTreeSelect(); // 初始化部门数据
   getList(); // 初始化列表数据
-  init();
+  initData();
 });
 
 defineExpose({
