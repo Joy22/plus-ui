@@ -153,14 +153,8 @@ const queryParams = ref<UserQuery>({
 });
 
 const confirm = () => {
-  if (prop.multiple) {
-    emit('update:modelValue', selectUserList.value);
-    emit('confirmCallBack', selectUserList.value);
-  } else {
-    const data = selectUserList.value.length > 0 ? selectUserList.value[0] : undefined;
-    emit('update:modelValue', data);
-    emit('confirmCallBack', data);
-  }
+  emit('update:modelValue', selectUserList.value);
+  emit('confirmCallBack', selectUserList.value);
   userDialog.closeDialog();
 };
 
