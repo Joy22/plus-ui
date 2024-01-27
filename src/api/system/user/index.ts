@@ -18,6 +18,18 @@ export const listUser = (query: UserQuery): AxiosPromise<UserVO[]> => {
 };
 
 /**
+ * 查询用户列表
+ * @param userIds
+ */
+export const optionSelect = (userIds: (number | string)[]): AxiosPromise<UserVO[]> => {
+  return request({
+    url: '/system/user/optionselect?userIds=' + userIds,
+    method: 'get',
+    data: userIds
+  });
+};
+
+/**
  * 获取用户详情
  * @param userId
  */
@@ -199,6 +211,7 @@ export const deptTreeSelect = (): AxiosPromise<DeptVO[]> => {
 export default {
   listUser,
   getUser,
+  optionSelect,
   addUser,
   updateUser,
   delUser,
