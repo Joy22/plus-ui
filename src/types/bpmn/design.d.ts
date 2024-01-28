@@ -1,5 +1,5 @@
 declare module 'bpmnDesign' {
-  import { AuditUserTypeEnum, SpecifyDescEnum, MultipleUserAuditTypeEnum } from '@/enums/bpmn/IndexEnums';
+  import { AllocationTypeEnum, SpecifyDescEnum, MultipleUserAuditTypeEnum } from '@/enums/bpmn/IndexEnums';
 
   export interface ParamVO {
     type: string;
@@ -31,11 +31,9 @@ declare module 'bpmnDesign' {
   }
 
   export interface TaskPanel extends BasePanel {
-    auditUserType: AuditUserTypeEnum;
+    allocationType: AllocationTypeEnum;
     specifyDesc: SpecifyDescEnum;
     multipleUserAuditType: MultipleUserAuditTypeEnum;
-    users?: Record<string, any>[];
-    user?: Record<string, any>;
     roles?: Record<string, any>[];
     async?: boolean;
     priority?: number;
