@@ -89,7 +89,7 @@
               v-model:page="queryParams.pageNum"
               v-model:limit="queryParams.pageSize"
               :total="total"
-              @pagination="getList"
+              @pagination="pageList"
             />
           </el-card>
         </el-col>
@@ -158,15 +158,6 @@ const confirm = () => {
   userDialog.closeDialog();
 };
 
-const refreshDefaultUser = async (data) => {
-  const ids = computedIds(data);
-  if (ids.length > 0) {
-    // const { data } = await api.optionSelect(ids);
-    // await tableRef.value?.setCheckboxRow(data, true);
-    // selectUserList.value = data;
-  }
-};
-
 const computedIds = (data) => {
   if (data instanceof Array) {
     return [...data];
@@ -180,17 +171,8 @@ const computedIds = (data) => {
   }
 };
 
-const defaultSelectUserIds = computed(() => {
-  return computedIds(prop.data);
-});
+const defaultSelectUserIds = computed(() => computedIds(prop.data));
 
-watch(
-  () => prop.data,
-  (newVal) => {
-    refreshDefaultUser(newVal);
-  },
-  { deep: true }
-);
 /** 根据名称筛选部门树 */
 watchEffect(
   () => {
@@ -220,6 +202,14 @@ const getList = async () => {
   loading.value = false;
   userList.value = res.rows;
   total.value = res.total;
+};
+
+const pageList = async () => {
+  await getList();
+  const users = userList.value.filter((item) => {
+    return defaultSelectUserIds.value.includes(item.userId);
+  });
+  await tableRef.value.setCheckboxRow(users, true);
 };
 
 /** 节点单击事件 */
@@ -281,15 +271,17 @@ const handleCloseTag = (user: UserVO) => {
   selectUserList.value.splice(index, 1);
 };
 
-const initData = async () => {
-  const { data } = await api.optionSelect(defaultSelectUserIds.value);
-  selectUserList.value = data;
+const initSelectUser = async () => {
+  if (defaultSelectUserIds.value.length > 0) {
+    const { data } = await api.optionSelect(defaultSelectUserIds.value);
+    selectUserList.value = data;
+  }
 };
 
 onMounted(() => {
+  initSelectUser();
   getTreeSelect(); // 初始化部门数据
   getList(); // 初始化列表数据
-  initData();
 });
 
 defineExpose({
