@@ -5,7 +5,7 @@ export default {
     formKey: true
   },
   'bpmn:UserTask': {
-    auditUserType: true,
+    allocationType: true,
     users: true,
     user: true,
     roles: true,
