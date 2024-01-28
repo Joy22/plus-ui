@@ -8,6 +8,33 @@ export default {
   'associations': [],
   'types': [
     {
+      'name': 'flowable:property',
+      'superClass': ['Element'],
+      'properties': [
+        {
+          'name': 'name',
+          'isAttr': true,
+          'type': 'String'
+        },
+        {
+          'name': 'value',
+          'isAttr': true,
+          'type': 'String'
+        }
+      ]
+    },
+    {
+      'name': 'flowable:properties',
+      'superClass': ['Element'],
+      'properties': [
+        {
+          'name': 'values',
+          'type': 'flowable:property',
+          'isMany': true
+        }
+      ]
+    },
+    {
       'name': 'InOutBinding',
       'superClass': ['Element'],
       'isAbstract': true,

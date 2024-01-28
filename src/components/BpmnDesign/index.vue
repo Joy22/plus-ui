@@ -386,7 +386,7 @@ const getProcessElement = () => {
 
   :deep(.el-dialog .el-dialog__body) {
     max-height: 100% !important;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 50px);
   }
 
   .process-toolbar {

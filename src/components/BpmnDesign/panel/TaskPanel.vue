@@ -37,49 +37,60 @@
               <el-switch v-model="formData.async" inline-prompt active-text="是" inactive-text="否" @change="syncChange" />
             </el-form-item>
 
-            <el-tabs tab-position="left" style="" class="demo-tabs">
+            <el-tabs tab-position="left" class="demo-tabs" @tab-click="taskTabClick">
               <el-tab-pane label="身份存储">
-                <el-form-item v-if="showConfig.user" label="分配人员">
-                  <el-input v-model="formData.user.userName">
+                <el-form-item label="分配人员">
+                  <el-input v-model="formData.userName" disabled>
                     <template #append>
                       <el-button icon="Search" size="small" type="primary" @click="openSingleUserSelect" />
                     </template>
                   </el-input>
                 </el-form-item>
-                <el-form-item v-if="showConfig.users" label="候选人员">
+                <el-form-item label="候选人员">
                   <el-badge :value="selectUserLength" :max="99">
                     <el-button size="small" type="primary" @click="openUserSelect">选择人员</el-button>
                   </el-badge>
                 </el-form-item>
-                <el-form-item v-if="showConfig.roles" label="候选组">
+                <el-form-item label="候选组">
                   <el-badge :value="selectRoleLength" :max="99">
                     <el-button size="small" type="primary" @click="openRoleSelect">选择组</el-button>
                   </el-badge>
                 </el-form-item>
               </el-tab-pane>
-              <el-tab-pane label="固定值">开发中</el-tab-pane>
+
+              <el-tab-pane label="固定值">
+                <el-form-item prop="auditUserType" label="分配类型">
+                  <el-select v-model="formData.allocationType">
+                    <el-option v-for="item in AllocationTypeSelect" :key="item.id" :value="item.value" :label="item.label"> </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item v-if="formData.allocationType === AllocationTypeEnum.USER" label="分配人员">
+                  <el-input v-model="formData.userName">
+                    <template #append>
+                      <el-button icon="Search" size="small" type="primary" @click="proxy.$modal.msgWarning('开发中。。。。。。')" />
+                    </template>
+                  </el-input>
+                </el-form-item>
+                <div v-if="formData.allocationType === AllocationTypeEnum.CANDIDATE">
+                  <el-form-item label="候选人员">
+                    <el-badge :value="selectUserLength" :max="99">
+                      <el-button size="small" type="primary" @click="openUserSelect">选择人员</el-button>
+                    </el-badge>
+                  </el-form-item>
+                  <el-form-item label="候选组">
+                    <el-badge :value="selectRoleLength" :max="99">
+                      <el-button size="small" type="primary" @click="openRoleSelect">选择组</el-button>
+                    </el-badge>
+                  </el-form-item>
+                </div>
+                <el-form-item v-if="formData.allocationType === AllocationTypeEnum.SPECIFY && showConfig.specifyDesc" style="">
+                  <el-radio-group v-model="formData.specifyDesc" class="ml-4">
+                    <el-radio v-for="item in SpecifyDesc" :key="item.id" :label="item.value" size="large">{{ item.label }}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-tab-pane>
             </el-tabs>
 
-            <!--            <el-form-item v-if="showConfig.auditUserType" prop="auditUserType" label="人员类型">-->
-            <!--              <el-select v-model="formData.auditUserType">-->
-            <!--                <el-option v-for="item in AuditUserTypeSelect" :key="item.id" :value="item.value" :label="item.label"> </el-option>-->
-            <!--              </el-select>-->
-            <!--            </el-form-item>-->
-            <!--            <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.USER && showConfig.users" style="">-->
-            <!--              <el-badge :value="selectUserLength" :max="99">-->
-            <!--                <el-button type="primary" @click="openUserSelect">选择人员</el-button>-->
-            <!--              </el-badge>-->
-            <!--            </el-form-item>-->
-            <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.ROLE && showConfig.roles" style="">
-              <el-badge :value="selectRoleLength" :max="99">
-                <el-button type="primary" @click="openRoleSelect">选择角色</el-button>
-              </el-badge>
-            </el-form-item>
-            <el-form-item v-if="formData.auditUserType === AuditUserTypeEnum.SPECIFY && showConfig.specifyDesc" style="">
-              <el-radio-group v-model="formData.specifyDesc" class="ml-4">
-                <el-radio v-for="item in SpecifyDesc" :key="item.id" :label="item.value" size="large">{{ item.label }}</el-radio>
-              </el-radio-group>
-            </el-form-item>
             <el-form-item v-if="showConfig.multipleUserAuditType" prop="multipleUserAuditType" label="多人审批方式">
               <el-radio-group v-model="formData.multipleUserAuditType" class="ml-4 block-radio">
                 <el-radio v-for="item in MultipleUserAuditType" :key="item.id" :label="item.value" size="large">{{ item.label }}</el-radio>
@@ -140,8 +151,8 @@
         </el-form-item>
       </el-collapse>
     </el-form>
-    <UserSelect ref="singleUserSelectRef" v-model="formData.user" :multiple="false"></UserSelect>
-    <UserSelect ref="userSelectRef" v-model="formData.users"></UserSelect>
+    <UserSelect ref="userSelectRef" :data="formData.candidateUsers" @confirm-call-back="userSelectCallBack"></UserSelect>
+    <UserSelect ref="singleUserSelectRef" :data="formData.assignee" :multiple="false" @confirm-call-back="singleUserSelectCallBack"></UserSelect>
     <RoleSelect ref="roleSelectRef" v-model="formData.roles"></RoleSelect>
     <DueDate ref="dueDateRef" v-model="formData.dueDate"></DueDate>
   </div>
@@ -152,11 +163,10 @@ import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 import UserSelect from '@/components/UserSelect';
 import RoleSelect from '@/components/RoleSelect';
 import DueDate from '@/components/BpmnDesign/panel/property/DueDate.vue';
-import { Element, Modeler } from 'bpmn';
+import { Element, Moddle, Modeler, Modeling } from 'bpmn';
 import { TaskPanel } from 'bpmnDesign';
-import { AuditUserTypeEnum, MultipleUserAuditTypeEnum, SpecifyDescEnum } from '@/enums/bpmn/IndexEnums';
+import { AllocationTypeEnum, MultipleUserAuditTypeEnum, SpecifyDescEnum } from '@/enums/bpmn/IndexEnums';
 import { BellFilled, Checked, InfoFilled } from '@element-plus/icons-vue';
-import { getUserListByIds } from '@/api/workflow/workflowUser';
 import { UserVO } from '@/api/system/user/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -166,7 +176,7 @@ interface PropType {
   element: Element;
 }
 const props = withDefaults(defineProps<PropType>(), {});
-const { nameChange, idChange, showConfig, updateProperties } = usePanel({
+const { nameChange, idChange, showConfig, updateProperties, createModdleElement } = usePanel({
   modeler: props.modeler,
   element: toRaw(props.element)
 });
@@ -176,11 +186,9 @@ const { parse, formData } = useParseElement<TaskPanel>({
   initData: {
     id: '',
     name: '',
-    user: {},
-    // roles: [],
     dueDate: '',
     multipleUserAuditType: MultipleUserAuditTypeEnum.SERIAL,
-    auditUserType: AuditUserTypeEnum.USER,
+    allocationType: AllocationTypeEnum.USER,
     specifyDesc: SpecifyDescEnum.SPECIFY_SINGLE
   }
 });
@@ -190,6 +198,8 @@ const userSelectRef = ref<InstanceType<typeof UserSelect>>();
 const singleUserSelectRef = ref<InstanceType<typeof UserSelect>>();
 const roleSelectRef = ref<InstanceType<typeof RoleSelect>>();
 const dueDateRef = ref<InstanceType<typeof DueDate>>();
+
+const isMultiple = ref(true);
 const openUserSelect = () => {
   userSelectRef.value.open();
 };
@@ -203,12 +213,70 @@ const openDueDate = () => {
   dueDateRef.value.openDialog();
 };
 
+const singleUserSelectCallBack = (data: UserVO[]) => {
+  const modeling = props.modeler.get<Modeling>('modeling');
+  if (data.length !== 0) {
+    const user = data[0];
+    formData.value.userName = user.userName;
+    const userId = user.userId;
+    updateProperties({ 'flowable:assignee': userId });
+    let extensionElements = props.element.businessObject.get('extensionElements');
+    if (!extensionElements) {
+      extensionElements = createModdleElement('bpmn:ExtensionElements', {}, props.element.businessObject);
+      modeling.updateModdleProperties(toRaw(props.element), toRaw(props.element.businessObject), { extensionElements });
+    }
+    let propertiesElements;
+    if (!extensionElements.values) {
+      propertiesElements = createModdleElement('flowable:properties', {}, extensionElements);
+      modeling.updateModdleProperties(toRaw(props.element), extensionElements, {
+        values: [...extensionElements.get('values'), propertiesElements]
+      });
+    } else {
+      propertiesElements = extensionElements.values.find((item) => item.$type === 'flowable:properties');
+    }
+
+    let userNameProperty;
+    if (propertiesElements.values) {
+      userNameProperty = propertiesElements.values.find((item) => {
+        if (item['name'] === 'userName') {
+          return true;
+        }
+        return false;
+      });
+      userNameProperty['name'] = 'userName';
+      userNameProperty['value'] = user.userName;
+    } else {
+      userNameProperty = createModdleElement('flowable:property', { name: 'userName', value: user.userName }, propertiesElements);
+      modeling.updateModdleProperties(toRaw(props.element), propertiesElements, {
+        values: [...propertiesElements.get('values'), userNameProperty]
+      });
+    }
+  } else {
+    updateProperties({ 'flowable:assignee': undefined });
+  }
+};
+const userSelectCallBack = (data: UserVO[]) => {
+  if (data?.length !== 0) {
+    // 获取userId 用逗号,隔开
+    const userIds = data.map((item) => item.userId).join(',');
+    updateProperties({ 'flowable:candidateUsers': userIds });
+    formData.value.candidateUsers = userIds;
+  } else {
+    updateProperties({ 'flowable:candidateUsers': undefined });
+    formData.value.candidateUsers = undefined;
+  }
+};
+
+const taskTabClick = (e) => {
+  formData.value.roles = [];
+};
+
 const syncChange = (newVal) => {
   updateProperties({ 'flowable:async': newVal });
 };
 const selectUserLength = computed(() => {
-  if (formData.value.users) {
-    return formData.value.users.length;
+  if (formData.value.candidateUsers) {
+    return formData.value.candidateUsers.split(',').length;
   } else {
     return 0;
   }
@@ -221,13 +289,6 @@ const selectRoleLength = computed(() => {
   }
 });
 watch(
-  () => formData.value.auditUserType,
-  (val, oldVal) => {
-    formData.value.users = [];
-    formData.value.roles = [];
-  }
-);
-watch(
   () => formData.value.roles,
   (newVal: Record<string, any>[]) => {
     if (newVal?.length > 0) {
@@ -236,28 +297,6 @@ watch(
       updateProperties({ 'flowable:candidateGroups': roleIds });
     } else {
       updateProperties({ 'flowable:candidateGroups': undefined });
-    }
-  },
-  { deep: true }
-);
-watch(
-  () => formData.value.users,
-  (newVal: UserVO[]) => {
-    console.log(newVal);
-    if (newVal?.length === 1) {
-      const user = newVal[0];
-      const userId = user.userId;
-      updateProperties({ 'flowable:assignee': userId });
-      updateProperties({ 'flowable:candidateUsers': undefined });
-      // 删除会签属性
-    } else if (newVal?.length > 1) {
-      // 获取userId 用逗号,隔开
-      const userIds = newVal.map((item) => item.userId).join(',');
-      updateProperties({ 'flowable:candidateUsers': userIds });
-      updateProperties({ 'flowable:assignee': undefined });
-    } else {
-      updateProperties({ 'flowable:candidateUsers': undefined });
-      updateProperties({ 'flowable:assignee': undefined });
     }
   },
   { deep: true }
@@ -302,26 +341,17 @@ watch(
     }
   }
 );
-const initUsers = async () => {
-  if (formData.value.candidateUsers) {
-    const userIds = formData.value.candidateUsers.split(',');
-    const res = await getUserListByIds(userIds);
-    formData.value.users = res.data;
-  }
-};
-onBeforeMount(() => {
-  initUsers();
-});
+
 const formRules = ref<ElFormRules>({
   id: [{ required: true, message: '请输入', trigger: 'blur' }],
   name: [{ required: true, message: '请输入', trigger: 'blur' }]
 });
 
-const AuditUserTypeSelect = [
-  { id: 'b9cdf970-dd91-47c0-819f-42a7010ca2a6', label: '指定人员', value: 'user' },
-  { id: '3f7ccbcd-c464-4602-bb9d-e96649d10585', label: '角色', value: 'role' },
-  { id: 'c49065e0-7f2d-4c09-aedb-ab2d47d9a454', label: '发起人自己', value: 'yourself' },
-  { id: '6ef40a03-7e9a-4898-89b2-c88fe9064542', label: '发起人指定', value: 'specify' }
+const AllocationTypeSelect = [
+  { id: 'b9cdf970-dd91-47c0-819f-42a7010ca2a6', label: '指定人员', value: AllocationTypeEnum.USER },
+  { id: '3f7ccbcd-c464-4602-bb9d-e96649d10585', label: '候选人员', value: AllocationTypeEnum.CANDIDATE },
+  { id: 'c49065e0-7f2d-4c09-aedb-ab2d47d9a454', label: '发起人自己', value: AllocationTypeEnum.YOURSELF },
+  { id: '6ef40a03-7e9a-4898-89b2-c88fe9064542', label: '发起人指定', value: AllocationTypeEnum.SPECIFY }
 ];
 const SpecifyDesc = [
   { id: 'fa253b34-4335-458c-b1bc-b039e2a2b7a6', label: '指定一个人', value: 'specifySingle' },
