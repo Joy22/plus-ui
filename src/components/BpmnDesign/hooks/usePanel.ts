@@ -30,12 +30,19 @@ export default (ops: Options) => {
       updateProperties({ name: newVal });
     }
   };
+  const createModdleElement = (elementType, properties, parent) => {
+    const moddle = modeler.get<Moddle>('moddle');
+    const element = moddle.create(elementType, properties);
+    parent && (element.$parent = parent);
+    return element;
+  };
 
   return {
     elementType,
     showConfig: config,
 
     updateProperties,
+    createModdleElement,
     idChange,
     nameChange
   };
