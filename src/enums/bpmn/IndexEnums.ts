@@ -1,6 +1,6 @@
-export enum AuditUserTypeEnum {
+export enum AllocationTypeEnum {
   USER = 'user',
-  ROLE = 'role',
+  CANDIDATE = 'candidate',
   YOURSELF = 'yourself',
   SPECIFY = 'specify'
 }
